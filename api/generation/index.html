@@ -1,0 +1,774 @@
+<!DOCTYPE html><html lang="en" data-appearance="light"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>pyoq.generation · PyOQ</title><meta name="description" content="The pipeline that writes the generated package, and what owns each file."><link rel="canonical" href="https://teqpod.com/pyoq-sql/api/generation/"><meta name="robots" content="index, follow, max-image-preview:large"><meta name="theme-color" content="#1b6ef3"><link rel="sitemap" type="application/xml" href="/pyoq-sql/sitemap.xml"><meta property="og:type" content="article"><meta property="og:site_name" content="PyOQ"><meta property="og:locale" content="en"><meta property="og:title" content="pyoq.generation · PyOQ"><meta property="og:description" content="The pipeline that writes the generated package, and what owns each file."><meta property="og:url" content="https://teqpod.com/pyoq-sql/api/generation/"><meta property="og:image" content="https://teqpod.com/pyoq-sql/brand/pyoq-banner.png"><meta property="og:image:type" content="image/png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="PyOQ, fully typed database-first SQL for Python"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="pyoq.generation · PyOQ"><meta name="twitter:description" content="The pipeline that writes the generated package, and what owns each file."><meta name="twitter:image" content="https://teqpod.com/pyoq-sql/brand/pyoq-banner.png"><link rel="icon" type="image/svg+xml" href="/pyoq-sql/brand/pyoq-mark.svg"><link rel="icon" type="image/png" sizes="32x32" href="/pyoq-sql/brand/pyoq-favicon-32.png"><link rel="apple-touch-icon" href="/pyoq-sql/brand/pyoq-mark-180.png"><script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://teqpod.com/pyoq-sql/#site","name":"PyOQ","url":"https://teqpod.com/pyoq-sql/","description":"A database-first SQL toolkit with generated types, explicit execution, and native acceleration for Python applications."},{"@type":"SoftwareApplication","@id":"https://teqpod.com/pyoq-sql/#project","name":"PyOQ","description":"A database-first SQL toolkit with generated types, explicit execution, and native acceleration for Python applications.","url":"https://teqpod.com/pyoq-sql/","sameAs":["https://pypi.org/project/pyoq-sql/"],"applicationCategory":"DeveloperApplication","operatingSystem":"Linux, macOS, Windows","programmingLanguage":"Python","license":"https://teqpod.com/pyoq-sql/licence/","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}},{"@type":"TechArticle","headline":"pyoq.generation · PyOQ","description":"The pipeline that writes the generated package, and what owns each file.","url":"https://teqpod.com/pyoq-sql/api/generation/","image":"https://teqpod.com/pyoq-sql/brand/pyoq-banner.png","isPartOf":{"@id":"https://teqpod.com/pyoq-sql/#site"},"about":{"@id":"https://teqpod.com/pyoq-sql/#project"},"inLanguage":"en","articleSection":"APIs"}]}</script><script>
+  (() => {
+    let chosen = null;
+    try {
+      chosen = localStorage.getItem("pyoq-appearance");
+    } catch {}
+    const dark = matchMedia("(prefers-color-scheme: dark)").matches;
+    document.documentElement.dataset.appearance = chosen ?? (dark ? "dark" : "light");
+  })();
+</script><link rel="stylesheet" href="/pyoq-sql/_astro/app.CXhD3KCe.css"></head><body><a class="skip" href="#content">Skip to content</a><header class="bar"><a class="wordmark" href="/pyoq-sql/" aria-label="PyOQ documentation home"><img class="brand-image" src="/pyoq-sql/brand/pyoq-mark.svg" width="30" height="30" alt=""><span class="brand-name">PyOQ</span><span class="brand-context">docs</span></a><div class="search" data-pagefind-ignore><svg class="glass" viewBox="0 0 20 20" width="15" height="15" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.8" d="M8.5 14.5a6 6 0 1 1 0-12 6 6 0 0 1 0 12Zm4.5-1.5 4 4"></path></svg><input id="search" type="search" placeholder="Search the documentation" autocomplete="off" spellcheck="false" aria-label="Search the documentation" aria-expanded="false" aria-controls="results"><kbd>/</kbd><div id="results" role="listbox" hidden></div></div><script>(function(){const runtime = "/pyoq-sql/pagefind/pagefind.js";
+const baseUrl = "/pyoq-sql/";
+
+  const field = document.getElementById("search");
+  const panel = document.getElementById("results");
+  let engine = null;
+  let chosen = -1;
+
+  async function ready() {
+    if (engine) return engine;
+    try {
+      engine = await import(runtime);
+      await engine.options({ baseUrl, excerptLength: 24 });
+      await engine.init();
+    } catch {
+      engine = "unavailable";
+    }
+    return engine;
+  }
+
+  function close() {
+    panel.hidden = true;
+    field.setAttribute("aria-expanded", "false");
+    chosen = -1;
+  }
+
+  function draw(results) {
+    if (!results.length) {
+      panel.innerHTML = '<p class="none">Nothing matches that.</p>';
+    } else {
+      panel.innerHTML = results
+        .map((result) => {
+          const where = result.meta?.group ?? "Documentation";
+          const title = result.meta?.title ?? "Untitled";
+          return `<a role="option" href="${result.url}">
+            <span class="where">${where}</span>
+            <span class="what">${title}</span>
+            <span class="bit">${result.excerpt}</span>
+          </a>`;
+        })
+        .join("");
+    }
+    panel.hidden = false;
+    field.setAttribute("aria-expanded", "true");
+    chosen = -1;
+  }
+
+  let running = 0;
+  async function run() {
+    const wanted = field.value.trim();
+    if (!wanted) return close();
+    const engine = await ready();
+    if (engine === "unavailable") {
+      panel.innerHTML =
+        '<p class="none">Search is built with the site. Run <code>bun run build</code>.</p>';
+      panel.hidden = false;
+      return;
+    }
+    const token = ++running;
+    const found = await engine.search(wanted);
+    if (token !== running) return;
+    const top = await Promise.all(found.results.slice(0, 8).map((one) => one.data()));
+    if (token !== running) return;
+    draw(top);
+  }
+
+  function move(step) {
+    const links = panel.querySelectorAll("a");
+    if (!links.length) return;
+    chosen = (chosen + step + links.length) % links.length;
+    links.forEach((link, at) => link.classList.toggle("on", at === chosen));
+    links[chosen].scrollIntoView({ block: "nearest" });
+  }
+
+  let waiting;
+  field?.addEventListener("input", () => {
+    clearTimeout(waiting);
+    waiting = setTimeout(run, 120);
+  });
+  field?.addEventListener("focus", ready);
+
+  field?.addEventListener("keydown", (event) => {
+    if (event.key === "ArrowDown") {
+      event.preventDefault();
+      move(1);
+    } else if (event.key === "ArrowUp") {
+      event.preventDefault();
+      move(-1);
+    } else if (event.key === "Enter" && chosen >= 0) {
+      event.preventDefault();
+      panel.querySelectorAll("a")[chosen].click();
+    } else if (event.key === "Escape") {
+      field.blur();
+      close();
+    }
+  });
+
+  document.addEventListener("click", (event) => {
+    if (!panel.contains(event.target) && event.target !== field) close();
+  });
+
+  // "/" reaches the field from anywhere, which is where a reader goes first.
+  document.addEventListener("keydown", (event) => {
+    const typing = /^(INPUT|TEXTAREA)$/.test(document.activeElement?.tagName ?? "");
+    if (event.key === "/" && !typing) {
+      event.preventDefault();
+      field.focus();
+      field.select();
+    }
+  });
+})();</script><button id="appearance" type="button" aria-label="Switch appearance"><svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M10 2a8 8 0 1 0 0 16 8 8 0 0 0 0-16Zm0 1.6V16.4a6.4 6.4 0 0 1 0-12.8Z"></path></svg></button><script type="module">var e=document.documentElement;document.getElementById(`appearance`)?.addEventListener(`click`,()=>{let t=e.dataset.appearance===`dark`?`light`:`dark`;e.dataset.appearance=t;try{localStorage.setItem(`pyoq-appearance`,t)}catch{}});</script></header><div class="page"><nav class="side" aria-label="Documentation"><details class="side-toggle"><summary>Contents</summary></details><div class="side-body"><details class="side-group" data-group="Start here"><summary class="group" title="What this is, whether it suits you, and getting it running."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>Start here</summary><ul><li><a href="/pyoq-sql/overview/">What PyOQ is</a></li><li><a href="/pyoq-sql/when-to-use/">When to use what</a></li><li><a href="/pyoq-sql/installing/">Installing</a></li><li><a href="/pyoq-sql/generating/">Generating your types</a></li><li><a href="/pyoq-sql/first-query/">Your first query</a></li></ul></details><details class="side-group" data-group="For LLMs"><summary class="group" title="A compact project model and source map for coding agents."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>For LLMs</summary><ul><li><a href="/pyoq-sql/agents/">LLM agent guide</a></li></ul></details><details class="side-group" data-group="Reading"><summary class="group" title="Everything that ends in rows coming back."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>Reading</summary><ul><li><a href="/pyoq-sql/selecting/">Selecting rows</a></li><li><a href="/pyoq-sql/expressions/">Expressions and conditions</a></li><li><a href="/pyoq-sql/joins/">Joins and set operations</a></li><li><a href="/pyoq-sql/routines/">Stored routines</a></li><li><a href="/pyoq-sql/results/">Reading results</a></li></ul></details><details class="side-group" data-group="Writing"><summary class="group" title="Everything that changes what is in the database."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>Writing</summary><ul><li><a href="/pyoq-sql/inserting/">Inserting rows</a></li><li><a href="/pyoq-sql/updating/">Updating and deleting</a></li><li><a href="/pyoq-sql/conflicts/">Conflict resolution</a></li><li><a href="/pyoq-sql/bulk/">Bulk writes</a></li></ul></details><details class="side-group" data-group="Your data"><summary class="group" title="What the schema says, and how PyOQ reads it back."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>Your data</summary><ul><li><a href="/pyoq-sql/relations/">Relations</a></li><li><a href="/pyoq-sql/types/">Column types</a></li><li><a href="/pyoq-sql/snapshots/">Snapshots and drift</a></li><li><a href="/pyoq-sql/migrations/">Migration lifecycle</a></li></ul></details><details class="side-group" data-group="Running statements"><summary class="group" title="What happens between a built statement and a row."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>Running statements</summary><ul><li><a href="/pyoq-sql/connections/">Connections and pools</a></li><li><a href="/pyoq-sql/mysql-application/">MySQL without a framework</a></li><li><a href="/pyoq-sql/async/">Asynchronous execution</a></li><li><a href="/pyoq-sql/transactions/">Transactions and streaming</a></li><li><a href="/pyoq-sql/dialects/">Dialects</a></li><li><a href="/pyoq-sql/diagnostics/">Diagnostics</a></li><li><a href="/pyoq-sql/policies/">Policies</a></li><li><a href="/pyoq-sql/security/">Security</a></li><li><a href="/pyoq-sql/performance/">Performance</a></li></ul></details><details class="side-group" data-group="Frameworks"><summary class="group" title="Running inside something that already owns the connection."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>Frameworks</summary><ul><li><a href="/pyoq-sql/alembic/">Alembic</a></li><li><a href="/pyoq-sql/django/">Django</a></li><li><a href="/pyoq-sql/fastapi/">FastAPI</a></li><li><a href="/pyoq-sql/sanic/">Sanic</a></li><li><a href="/pyoq-sql/serving/">Standalone services</a></li></ul></details><details class="side-group" data-group="Reference"><summary class="group" title="The details, once you know what you are looking for."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>Reference</summary><ul><li><a href="/pyoq-sql/cli/">Command line</a></li><li><a href="/pyoq-sql/configuration/">Configuration</a></li><li><a href="/pyoq-sql/errors/">Errors</a></li><li><a href="/pyoq-sql/troubleshooting/">Troubleshooting</a></li><li><a href="/pyoq-sql/testing/">Testing applications</a></li><li><a href="/pyoq-sql/releasing/">Releasing</a></li><li><a href="/pyoq-sql/licence/">Licence</a></li></ul></details><details class="side-group" data-group="APIs" open><summary class="group" title="Every package, every name it exports, and what each one does."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>APIs</summary><ul><li><a href="/pyoq-sql/api/references/">All references</a></li><li><a href="/pyoq-sql/api/internals/">Internals</a></li><li><a href="/pyoq-sql/api/pyoq/">pyoq</a></li><li><a href="/pyoq-sql/api/commands/">pyoq commands</a></li><li><a href="/pyoq-sql/api/native/">pyoq._native</a></li><li><a href="/pyoq-sql/api/cli/">pyoq.cli</a></li><li><a href="/pyoq-sql/api/config/">pyoq.config</a></li><li><a href="/pyoq-sql/api/descriptors/">pyoq.descriptors</a></li><li><a href="/pyoq-sql/api/diagnostics/">pyoq.diagnostics</a></li><li><a href="/pyoq-sql/api/django/">pyoq.django</a></li><li><a href="/pyoq-sql/api/dsl/">pyoq.dsl</a></li><li><a href="/pyoq-sql/api/errors/">pyoq.errors</a></li><li><a href="/pyoq-sql/api/fastapi/">pyoq.fastapi</a></li><li><a href="/pyoq-sql/api/fetching/">pyoq.fetching</a></li><li><a href="/pyoq-sql/api/generation/" class="active" aria-current="page">pyoq.generation</a></li><li><a href="/pyoq-sql/api/hydration/">pyoq.hydration</a></li><li><a href="/pyoq-sql/api/migrations/">pyoq.migrations</a></li><li><a href="/pyoq-sql/api/naming/">pyoq.naming</a></li><li><a href="/pyoq-sql/api/policies/">pyoq.policies</a></li><li><a href="/pyoq-sql/api/query/">pyoq.query</a></li><li><a href="/pyoq-sql/api/query-expressions/">pyoq.query expressions</a></li><li><a href="/pyoq-sql/api/query-functions/">pyoq.query functions</a></li><li><a href="/pyoq-sql/api/query-execution/">pyoq.query.execution</a></li><li><a href="/pyoq-sql/api/query-mysql/">pyoq.query.mysql</a></li><li><a href="/pyoq-sql/api/query-postgres/">pyoq.query.postgres</a></li><li><a href="/pyoq-sql/api/query-sqlite/">pyoq.query.sqlite</a></li><li><a href="/pyoq-sql/api/relations/">pyoq.relations</a></li><li><a href="/pyoq-sql/api/runtime/">pyoq.runtime</a></li><li><a href="/pyoq-sql/api/sanic/">pyoq.sanic</a></li><li><a href="/pyoq-sql/api/schema/">pyoq.schema</a></li><li><a href="/pyoq-sql/api/schema-dialects/">pyoq.schema dialects</a></li><li><a href="/pyoq-sql/api/serving/">pyoq.serving</a></li><li><a href="/pyoq-sql/api/snapshots/">pyoq.snapshots</a></li><li><a href="/pyoq-sql/api/tracing/">pyoq.tracing</a></li></ul></details></div></nav><script type="module">var e=`pyoq-sidebar`;function t(){try{return JSON.parse(sessionStorage.getItem(e)??`{}`)}catch{return{}}}function n(t){try{sessionStorage.setItem(e,JSON.stringify(t))}catch{}}var r=document.querySelector(`.side`),i=[...document.querySelectorAll(`.side-group`)],a=t();for(let e of i){let t=e.dataset.group;t&&(t in a&&(e.open=a[t]),e.addEventListener(`toggle`,()=>{a[t]=e.open,n(a)}))}function o(){if(!r||r.scrollHeight<=r.clientHeight)return;let e=r.querySelector(`a.active`);if(!e)return;let t=r.getBoundingClientRect(),n=e.getBoundingClientRect();n.top>=t.top&&n.bottom<=t.bottom||(r.scrollTop+=n.top-t.top-r.clientHeight/2+n.height/2)}requestAnimationFrame(o);</script><main id="content" data-pagefind-body><p class="crumb" data-pagefind-meta="group:APIs">APIs</p><article><h1>pyoq.generation</h1><p class="lede" data-pagefind-ignore>The pipeline that writes the generated package, and what owns each file.</p><p>What <code>pyoq generate</code> drives. Generation is deterministic, validated before anything is written, and atomic: a run either replaces the package or leaves it as it was.</p>
+<p><code>GeneratedTypesRenderer</code> is also exported from <code>pyoq.generation.rendering</code>.</p>
+<h2 id="atomicgenerationwriter"><code>AtomicGenerationWriter</code></h2>
+<p><em>dataclass</em></p>
+<p>Replaces the package in one step, so a failure leaves the old one intact.</p>
+<div class="code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">AtomicGenerationWriter(manifest_store: </span><span style="color:#A31515;--shiki-dark:#CE9178">'ManifestStore'</span><span style="color:#000000;--shiki-dark:#D4D4D4">, cleanup: </span><span style="color:#A31515;--shiki-dark:#CE9178">'ManifestOwnedCleanup'</span><span style="color:#000000;--shiki-dark:#D4D4D4">, replace_directory: </span><span style="color:#A31515;--shiki-dark:#CE9178">'DirectoryReplacer'</span><span style="color:#000000;--shiki-dark:#D4D4D4"> = &#x3C;built-</span><span style="color:#AF00DB;--shiki-dark:#C586C0">in</span><span style="color:#000000;--shiki-dark:#D4D4D4"> function replace>)</span></span></code></pre>
+<div class="monaco-host"></div></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Field</th><th>Type</th></tr></thead><tbody><tr><td><code>manifest_store</code></td><td><code>ManifestStore</code></td></tr><tr><td><code>cleanup</code></td><td><code>ManifestOwnedCleanup</code></td></tr><tr><td><code>replace_directory</code></td><td><code>DirectoryReplacer</code></td></tr></tbody></table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Method</th><th>Returns</th></tr></thead><tbody><tr><td><code>write(package_root: 'Path', plan: 'GenerationPlan', current_manifest: 'OwnershipManifest | None', desired_manifest: 'OwnershipManifest')</code></td><td>—</td></tr><tr><td><code>write_profiles(base_root: 'Path', profiles: 'tuple[ProfileGenerationWrite, ...]')</code></td><td>—</td></tr></tbody></table>
+<h2 id="concernrenderer"><code>ConcernRenderer</code></h2>
+<p><em>class</em></p>
+<p>What each renderer is: one concern of the package, rendered on its own.</p>
+<div class="code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">ConcernRenderer(*args, **kwargs)</span></span></code></pre>
+<div class="monaco-host"></div></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Method</th><th>Returns</th></tr></thead><tbody><tr><td><code>render(snapshot: 'SchemaSnapshot', configuration: 'Configuration')</code></td><td><code>tuple[RenderedFile, ...]</code></td></tr></tbody></table>
+<h2 id="directoryprojectlock"><code>DirectoryProjectLock</code></h2>
+<p><em>class</em></p>
+<p>The project lock, held as a directory.</p>
+<div class="code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">DirectoryProjectLock()</span></span></code></pre>
+<div class="monaco-host"></div></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Method</th><th>Returns</th></tr></thead><tbody><tr><td><code>acquire(project_root: 'Path')</code></td><td><code>Generator[None, None, None]</code></td></tr></tbody></table>
+<h2 id="driftchecker"><code>DriftChecker</code></h2>
+<p><em>class</em></p>
+<p>Whether what is on disk still matches the plan.</p>
+<div class="code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">DriftChecker(*args, **kwargs)</span></span></code></pre>
+<div class="monaco-host"></div></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Method</th><th>Returns</th></tr></thead><tbody><tr><td><code>compare(package_root: 'Path', plan: 'GenerationPlan', current_manifest: 'OwnershipManifest | None', desired_manifest: 'OwnershipManifest')</code></td><td><code>DriftReport</code></td></tr></tbody></table>
+<h2 id="driftreport"><code>DriftReport</code></h2>
+<p><em>dataclass</em></p>
+<p>What that check found.</p>
+<div class="code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">DriftReport(created: </span><span style="color:#A31515;--shiki-dark:#CE9178">'tuple[PurePosixPath, ...]'</span><span style="color:#000000;--shiki-dark:#D4D4D4"> = (), updated: </span><span style="color:#A31515;--shiki-dark:#CE9178">'tuple[PurePosixPath, ...]'</span><span style="color:#000000;--shiki-dark:#D4D4D4"> = (), removed: </span><span style="color:#A31515;--shiki-dark:#CE9178">'tuple[PurePosixPath, ...]'</span><span style="color:#000000;--shiki-dark:#D4D4D4"> = (), conflicts: </span><span style="color:#A31515;--shiki-dark:#CE9178">'tuple[PurePosixPath, ...]'</span><span style="color:#000000;--shiki-dark:#D4D4D4"> = (), manifest_changed: </span><span style="color:#A31515;--shiki-dark:#CE9178">'bool'</span><span style="color:#000000;--shiki-dark:#D4D4D4"> = </span><span style="color:#0000FF;--shiki-dark:#569CD6">False</span><span style="color:#000000;--shiki-dark:#D4D4D4">)</span></span></code></pre>
+<div class="monaco-host"></div></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Field</th><th>Type</th></tr></thead><tbody><tr><td><code>created</code></td><td><code>tuple[PurePosixPath, ...]</code></td></tr><tr><td><code>updated</code></td><td><code>tuple[PurePosixPath, ...]</code></td></tr><tr><td><code>removed</code></td><td><code>tuple[PurePosixPath, ...]</code></td></tr><tr><td><code>conflicts</code></td><td><code>tuple[PurePosixPath, ...]</code></td></tr><tr><td><code>manifest_changed</code></td><td><code>bool</code></td></tr></tbody></table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Method</th><th>Returns</th></tr></thead><tbody><tr><td><code>summary()</code></td><td><code>str</code></td></tr></tbody></table>
+<h2 id="filedriftchecker"><code>FileDriftChecker</code></h2>
+<p><em>dataclass</em></p>
+<p>That check, against files.</p>
+<div class="code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">FileDriftChecker(digest_reader: </span><span style="color:#A31515;--shiki-dark:#CE9178">'FileDigestReader'</span><span style="color:#000000;--shiki-dark:#D4D4D4"> = &#x3C;function _file_digest at </span><span style="color:#0000FF;--shiki-dark:#569CD6">0x</span><span style="color:#098658;--shiki-dark:#B5CEA8">10b7ef240</span><span style="color:#000000;--shiki-dark:#D4D4D4">>)</span></span></code></pre>
+<div class="monaco-host"></div></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Field</th><th>Type</th></tr></thead><tbody><tr><td><code>digest_reader</code></td><td><code>FileDigestReader</code></td></tr></tbody></table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Method</th><th>Returns</th></tr></thead><tbody><tr><td><code>compare(package_root: 'Path', plan: 'GenerationPlan', current_manifest: 'OwnershipManifest | None', desired_manifest: 'OwnershipManifest')</code></td><td><code>DriftReport</code></td></tr></tbody></table>
+<h2 id="generatedtypesrenderer"><code>GeneratedTypesRenderer</code></h2>
+<p><em>dataclass</em></p>
+<p>Renders the generated types. Also exported from <code>pyoq.generation.rendering</code>.</p>
+<div class="code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">GeneratedTypesRenderer(naming_policy: </span><span style="color:#A31515;--shiki-dark:#CE9178">'NamingPolicy'</span><span style="color:#000000;--shiki-dark:#D4D4D4"> = &#x3C;factory>, file_renderers: </span><span style="color:#A31515;--shiki-dark:#CE9178">'tuple[PackageFileRenderer, ...]'</span><span style="color:#000000;--shiki-dark:#D4D4D4"> = (&#x3C;function render_domains at </span><span style="color:#0000FF;--shiki-dark:#569CD6">0x</span><span style="color:#098658;--shiki-dark:#B5CEA8">10b856de0</span><span style="color:#000000;--shiki-dark:#D4D4D4">>, &#x3C;function render_enums at </span><span style="color:#0000FF;--shiki-dark:#569CD6">0x</span><span style="color:#098658;--shiki-dark:#B5CEA8">10b8577e0</span><span style="color:#000000;--shiki-dark:#D4D4D4">>, &#x3C;function render_exports at </span><span style="color:#0000FF;--shiki-dark:#569CD6">0x</span><span style="color:#098658;--shiki-dark:#B5CEA8">10b878360</span><span style="color:#000000;--shiki-dark:#D4D4D4">>, &#x3C;function render_relations at </span><span style="color:#0000FF;--shiki-dark:#569CD6">0x</span><span style="color:#098658;--shiki-dark:#B5CEA8">10b878540</span><span style="color:#000000;--shiki-dark:#D4D4D4">>, &#x3C;function render_routines at </span><span style="color:#0000FF;--shiki-dark:#569CD6">0x</span><span style="color:#098658;--shiki-dark:#B5CEA8">10b878c20</span><span style="color:#000000;--shiki-dark:#D4D4D4">>, &#x3C;function render_rows at </span><span style="color:#0000FF;--shiki-dark:#569CD6">0x</span><span style="color:#098658;--shiki-dark:#B5CEA8">10b879b20</span><span style="color:#000000;--shiki-dark:#D4D4D4">>, &#x3C;function render_tables at </span><span style="color:#0000FF;--shiki-dark:#569CD6">0x</span><span style="color:#098658;--shiki-dark:#B5CEA8">10b879f80</span><span style="color:#000000;--shiki-dark:#D4D4D4">>, &#x3C;function render_writes at </span><span style="color:#0000FF;--shiki-dark:#569CD6">0x</span><span style="color:#098658;--shiki-dark:#B5CEA8">10b87a8e0</span><span style="color:#000000;--shiki-dark:#D4D4D4">>))</span></span></code></pre>
+<div class="monaco-host"></div></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Field</th><th>Type</th></tr></thead><tbody><tr><td><code>naming_policy</code></td><td><code>NamingPolicy</code></td></tr><tr><td><code>file_renderers</code></td><td><code>tuple[PackageFileRenderer, ...]</code></td></tr></tbody></table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Method</th><th>Returns</th></tr></thead><tbody><tr><td><code>render(snapshot: 'SchemaSnapshot', configuration: 'Configuration')</code></td><td><code>tuple[RenderedFile, ...]</code></td></tr></tbody></table>
+<h2 id="generationmode"><code>GenerationMode</code></h2>
+<p><em>enum</em></p>
+<p>Whether to write, check, or report what would change.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Member</th><th>Value</th></tr></thead><tbody><tr><td><code>WRITE</code></td><td><code>'write'</code></td></tr><tr><td><code>CHECK</code></td><td><code>'check'</code></td></tr><tr><td><code>DRY_RUN</code></td><td><code>'dry-run'</code></td></tr></tbody></table>
+<h2 id="generationpipeline"><code>GenerationPipeline</code></h2>
+<p><em>dataclass</em></p>
+<p>The whole run: plan, validate, write, clean up.</p>
+<div class="code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">GenerationPipeline(schema_source: </span><span style="color:#A31515;--shiki-dark:#CE9178">'SchemaSource'</span><span style="color:#000000;--shiki-dark:#D4D4D4">, planner: </span><span style="color:#A31515;--shiki-dark:#CE9178">'GenerationPlanner'</span><span style="color:#000000;--shiki-dark:#D4D4D4">, validator: </span><span style="color:#A31515;--shiki-dark:#CE9178">'PlanValidator'</span><span style="color:#000000;--shiki-dark:#D4D4D4">, manifest_store: </span><span style="color:#A31515;--shiki-dark:#CE9178">'ManifestStore'</span><span style="color:#000000;--shiki-dark:#D4D4D4">, drift_checker: </span><span style="color:#A31515;--shiki-dark:#CE9178">'DriftChecker'</span><span style="color:#000000;--shiki-dark:#D4D4D4">, writer: </span><span style="color:#A31515;--shiki-dark:#CE9178">'PlanWriter'</span><span style="color:#000000;--shiki-dark:#D4D4D4">, project_lock: </span><span style="color:#A31515;--shiki-dark:#CE9178">'ProjectLock'</span><span style="color:#000000;--shiki-dark:#D4D4D4">)</span></span></code></pre>
+<div class="monaco-host"></div></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Field</th><th>Type</th></tr></thead><tbody><tr><td><code>schema_source</code></td><td><code>SchemaSource</code></td></tr><tr><td><code>planner</code></td><td><code>GenerationPlanner</code></td></tr><tr><td><code>validator</code></td><td><code>PlanValidator</code></td></tr><tr><td><code>manifest_store</code></td><td><code>ManifestStore</code></td></tr><tr><td><code>drift_checker</code></td><td><code>DriftChecker</code></td></tr><tr><td><code>writer</code></td><td><code>PlanWriter</code></td></tr><tr><td><code>project_lock</code></td><td><code>ProjectLock</code></td></tr></tbody></table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Method</th><th>Returns</th></tr></thead><tbody><tr><td><code>execute(configuration: 'Configuration', mode: 'GenerationMode')</code></td><td><code>str</code></td></tr><tr><td><code>execute_all(configuration: 'Configuration', mode: 'GenerationMode')</code></td><td><code>str</code></td></tr></tbody></table>
+<h2 id="profilegenerationwrite"><code>ProfileGenerationWrite</code></h2>
+<p><em>dataclass</em></p>
+<p>One validated profile package ready to be staged in an atomic multi-profile
+publication.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Field</th><th>Type</th></tr></thead><tbody><tr><td><code>package_name</code></td><td><code>str</code></td></tr><tr><td><code>plan</code></td><td><code>GenerationPlan</code></td></tr><tr><td><code>current_manifest</code></td><td><code>OwnershipManifest | None</code></td></tr><tr><td><code>desired_manifest</code></td><td><code>OwnershipManifest</code></td></tr></tbody></table>
+<h2 id="generationplan"><code>GenerationPlan</code></h2>
+<p><em>dataclass</em></p>
+<p>What would be written, worked out before anything is.</p>
+<div class="code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">GenerationPlan(files: </span><span style="color:#A31515;--shiki-dark:#CE9178">'tuple[RenderedFile, ...]'</span><span style="color:#000000;--shiki-dark:#D4D4D4">)</span></span></code></pre>
+<div class="monaco-host"></div></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Field</th><th>Type</th></tr></thead><tbody><tr><td><code>files</code></td><td><code>tuple[RenderedFile, ...]</code></td></tr></tbody></table>
+<h2 id="generationplanner"><code>GenerationPlanner</code></h2>
+<p><em>dataclass</em></p>
+<p>Works that plan out.</p>
+<div class="code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">GenerationPlanner(renderers: </span><span style="color:#A31515;--shiki-dark:#CE9178">'tuple[ConcernRenderer, ...]'</span><span style="color:#000000;--shiki-dark:#D4D4D4">)</span></span></code></pre>
+<div class="monaco-host"></div></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Field</th><th>Type</th></tr></thead><tbody><tr><td><code>renderers</code></td><td><code>tuple[ConcernRenderer, ...]</code></td></tr></tbody></table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Method</th><th>Returns</th></tr></thead><tbody><tr><td><code>plan(snapshot: 'SchemaSnapshot', configuration: 'Configuration')</code></td><td><code>GenerationPlan</code></td></tr></tbody></table>
+<h2 id="jsonmanifeststore"><code>JsonManifestStore</code></h2>
+<p><em>class</em></p>
+<p>The manifest store, as JSON on disk.</p>
+<div class="code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">JsonManifestStore()</span></span></code></pre>
+<div class="monaco-host"></div></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Method</th><th>Returns</th></tr></thead><tbody><tr><td><code>load(package_root: 'Path')</code></td><td><code>OwnershipManifest | None</code></td></tr><tr><td><code>encode(manifest: 'OwnershipManifest')</code></td><td><code>bytes</code></td></tr></tbody></table>
+<h2 id="manifest_format_version"><code>MANIFEST_FORMAT_VERSION</code></h2>
+<p><em>class</em></p>
+<p>The format the manifest is written in.</p>
+<h2 id="manifest_name"><code>MANIFEST_NAME</code></h2>
+<p><em>class</em></p>
+<p>The manifest’s filename.</p>
+<h2 id="manifestownedcleanup"><code>ManifestOwnedCleanup</code></h2>
+<p><em>class</em></p>
+<p>Removes what the manifest owns and the plan no longer writes.</p>
+<div class="code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">ManifestOwnedCleanup()</span></span></code></pre>
+<div class="monaco-host"></div></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Method</th><th>Returns</th></tr></thead><tbody><tr><td><code>remove_stale(staging_root: 'Path', current_manifest: 'OwnershipManifest | None', retained_paths: 'frozenset[PurePosixPath]')</code></td><td>—</td></tr></tbody></table>
+<h2 id="manifeststore"><code>ManifestStore</code></h2>
+<p><em>class</em></p>
+<p>Where a manifest is kept.</p>
+<div class="code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">ManifestStore(*args, **kwargs)</span></span></code></pre>
+<div class="monaco-host"></div></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Method</th><th>Returns</th></tr></thead><tbody><tr><td><code>load(package_root: 'Path')</code></td><td><code>OwnershipManifest | None</code></td></tr><tr><td><code>encode(manifest: 'OwnershipManifest')</code></td><td><code>bytes</code></td></tr></tbody></table>
+<h2 id="ownedfile"><code>OwnedFile</code></h2>
+<p><em>dataclass</em></p>
+<p>One file the generated package owns.</p>
+<div class="code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">OwnedFile(path: </span><span style="color:#A31515;--shiki-dark:#CE9178">'PurePosixPath'</span><span style="color:#000000;--shiki-dark:#D4D4D4">, digest: </span><span style="color:#A31515;--shiki-dark:#CE9178">'str'</span><span style="color:#000000;--shiki-dark:#D4D4D4">)</span></span></code></pre>
+<div class="monaco-host"></div></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Field</th><th>Type</th></tr></thead><tbody><tr><td><code>path</code></td><td><code>PurePosixPath</code></td></tr><tr><td><code>digest</code></td><td><code>str</code></td></tr></tbody></table>
+<h2 id="ownershipmanifest"><code>OwnershipManifest</code></h2>
+<p><em>dataclass</em></p>
+<p>Every file it owns, which is why a file you added by hand is never overwritten.</p>
+<div class="code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">OwnershipManifest(package: </span><span style="color:#A31515;--shiki-dark:#CE9178">'str'</span><span style="color:#000000;--shiki-dark:#D4D4D4">, files: </span><span style="color:#A31515;--shiki-dark:#CE9178">'tuple[OwnedFile, ...]'</span><span style="color:#000000;--shiki-dark:#D4D4D4">, format_version: </span><span style="color:#A31515;--shiki-dark:#CE9178">'int'</span><span style="color:#000000;--shiki-dark:#D4D4D4"> = </span><span style="color:#098658;--shiki-dark:#B5CEA8">1</span><span style="color:#000000;--shiki-dark:#D4D4D4">)</span></span></code></pre>
+<div class="monaco-host"></div></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Field</th><th>Type</th></tr></thead><tbody><tr><td><code>package</code></td><td><code>str</code></td></tr><tr><td><code>files</code></td><td><code>tuple[OwnedFile, ...]</code></td></tr><tr><td><code>format_version</code></td><td><code>int</code></td></tr></tbody></table>
+<h2 id="planvalidator"><code>PlanValidator</code></h2>
+<p><em>class</em></p>
+<p>Refuses a plan that would produce something invalid.</p>
+<div class="code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">PlanValidator(*args, **kwargs)</span></span></code></pre>
+<div class="monaco-host"></div></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Method</th><th>Returns</th></tr></thead><tbody><tr><td><code>validate(plan: 'GenerationPlan')</code></td><td>—</td></tr></tbody></table>
+<h2 id="planwriter"><code>PlanWriter</code></h2>
+<p><em>class</em></p>
+<p>What a writer is.</p>
+<div class="code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">PlanWriter(*args, **kwargs)</span></span></code></pre>
+<div class="monaco-host"></div></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Method</th><th>Returns</th></tr></thead><tbody><tr><td><code>write(package_root: 'Path', plan: 'GenerationPlan', current_manifest: 'OwnershipManifest | None', desired_manifest: 'OwnershipManifest')</code></td><td>—</td></tr><tr><td><code>write_profiles(base_root: 'Path', profiles: 'tuple[ProfileGenerationWrite, ...]')</code></td><td>—</td></tr></tbody></table>
+<h2 id="projectlock"><code>ProjectLock</code></h2>
+<p><em>class</em></p>
+<p>Stops two runs writing at once.</p>
+<div class="code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">ProjectLock(*args, **kwargs)</span></span></code></pre>
+<div class="monaco-host"></div></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Method</th><th>Returns</th></tr></thead><tbody><tr><td><code>acquire(project_root: 'Path')</code></td><td><code>AbstractContextManager[None]</code></td></tr></tbody></table>
+<h2 id="pythonsyntaxvalidator"><code>PythonSyntaxValidator</code></h2>
+<p><em>class</em></p>
+<p>Refuses output that will not parse.</p>
+<div class="code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">PythonSyntaxValidator()</span></span></code></pre>
+<div class="monaco-host"></div></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Method</th><th>Returns</th></tr></thead><tbody><tr><td><code>validate(plan: 'GenerationPlan')</code></td><td>—</td></tr></tbody></table>
+<h2 id="renderedfile"><code>RenderedFile</code></h2>
+<p><em>dataclass</em></p>
+<p>One file as it will be written.</p>
+<div class="code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">RenderedFile(path: </span><span style="color:#A31515;--shiki-dark:#CE9178">'PurePosixPath'</span><span style="color:#000000;--shiki-dark:#D4D4D4">, content: </span><span style="color:#A31515;--shiki-dark:#CE9178">'str'</span><span style="color:#000000;--shiki-dark:#D4D4D4">)</span></span></code></pre>
+<div class="monaco-host"></div></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Field</th><th>Type</th></tr></thead><tbody><tr><td><code>path</code></td><td><code>PurePosixPath</code></td></tr><tr><td><code>content</code></td><td><code>str</code></td></tr></tbody></table>
+<h2 id="schemasource"><code>SchemaSource</code></h2>
+<p><em>class</em></p>
+<p>Where the schema comes from, the same protocol <a href="../schema/">pyoq.schema</a> defines.</p>
+<div class="code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">SchemaSource(*args, **kwargs)</span></span></code></pre>
+<div class="monaco-host"></div></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Method</th><th>Returns</th></tr></thead><tbody><tr><td><code>load(configuration: 'Configuration')</code></td><td><code>SchemaSnapshot</code></td></tr></tbody></table></article><nav class="pager" aria-label="Neighbouring pages"><a class="previous" href="/pyoq-sql/api/fetching/"><span>Previous</span>pyoq.fetching</a><a class="next" href="/pyoq-sql/api/hydration/"><span>Next</span>pyoq.hydration</a></nav><footer class="page-footer"><p>PyOQ is released under the <a href="/pyoq-sql/licence/" rel="license">MPL-2.0</a> licence.</p></footer></main><nav class="contents" aria-label="On this page"><p>On this page</p><ul><li><a href="#atomicgenerationwriter">AtomicGenerationWriter</a></li><li><a href="#concernrenderer">ConcernRenderer</a></li><li><a href="#directoryprojectlock">DirectoryProjectLock</a></li><li><a href="#driftchecker">DriftChecker</a></li><li><a href="#driftreport">DriftReport</a></li><li><a href="#filedriftchecker">FileDriftChecker</a></li><li><a href="#generatedtypesrenderer">GeneratedTypesRenderer</a></li><li><a href="#generationmode">GenerationMode</a></li><li><a href="#generationpipeline">GenerationPipeline</a></li><li><a href="#profilegenerationwrite">ProfileGenerationWrite</a></li><li><a href="#generationplan">GenerationPlan</a></li><li><a href="#generationplanner">GenerationPlanner</a></li><li><a href="#jsonmanifeststore">JsonManifestStore</a></li><li><a href="#manifest_format_version">MANIFEST_FORMAT_VERSION</a></li><li><a href="#manifest_name">MANIFEST_NAME</a></li><li><a href="#manifestownedcleanup">ManifestOwnedCleanup</a></li><li><a href="#manifeststore">ManifestStore</a></li><li><a href="#ownedfile">OwnedFile</a></li><li><a href="#ownershipmanifest">OwnershipManifest</a></li><li><a href="#planvalidator">PlanValidator</a></li><li><a href="#planwriter">PlanWriter</a></li><li><a href="#projectlock">ProjectLock</a></li><li><a href="#pythonsyntaxvalidator">PythonSyntaxValidator</a></li><li><a href="#renderedfile">RenderedFile</a></li><li><a href="#schemasource">SchemaSource</a></li></ul></nav></div><script type="module">document.addEventListener(`click`,e=>{let t=e.target?.closest(`[data-copy]`);if(!t)return;let n=(t.closest(`.code-shell`)?.querySelector(`pre`)?.textContent??``).replace(/\n$/,``);if(!n)return;let r=e=>{let n=t.querySelector(`[data-copy-label]`);n&&(n.textContent=e)};navigator.clipboard.writeText(n).then(()=>{t.dataset.copied=``,r(`Copied`),setTimeout(()=>{delete t.dataset.copied,r(`Copy`)},1600)},()=>r(`Press ⌘C`))});</script><script type="module" src="/pyoq-sql/_astro/CodeEditors.astro_astro_type_script_index_0_lang.C8S0YAI5.js"></script><script type="module" src="/pyoq-sql/_astro/Diagrams.astro_astro_type_script_index_0_lang.BNJty66e.js"></script></body></html>

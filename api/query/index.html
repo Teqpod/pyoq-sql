@@ -1,0 +1,747 @@
+<!DOCTYPE html><html lang="en" data-appearance="light"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>pyoq.query · PyOQ</title><meta name="description" content="The statement model, the enums it is written in, and the tree it compiles to."><link rel="canonical" href="https://teqpod.com/pyoq-sql/api/query/"><meta name="robots" content="index, follow, max-image-preview:large"><meta name="theme-color" content="#1b6ef3"><link rel="sitemap" type="application/xml" href="/pyoq-sql/sitemap.xml"><meta property="og:type" content="article"><meta property="og:site_name" content="PyOQ"><meta property="og:locale" content="en"><meta property="og:title" content="pyoq.query · PyOQ"><meta property="og:description" content="The statement model, the enums it is written in, and the tree it compiles to."><meta property="og:url" content="https://teqpod.com/pyoq-sql/api/query/"><meta property="og:image" content="https://teqpod.com/pyoq-sql/brand/pyoq-banner.png"><meta property="og:image:type" content="image/png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="PyOQ, fully typed database-first SQL for Python"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="pyoq.query · PyOQ"><meta name="twitter:description" content="The statement model, the enums it is written in, and the tree it compiles to."><meta name="twitter:image" content="https://teqpod.com/pyoq-sql/brand/pyoq-banner.png"><link rel="icon" type="image/svg+xml" href="/pyoq-sql/brand/pyoq-mark.svg"><link rel="icon" type="image/png" sizes="32x32" href="/pyoq-sql/brand/pyoq-favicon-32.png"><link rel="apple-touch-icon" href="/pyoq-sql/brand/pyoq-mark-180.png"><script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://teqpod.com/pyoq-sql/#site","name":"PyOQ","url":"https://teqpod.com/pyoq-sql/","description":"A database-first SQL toolkit with generated types, explicit execution, and native acceleration for Python applications."},{"@type":"SoftwareApplication","@id":"https://teqpod.com/pyoq-sql/#project","name":"PyOQ","description":"A database-first SQL toolkit with generated types, explicit execution, and native acceleration for Python applications.","url":"https://teqpod.com/pyoq-sql/","sameAs":["https://pypi.org/project/pyoq-sql/"],"applicationCategory":"DeveloperApplication","operatingSystem":"Linux, macOS, Windows","programmingLanguage":"Python","license":"https://teqpod.com/pyoq-sql/licence/","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}},{"@type":"TechArticle","headline":"pyoq.query · PyOQ","description":"The statement model, the enums it is written in, and the tree it compiles to.","url":"https://teqpod.com/pyoq-sql/api/query/","image":"https://teqpod.com/pyoq-sql/brand/pyoq-banner.png","isPartOf":{"@id":"https://teqpod.com/pyoq-sql/#site"},"about":{"@id":"https://teqpod.com/pyoq-sql/#project"},"inLanguage":"en","articleSection":"APIs"}]}</script><script>
+  (() => {
+    let chosen = null;
+    try {
+      chosen = localStorage.getItem("pyoq-appearance");
+    } catch {}
+    const dark = matchMedia("(prefers-color-scheme: dark)").matches;
+    document.documentElement.dataset.appearance = chosen ?? (dark ? "dark" : "light");
+  })();
+</script><link rel="stylesheet" href="/pyoq-sql/_astro/app.CXhD3KCe.css"></head><body><a class="skip" href="#content">Skip to content</a><header class="bar"><a class="wordmark" href="/pyoq-sql/" aria-label="PyOQ documentation home"><img class="brand-image" src="/pyoq-sql/brand/pyoq-mark.svg" width="30" height="30" alt=""><span class="brand-name">PyOQ</span><span class="brand-context">docs</span></a><div class="search" data-pagefind-ignore><svg class="glass" viewBox="0 0 20 20" width="15" height="15" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.8" d="M8.5 14.5a6 6 0 1 1 0-12 6 6 0 0 1 0 12Zm4.5-1.5 4 4"></path></svg><input id="search" type="search" placeholder="Search the documentation" autocomplete="off" spellcheck="false" aria-label="Search the documentation" aria-expanded="false" aria-controls="results"><kbd>/</kbd><div id="results" role="listbox" hidden></div></div><script>(function(){const runtime = "/pyoq-sql/pagefind/pagefind.js";
+const baseUrl = "/pyoq-sql/";
+
+  const field = document.getElementById("search");
+  const panel = document.getElementById("results");
+  let engine = null;
+  let chosen = -1;
+
+  async function ready() {
+    if (engine) return engine;
+    try {
+      engine = await import(runtime);
+      await engine.options({ baseUrl, excerptLength: 24 });
+      await engine.init();
+    } catch {
+      engine = "unavailable";
+    }
+    return engine;
+  }
+
+  function close() {
+    panel.hidden = true;
+    field.setAttribute("aria-expanded", "false");
+    chosen = -1;
+  }
+
+  function draw(results) {
+    if (!results.length) {
+      panel.innerHTML = '<p class="none">Nothing matches that.</p>';
+    } else {
+      panel.innerHTML = results
+        .map((result) => {
+          const where = result.meta?.group ?? "Documentation";
+          const title = result.meta?.title ?? "Untitled";
+          return `<a role="option" href="${result.url}">
+            <span class="where">${where}</span>
+            <span class="what">${title}</span>
+            <span class="bit">${result.excerpt}</span>
+          </a>`;
+        })
+        .join("");
+    }
+    panel.hidden = false;
+    field.setAttribute("aria-expanded", "true");
+    chosen = -1;
+  }
+
+  let running = 0;
+  async function run() {
+    const wanted = field.value.trim();
+    if (!wanted) return close();
+    const engine = await ready();
+    if (engine === "unavailable") {
+      panel.innerHTML =
+        '<p class="none">Search is built with the site. Run <code>bun run build</code>.</p>';
+      panel.hidden = false;
+      return;
+    }
+    const token = ++running;
+    const found = await engine.search(wanted);
+    if (token !== running) return;
+    const top = await Promise.all(found.results.slice(0, 8).map((one) => one.data()));
+    if (token !== running) return;
+    draw(top);
+  }
+
+  function move(step) {
+    const links = panel.querySelectorAll("a");
+    if (!links.length) return;
+    chosen = (chosen + step + links.length) % links.length;
+    links.forEach((link, at) => link.classList.toggle("on", at === chosen));
+    links[chosen].scrollIntoView({ block: "nearest" });
+  }
+
+  let waiting;
+  field?.addEventListener("input", () => {
+    clearTimeout(waiting);
+    waiting = setTimeout(run, 120);
+  });
+  field?.addEventListener("focus", ready);
+
+  field?.addEventListener("keydown", (event) => {
+    if (event.key === "ArrowDown") {
+      event.preventDefault();
+      move(1);
+    } else if (event.key === "ArrowUp") {
+      event.preventDefault();
+      move(-1);
+    } else if (event.key === "Enter" && chosen >= 0) {
+      event.preventDefault();
+      panel.querySelectorAll("a")[chosen].click();
+    } else if (event.key === "Escape") {
+      field.blur();
+      close();
+    }
+  });
+
+  document.addEventListener("click", (event) => {
+    if (!panel.contains(event.target) && event.target !== field) close();
+  });
+
+  // "/" reaches the field from anywhere, which is where a reader goes first.
+  document.addEventListener("keydown", (event) => {
+    const typing = /^(INPUT|TEXTAREA)$/.test(document.activeElement?.tagName ?? "");
+    if (event.key === "/" && !typing) {
+      event.preventDefault();
+      field.focus();
+      field.select();
+    }
+  });
+})();</script><button id="appearance" type="button" aria-label="Switch appearance"><svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M10 2a8 8 0 1 0 0 16 8 8 0 0 0 0-16Zm0 1.6V16.4a6.4 6.4 0 0 1 0-12.8Z"></path></svg></button><script type="module">var e=document.documentElement;document.getElementById(`appearance`)?.addEventListener(`click`,()=>{let t=e.dataset.appearance===`dark`?`light`:`dark`;e.dataset.appearance=t;try{localStorage.setItem(`pyoq-appearance`,t)}catch{}});</script></header><div class="page"><nav class="side" aria-label="Documentation"><details class="side-toggle"><summary>Contents</summary></details><div class="side-body"><details class="side-group" data-group="Start here"><summary class="group" title="What this is, whether it suits you, and getting it running."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>Start here</summary><ul><li><a href="/pyoq-sql/overview/">What PyOQ is</a></li><li><a href="/pyoq-sql/when-to-use/">When to use what</a></li><li><a href="/pyoq-sql/installing/">Installing</a></li><li><a href="/pyoq-sql/generating/">Generating your types</a></li><li><a href="/pyoq-sql/first-query/">Your first query</a></li></ul></details><details class="side-group" data-group="For LLMs"><summary class="group" title="A compact project model and source map for coding agents."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>For LLMs</summary><ul><li><a href="/pyoq-sql/agents/">LLM agent guide</a></li></ul></details><details class="side-group" data-group="Reading"><summary class="group" title="Everything that ends in rows coming back."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>Reading</summary><ul><li><a href="/pyoq-sql/selecting/">Selecting rows</a></li><li><a href="/pyoq-sql/expressions/">Expressions and conditions</a></li><li><a href="/pyoq-sql/joins/">Joins and set operations</a></li><li><a href="/pyoq-sql/routines/">Stored routines</a></li><li><a href="/pyoq-sql/results/">Reading results</a></li></ul></details><details class="side-group" data-group="Writing"><summary class="group" title="Everything that changes what is in the database."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>Writing</summary><ul><li><a href="/pyoq-sql/inserting/">Inserting rows</a></li><li><a href="/pyoq-sql/updating/">Updating and deleting</a></li><li><a href="/pyoq-sql/conflicts/">Conflict resolution</a></li><li><a href="/pyoq-sql/bulk/">Bulk writes</a></li></ul></details><details class="side-group" data-group="Your data"><summary class="group" title="What the schema says, and how PyOQ reads it back."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>Your data</summary><ul><li><a href="/pyoq-sql/relations/">Relations</a></li><li><a href="/pyoq-sql/types/">Column types</a></li><li><a href="/pyoq-sql/snapshots/">Snapshots and drift</a></li><li><a href="/pyoq-sql/migrations/">Migration lifecycle</a></li></ul></details><details class="side-group" data-group="Running statements"><summary class="group" title="What happens between a built statement and a row."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>Running statements</summary><ul><li><a href="/pyoq-sql/connections/">Connections and pools</a></li><li><a href="/pyoq-sql/mysql-application/">MySQL without a framework</a></li><li><a href="/pyoq-sql/async/">Asynchronous execution</a></li><li><a href="/pyoq-sql/transactions/">Transactions and streaming</a></li><li><a href="/pyoq-sql/dialects/">Dialects</a></li><li><a href="/pyoq-sql/diagnostics/">Diagnostics</a></li><li><a href="/pyoq-sql/policies/">Policies</a></li><li><a href="/pyoq-sql/security/">Security</a></li><li><a href="/pyoq-sql/performance/">Performance</a></li></ul></details><details class="side-group" data-group="Frameworks"><summary class="group" title="Running inside something that already owns the connection."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>Frameworks</summary><ul><li><a href="/pyoq-sql/alembic/">Alembic</a></li><li><a href="/pyoq-sql/django/">Django</a></li><li><a href="/pyoq-sql/fastapi/">FastAPI</a></li><li><a href="/pyoq-sql/sanic/">Sanic</a></li><li><a href="/pyoq-sql/serving/">Standalone services</a></li></ul></details><details class="side-group" data-group="Reference"><summary class="group" title="The details, once you know what you are looking for."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>Reference</summary><ul><li><a href="/pyoq-sql/cli/">Command line</a></li><li><a href="/pyoq-sql/configuration/">Configuration</a></li><li><a href="/pyoq-sql/errors/">Errors</a></li><li><a href="/pyoq-sql/troubleshooting/">Troubleshooting</a></li><li><a href="/pyoq-sql/testing/">Testing applications</a></li><li><a href="/pyoq-sql/releasing/">Releasing</a></li><li><a href="/pyoq-sql/licence/">Licence</a></li></ul></details><details class="side-group" data-group="APIs" open><summary class="group" title="Every package, every name it exports, and what each one does."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>APIs</summary><ul><li><a href="/pyoq-sql/api/references/">All references</a></li><li><a href="/pyoq-sql/api/internals/">Internals</a></li><li><a href="/pyoq-sql/api/pyoq/">pyoq</a></li><li><a href="/pyoq-sql/api/commands/">pyoq commands</a></li><li><a href="/pyoq-sql/api/native/">pyoq._native</a></li><li><a href="/pyoq-sql/api/cli/">pyoq.cli</a></li><li><a href="/pyoq-sql/api/config/">pyoq.config</a></li><li><a href="/pyoq-sql/api/descriptors/">pyoq.descriptors</a></li><li><a href="/pyoq-sql/api/diagnostics/">pyoq.diagnostics</a></li><li><a href="/pyoq-sql/api/django/">pyoq.django</a></li><li><a href="/pyoq-sql/api/dsl/">pyoq.dsl</a></li><li><a href="/pyoq-sql/api/errors/">pyoq.errors</a></li><li><a href="/pyoq-sql/api/fastapi/">pyoq.fastapi</a></li><li><a href="/pyoq-sql/api/fetching/">pyoq.fetching</a></li><li><a href="/pyoq-sql/api/generation/">pyoq.generation</a></li><li><a href="/pyoq-sql/api/hydration/">pyoq.hydration</a></li><li><a href="/pyoq-sql/api/migrations/">pyoq.migrations</a></li><li><a href="/pyoq-sql/api/naming/">pyoq.naming</a></li><li><a href="/pyoq-sql/api/policies/">pyoq.policies</a></li><li><a href="/pyoq-sql/api/query/" class="active" aria-current="page">pyoq.query</a></li><li><a href="/pyoq-sql/api/query-expressions/">pyoq.query expressions</a></li><li><a href="/pyoq-sql/api/query-functions/">pyoq.query functions</a></li><li><a href="/pyoq-sql/api/query-execution/">pyoq.query.execution</a></li><li><a href="/pyoq-sql/api/query-mysql/">pyoq.query.mysql</a></li><li><a href="/pyoq-sql/api/query-postgres/">pyoq.query.postgres</a></li><li><a href="/pyoq-sql/api/query-sqlite/">pyoq.query.sqlite</a></li><li><a href="/pyoq-sql/api/relations/">pyoq.relations</a></li><li><a href="/pyoq-sql/api/runtime/">pyoq.runtime</a></li><li><a href="/pyoq-sql/api/sanic/">pyoq.sanic</a></li><li><a href="/pyoq-sql/api/schema/">pyoq.schema</a></li><li><a href="/pyoq-sql/api/schema-dialects/">pyoq.schema dialects</a></li><li><a href="/pyoq-sql/api/serving/">pyoq.serving</a></li><li><a href="/pyoq-sql/api/snapshots/">pyoq.snapshots</a></li><li><a href="/pyoq-sql/api/tracing/">pyoq.tracing</a></li></ul></details></div></nav><script type="module">var e=`pyoq-sidebar`;function t(){try{return JSON.parse(sessionStorage.getItem(e)??`{}`)}catch{return{}}}function n(t){try{sessionStorage.setItem(e,JSON.stringify(t))}catch{}}var r=document.querySelector(`.side`),i=[...document.querySelectorAll(`.side-group`)],a=t();for(let e of i){let t=e.dataset.group;t&&(t in a&&(e.open=a[t]),e.addEventListener(`toggle`,()=>{a[t]=e.open,n(a)}))}function o(){if(!r||r.scrollHeight<=r.clientHeight)return;let e=r.querySelector(`a.active`);if(!e)return;let t=r.getBoundingClientRect(),n=e.getBoundingClientRect();n.top>=t.top&&n.bottom<=t.bottom||(r.scrollTop+=n.top-t.top-r.clientHeight/2+n.height/2)}requestAnimationFrame(o);</script><main id="content" data-pagefind-body><p class="crumb" data-pagefind-meta="group:APIs">APIs</p><article><h1>pyoq.query</h1><p class="lede" data-pagefind-ignore>The statement model, the enums it is written in, and the tree it compiles to.</p><p>The query model itself. These are the statements the <a href="../dsl/">DSL</a> wraps: the
+same objects, without a database attached. Build one here and run it with
+<code>dsl.fetch(...)</code>.</p>
+<p>The pages beside this one cover what a column offers
+(<a href="../query-expressions/">expressions</a>) and what the package exports as
+callables (<a href="../query-functions/">functions</a>).</p>
+<h2 id="selectquery"><code>SelectQuery</code></h2>
+<p>A <code>SELECT</code>, unbound. Every method returns a new query.</p>
+<h3 id="sources-and-joining">Sources and joining</h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Method</th><th>What it does</th></tr></thead><tbody><tr><td><code>from_(source)</code></td><td>Where the rows come from.</td></tr><tr><td><code>distinct(enabled=True)</code></td><td>Removes duplicate rows.</td></tr><tr><td><code>join(source)</code>, <code>inner_join(source)</code></td><td>An inner join, qualified by what follows.</td></tr><tr><td><code>left_join</code>, <code>right_join</code>, <code>full_join</code></td><td>Outer joins, each qualified by what follows.</td></tr><tr><td><code>semi_join(source)</code></td><td>Rows that have a match, without bringing it back.</td></tr><tr><td><code>anti_join(source)</code></td><td>Rows that have no match.</td></tr><tr><td><code>cross_join(source)</code></td><td>Every combination, so nothing qualifies it.</td></tr><tr><td><code>natural_join</code>, <code>natural_left_join</code>, <code>natural_right_join</code>, <code>natural_full_join</code></td><td>Matched on every column both sides name alike.</td></tr></tbody></table>
+<h3 id="narrowing-grouping-and-ordering">Narrowing, grouping and ordering</h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Method</th><th>What it does</th></tr></thead><tbody><tr><td><code>where(condition)</code></td><td>Keeps rows the condition holds for.</td></tr><tr><td><code>group_by(*expressions)</code></td><td>Collapses rows that agree on them.</td></tr><tr><td><code>having(condition)</code></td><td>Keeps groups the condition holds for.</td></tr><tr><td><code>window(*specifications)</code></td><td>Names windows the query then looks through by name.</td></tr><tr><td><code>with_(*common_tables)</code></td><td>Attaches common table expressions.</td></tr><tr><td><code>order_by(*terms)</code></td><td>The order rows come back in.</td></tr><tr><td><code>limit(value)</code>, <code>offset(value)</code></td><td>How many, and from where.</td></tr></tbody></table>
+<h3 id="locking-rows">Locking rows</h3>
+<p>What a statement asks the database to hold while it reads. A dialect that
+cannot express one refuses while the statement is being built.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Method</th><th>What it asks for</th></tr></thead><tbody><tr><td><code>for_update()</code></td><td>The rows, exclusively.</td></tr><tr><td><code>for_no_key_update()</code></td><td>The rows, allowing a key to be read.</td></tr><tr><td><code>for_share()</code></td><td>The rows, shared with other readers.</td></tr><tr><td><code>for_key_share()</code></td><td>The weakest lock, guarding the key alone.</td></tr><tr><td><code>nowait()</code></td><td>Fail rather than wait for a lock someone else holds.</td></tr><tr><td><code>skip_locked()</code></td><td>Skip rows someone else holds, rather than waiting.</td></tr><tr><td><code>of(*targets)</code></td><td>Lock only the tables named, not everything joined.</td></tr></tbody></table>
+<h2 id="query"><code>Query</code></h2>
+<p>What every query is, whatever built it.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Method</th><th>What it does</th></tr></thead><tbody><tr><td><code>as_subquery(alias)</code></td><td>The query as something to select from.</td></tr><tr><td><code>as_lateral(alias)</code></td><td>The same, able to see the rows beside it.</td></tr><tr><td><code>as_common_table(name, *, columns=(), recursive=False)</code></td><td>The query named once and referred to by name.</td></tr><tr><td><code>union(other)</code>, <code>union_all(other)</code></td><td>Rows from either, duplicates removed or kept.</td></tr><tr><td><code>intersect(other)</code></td><td>Rows both return.</td></tr><tr><td><code>except_(other)</code></td><td>Rows the first returns and the second does not.</td></tr><tr><td><code>order_by(*terms)</code>, <code>limit(value)</code>, <code>offset(value)</code></td><td>Applied after a set operation.</td></tr></tbody></table>
+<h2 id="setquery"><code>SetQuery</code></h2>
+<p>What a set operation returns. Offers <code>order_by</code>, <code>limit</code> and <code>offset</code>, which
+apply to the combined result rather than to either side.</p>
+<h2 id="joining-steps">Joining steps</h2>
+<p><code>JoinStep</code> is a join waiting to be told how the two tables line up.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Method</th><th>What it does</th></tr></thead><tbody><tr><td><code>on(condition)</code></td><td>The predicate the rows are matched by.</td></tr><tr><td><code>using(*columns)</code></td><td>Matched on columns both tables name the same way.</td></tr><tr><td><code>on_key(relation)</code></td><td>Matched on the foreign key the schema already declares.</td></tr></tbody></table>
+<p><code>SemiJoinStep</code>, from <code>semi_join</code> and <code>anti_join</code>, offers <code>on(condition)</code> alone.</p>
+<h2 id="writing">Writing</h2>
+<p><code>InsertStatement</code>:</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Method</th><th>What it does</th></tr></thead><tbody><tr><td><code>values(*values)</code></td><td>One row, in the order the columns were named.</td></tr><tr><td><code>values_many(rows)</code></td><td>Many rows from one iterable.</td></tr><tr><td><code>on_conflict_do_nothing(*targets)</code></td><td>Skips a row that would collide.</td></tr><tr><td><code>on_conflict_do_update(*targets)</code></td><td>Updates the existing row instead.</td></tr></tbody></table>
+<p><code>ConflictUpdate</code>, from the last of those, offers <code>set(column, value)</code> and
+<code>where(condition)</code>.</p>
+<p><code>UpdateStatement</code> offers <code>set(column, value)</code> and <code>set_values(values, *columns)</code>, and both it and <code>DeleteStatement</code> are <code>ScopedStatement</code>s:</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Method</th><th>What it does</th></tr></thead><tbody><tr><td><code>where(condition)</code></td><td>Which rows are meant.</td></tr><tr><td><code>all_rows()</code></td><td>Says every row is meant, which is how a statement without a <code>where</code> may run.</td></tr></tbody></table>
+<p><code>MutationStatement</code> is what every write can finish with:</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Method</th><th>What it does</th></tr></thead><tbody><tr><td><code>returning_all()</code></td><td>Every column the table declares.</td></tr><tr><td><code>returning(*values)</code></td><td>The columns or expressions named.</td></tr></tbody></table>
+<p><code>ReturningStatement</code> is what those return, and <code>WriteStatement</code> and
+<code>WriteColumn</code> are what a write and its target column are as a model.</p>
+<h2 id="other-statement-parts">Other statement parts</h2>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Name</th><th>What it is</th></tr></thead><tbody><tr><td><code>Call</code></td><td>A procedure asked to run, and whatever it answers with. <code>returning(*columns)</code> says what to read back.</td></tr><tr><td><code>CommonTable</code></td><td>A query named once and referred to by name.</td></tr><tr><td><code>RecursiveTable</code></td><td>A common table named and typed before either of its terms is written. <code>field(column)</code> reaches one of its columns; <code>define(anchor, recursive)</code> gives it its two terms.</td></tr><tr><td><code>RecursiveColumn</code></td><td>One column of such a table, from <code>column(name, value_type)</code>.</td></tr><tr><td><code>Subquery</code></td><td>A query used as a source.</td></tr><tr><td><code>Source</code></td><td>Something rows come from. <code>field(value_type, database_name)</code> names a column of it.</td></tr><tr><td><code>Projection</code></td><td>One value in the result, under the name it is returned by.</td></tr><tr><td><code>OrderTerm</code></td><td>One term of an order. <code>nulls_first()</code> and <code>nulls_last()</code> say where nulls go.</td></tr><tr><td><code>Field</code></td><td>A column PyOQ did not generate, described by hand.</td></tr><tr><td><code>ColumnReference</code></td><td>A generated column, as the model sees it.</td></tr><tr><td><code>BoundValue</code></td><td>A value that will be sent as a parameter.</td></tr><tr><td><code>ComputedExpression</code></td><td>An expression the database works out.</td></tr><tr><td><code>VendorFunction</code>, <code>VendorPredicate</code></td><td>A function this database has that the model does not name.</td></tr><tr><td><code>NodeProvider</code></td><td>Anything that can give the model a node, which is what every builder accepts.</td></tr><tr><td><code>WindowSpecification</code></td><td>A window, named or written out.</td></tr></tbody></table>
+<h2 id="enums">Enums</h2>
+<p>The vocabulary the model is written in. You rarely name one directly, but a
+value read back from a statement is one of these.</p>
+<p><strong><code>AggregateName</code></strong></p>
+<p><code>COUNT</code>, <code>SUM</code>, <code>AVERAGE</code>, <code>MINIMUM</code>, <code>MAXIMUM</code>, <code>JSON_ARRAY_AGG</code>, <code>JSON_OBJECT_AGG</code></p>
+<p><strong><code>BinaryOperator</code></strong></p>
+<p><code>EQUAL</code>, <code>NOT_EQUAL</code>, <code>LESS_THAN</code>, <code>LESS_OR_EQUAL</code>, <code>GREATER_THAN</code>, <code>GREATER_OR_EQUAL</code>, <code>IS_DISTINCT_FROM</code>, <code>IS_NOT_DISTINCT_FROM</code>, <code>ADD</code>, <code>SUBTRACT</code>, <code>MULTIPLY</code>, <code>DIVIDE</code>, <code>MODULO</code>, <code>CONCAT</code>, <code>LIKE</code>, <code>NOT_LIKE</code></p>
+<p><strong><code>ConflictAction</code></strong></p>
+<p><code>NOTHING</code>, <code>UPDATE</code></p>
+<p><strong><code>DatePart</code></strong></p>
+<p><code>YEAR</code>, <code>MONTH</code>, <code>DAY</code>, <code>HOUR</code>, <code>MINUTE</code>, <code>SECOND</code></p>
+<p><strong><code>FrameExclusion</code></strong> Which rows a frame leaves out even though it reaches them.</p>
+<p><code>CURRENT_ROW</code>, <code>GROUP</code>, <code>TIES</code>, <code>NO_OTHERS</code></p>
+<p><strong><code>FunctionName</code></strong></p>
+<p><code>LOWER</code>, <code>UPPER</code>, <code>LENGTH</code>, <code>CONTAINS</code>, <code>STARTS_WITH</code>, <code>ENDS_WITH</code>, <code>COALESCE</code>, <code>NULLIF</code>, <code>GREATEST</code>, <code>LEAST</code></p>
+<p><strong><code>JoinKind</code></strong></p>
+<p><code>INNER</code>, <code>LEFT</code>, <code>RIGHT</code>, <code>FULL</code>, <code>CROSS</code></p>
+<p><strong><code>NullOrder</code></strong></p>
+<p><code>FIRST</code>, <code>LAST</code></p>
+<p><strong><code>OrderDirection</code></strong></p>
+<p><code>ASCENDING</code>, <code>DESCENDING</code></p>
+<p><strong><code>ScalarFamily</code></strong></p>
+<p><code>BOOLEAN</code>, <code>NUMERIC</code>, <code>STRING</code>, <code>BINARY</code>, <code>TEMPORAL</code>, <code>JSON</code>, <code>OTHER</code>, <code>NULL</code></p>
+<p><strong><code>SetOperator</code></strong></p>
+<p><code>UNION</code>, <code>UNION_ALL</code>, <code>INTERSECT</code>, <code>EXCEPT</code></p>
+<p><strong><code>UnaryOperator</code></strong></p>
+<p><code>NOT</code>, <code>NEGATE</code>, <code>IS_NULL</code>, <code>IS_NOT_NULL</code>, <code>IS_TRUE</code>, <code>IS_FALSE</code></p>
+<p><strong><code>VariadicOperator</code></strong></p>
+<p><code>AND</code>, <code>OR</code>, <code>IN</code>, <code>NOT_IN</code>, <code>BETWEEN</code>, <code>NOT_BETWEEN</code></p>
+<p><strong><code>WindowName</code></strong></p>
+<p><code>ROW_NUMBER</code>, <code>RANK</code>, <code>DENSE_RANK</code>, <code>PERCENT_RANK</code>, <code>CUME_DIST</code>, <code>NTILE</code>, <code>LAG</code>, <code>LEAD</code>, <code>FIRST_VALUE</code>, <code>LAST_VALUE</code>, <code>NTH_VALUE</code></p>
+<h2 id="types">Types</h2>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Name</th><th>What it is</th></tr></thead><tbody><tr><td><code>ExpressionNode</code></td><td>Any node of an expression tree.</td></tr><tr><td><code>WriteNode</code></td><td>Any node of a write.</td></tr><tr><td><code>JsonScalar</code></td><td>The scalar types a JSON document can hold.</td></tr><tr><td><code>JsonValue</code></td><td>Any JSON value.</td></tr><tr><td><code>ELEMENT_COLUMN</code></td><td>The name the elements of a JSON array are read under by <code>json_elements</code>.</td></tr></tbody></table>
+<h3 id="nodes-a-dialect-is-handed">Nodes a dialect is handed</h3>
+<p>These are not exported from <code>pyoq.query</code>, but a dialect’s expression compiler
+names them in its signatures, so they are here to be looked up. They live in
+<code>pyoq.query.nodes</code>, except <code>JsonElementsSourceNode</code>, which is in
+<code>pyoq.query.select_nodes</code>.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Node</th><th>What it is</th><th>Holds</th></tr></thead><tbody><tr><td><code>ArrayNode</code></td><td>An array asked about against something else.</td><td><code>operation</code>, <code>expression</code>, <code>operands</code></td></tr><tr><td><code>ArrayConstructNode</code></td><td>An array built out of the values around it.</td><td><code>elements</code>, <code>element_type</code></td></tr><tr><td><code>ArrayElementNode</code></td><td>One element of an array, counted the way the value it reads counts.</td><td><code>expression</code>, <code>indexes</code></td></tr><tr><td><code>ArrayLengthNode</code></td><td>How many elements an array holds, in one dimension or in all.</td><td><code>expression</code>, <code>dimension</code></td></tr><tr><td><code>ArrayDimensionsNode</code></td><td>How many dimensions an array has.</td><td><code>expression</code></td></tr><tr><td><code>JsonNode</code></td><td>Reading inside a JSON value, by a path each dialect spells its own way.</td><td><code>operation</code>, <code>expression</code>, <code>path</code></td></tr><tr><td><code>JsonBuildNode</code></td><td>A JSON value built out of the values around it.</td><td><code>kind</code>, <code>arguments</code></td></tr><tr><td><code>JsonWriteNode</code></td><td>A JSON document with something written into it.</td><td><code>operation</code>, <code>expression</code>, <code>value</code>, <code>path</code></td></tr><tr><td><code>JsonKeysNode</code></td><td>The members an object has, as a JSON array of their names.</td><td><code>expression</code></td></tr><tr><td><code>JsonContainsNode</code></td><td>Whether one JSON value holds another.</td><td><code>expression</code>, <code>value</code></td></tr><tr><td><code>JsonElementsSourceNode</code></td><td>The elements of a JSON array, read one row at a time.</td><td><code>expression</code>, <code>alias</code></td></tr><tr><td><code>FrameNode</code></td><td>The rows a window function reads, narrower than the window itself.</td><td><code>kind</code>, <code>start</code>, <code>end</code>, <code>exclusion</code></td></tr></tbody></table>
+<h2 id="the-compiled-tree">The compiled tree</h2>
+<p>A statement compiles to a tree of frozen nodes. They are exported so a caller
+can read a statement rather than only build one, and none of them is
+constructed by hand in ordinary use.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Node</th><th>Holds</th></tr></thead><tbody><tr><td><code>AggregateNode</code></td><td><code>name</code>, <code>arguments</code>, <code>distinct</code></td></tr><tr><td><code>AssignmentNode</code></td><td><code>column</code>, <code>value</code></td></tr><tr><td><code>BinaryNode</code></td><td><code>operator</code>, <code>left</code>, <code>right</code></td></tr><tr><td><code>BoundValueNode</code></td><td><code>value</code>, <code>family</code>, <code>sensitive</code></td></tr><tr><td><code>CaseNode</code></td><td><code>branches</code>, <code>otherwise</code></td></tr><tr><td><code>CastNode</code></td><td><code>expression</code>, <code>value_type</code></td></tr><tr><td><code>ColumnBinding</code></td><td><code>database_name</code>, <code>field_name</code></td></tr><tr><td><code>CommonTableNode</code></td><td><code>name</code>, <code>query</code>, <code>columns</code>, <code>recursive</code></td></tr><tr><td><code>CommonTableSourceNode</code></td><td><code>name</code></td></tr><tr><td><code>ConflictNode</code></td><td><code>action</code>, <code>targets</code>, <code>assignments</code>, <code>condition</code></td></tr><tr><td><code>DeleteNode</code></td><td><code>target</code>, <code>condition</code>, <code>returning</code>, <code>unconditional</code></td></tr><tr><td><code>ExtractNode</code></td><td><code>part</code>, <code>expression</code></td></tr><tr><td><code>FieldNode</code></td><td><code>name</code>, <code>table</code>, <code>schema</code>, <code>catalog</code>, <code>family</code>, <code>value_type</code>, <code>nullable</code></td></tr><tr><td><code>FrameEdge</code></td><td><code>node</code></td></tr><tr><td><code>FunctionNode</code></td><td><code>name</code>, <code>arguments</code></td></tr><tr><td><code>InsertNode</code></td><td><code>target</code>, <code>columns</code>, <code>rows</code>, <code>returning</code>, <code>conflict</code></td></tr><tr><td><code>JoinNode</code></td><td><code>kind</code>, <code>source</code>, <code>condition</code>, <code>using</code>, <code>natural</code></td></tr><tr><td><code>OrderNode</code></td><td><code>expression</code>, <code>direction</code>, <code>nulls</code></td></tr><tr><td><code>ProjectionNode</code></td><td><code>expression</code>, <code>alias</code></td></tr><tr><td><code>RawNode</code></td><td><code>parts</code>, <code>family</code></td></tr><tr><td><code>RecursiveColumn</code></td><td><code>name</code>, <code>value_type</code></td></tr><tr><td><code>RowValueNode</code></td><td><code>expressions</code></td></tr><tr><td><code>SelectNode</code></td><td><code>projections</code>, <code>source</code>, <code>joins</code>, <code>condition</code>, <code>matches</code>, <code>groups</code>, <code>having</code>, <code>orders</code>, <code>limit</code>, <code>offset</code>, <code>common_tables</code>, <code>windows</code>, <code>distinct</code>, <code>lock</code>, <code>every_column</code></td></tr><tr><td><code>SetNode</code></td><td><code>left</code>, <code>operator</code>, <code>right</code>, <code>orders</code>, <code>limit</code>, <code>offset</code></td></tr><tr><td><code>SubquerySourceNode</code></td><td><code>query</code>, <code>alias</code>, <code>lateral</code></td></tr><tr><td><code>TableSourceNode</code></td><td><code>name</code>, <code>schema</code>, <code>catalog</code>, <code>alias</code></td></tr><tr><td><code>UnaryNode</code></td><td><code>operator</code>, <code>operand</code></td></tr><tr><td><code>UpdateNode</code></td><td><code>target</code>, <code>assignments</code>, <code>condition</code>, <code>returning</code>, <code>unconditional</code></td></tr><tr><td><code>VariadicNode</code></td><td><code>operator</code>, <code>operands</code></td></tr><tr><td><code>VendorFunctionNode</code></td><td><code>name</code>, <code>arguments</code>, <code>family</code>, <code>dialects</code>, <code>schema</code>, <code>catalog</code>, <code>value_type</code></td></tr><tr><td><code>WindowFunctionNode</code></td><td><code>name</code>, <code>arguments</code></td></tr><tr><td><code>WindowNode</code></td><td><code>expression</code>, <code>window</code></td></tr><tr><td><code>WindowSpecification</code></td><td><code>node</code>, <code>name</code></td></tr><tr><td><code>WriteTargetNode</code></td><td><code>name</code>, <code>schema</code>, <code>catalog</code>, <code>columns</code></td></tr></tbody></table></article><nav class="pager" aria-label="Neighbouring pages"><a class="previous" href="/pyoq-sql/api/policies/"><span>Previous</span>pyoq.policies</a><a class="next" href="/pyoq-sql/api/query-expressions/"><span>Next</span>pyoq.query expressions</a></nav><footer class="page-footer"><p>PyOQ is released under the <a href="/pyoq-sql/licence/" rel="license">MPL-2.0</a> licence.</p></footer></main><nav class="contents" aria-label="On this page"><p>On this page</p><ul><li><a href="#selectquery">SelectQuery</a></li><li><a href="#query">Query</a></li><li><a href="#setquery">SetQuery</a></li><li><a href="#joining-steps">Joining steps</a></li><li><a href="#writing">Writing</a></li><li><a href="#other-statement-parts">Other statement parts</a></li><li><a href="#enums">Enums</a></li><li><a href="#types">Types</a></li><li><a href="#the-compiled-tree">The compiled tree</a></li></ul></nav></div><script type="module">document.addEventListener(`click`,e=>{let t=e.target?.closest(`[data-copy]`);if(!t)return;let n=(t.closest(`.code-shell`)?.querySelector(`pre`)?.textContent??``).replace(/\n$/,``);if(!n)return;let r=e=>{let n=t.querySelector(`[data-copy-label]`);n&&(n.textContent=e)};navigator.clipboard.writeText(n).then(()=>{t.dataset.copied=``,r(`Copied`),setTimeout(()=>{delete t.dataset.copied,r(`Copy`)},1600)},()=>r(`Press ⌘C`))});</script><script type="module" src="/pyoq-sql/_astro/CodeEditors.astro_astro_type_script_index_0_lang.C8S0YAI5.js"></script><script type="module" src="/pyoq-sql/_astro/Diagrams.astro_astro_type_script_index_0_lang.BNJty66e.js"></script></body></html>

@@ -1,0 +1,286 @@
+<!DOCTYPE html><html lang="en" data-appearance="light"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Releasing · PyOQ</title><meta name="description" content="What a release is held to, what it is built from, and how one is withdrawn."><link rel="canonical" href="https://teqpod.com/pyoq-sql/releasing/"><meta name="robots" content="index, follow, max-image-preview:large"><meta name="theme-color" content="#1b6ef3"><link rel="sitemap" type="application/xml" href="/pyoq-sql/sitemap.xml"><meta property="og:type" content="article"><meta property="og:site_name" content="PyOQ"><meta property="og:locale" content="en"><meta property="og:title" content="Releasing · PyOQ"><meta property="og:description" content="What a release is held to, what it is built from, and how one is withdrawn."><meta property="og:url" content="https://teqpod.com/pyoq-sql/releasing/"><meta property="og:image" content="https://teqpod.com/pyoq-sql/brand/pyoq-banner.png"><meta property="og:image:type" content="image/png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="PyOQ, fully typed database-first SQL for Python"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Releasing · PyOQ"><meta name="twitter:description" content="What a release is held to, what it is built from, and how one is withdrawn."><meta name="twitter:image" content="https://teqpod.com/pyoq-sql/brand/pyoq-banner.png"><link rel="icon" type="image/svg+xml" href="/pyoq-sql/brand/pyoq-mark.svg"><link rel="icon" type="image/png" sizes="32x32" href="/pyoq-sql/brand/pyoq-favicon-32.png"><link rel="apple-touch-icon" href="/pyoq-sql/brand/pyoq-mark-180.png"><script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://teqpod.com/pyoq-sql/#site","name":"PyOQ","url":"https://teqpod.com/pyoq-sql/","description":"A database-first SQL toolkit with generated types, explicit execution, and native acceleration for Python applications."},{"@type":"SoftwareApplication","@id":"https://teqpod.com/pyoq-sql/#project","name":"PyOQ","description":"A database-first SQL toolkit with generated types, explicit execution, and native acceleration for Python applications.","url":"https://teqpod.com/pyoq-sql/","sameAs":["https://pypi.org/project/pyoq-sql/"],"applicationCategory":"DeveloperApplication","operatingSystem":"Linux, macOS, Windows","programmingLanguage":"Python","license":"https://teqpod.com/pyoq-sql/licence/","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}},{"@type":"TechArticle","headline":"Releasing · PyOQ","description":"What a release is held to, what it is built from, and how one is withdrawn.","url":"https://teqpod.com/pyoq-sql/releasing/","image":"https://teqpod.com/pyoq-sql/brand/pyoq-banner.png","isPartOf":{"@id":"https://teqpod.com/pyoq-sql/#site"},"about":{"@id":"https://teqpod.com/pyoq-sql/#project"},"inLanguage":"en","articleSection":"Reference"}]}</script><script>
+  (() => {
+    let chosen = null;
+    try {
+      chosen = localStorage.getItem("pyoq-appearance");
+    } catch {}
+    const dark = matchMedia("(prefers-color-scheme: dark)").matches;
+    document.documentElement.dataset.appearance = chosen ?? (dark ? "dark" : "light");
+  })();
+</script><link rel="stylesheet" href="/pyoq-sql/_astro/app.CXhD3KCe.css"></head><body><a class="skip" href="#content">Skip to content</a><header class="bar"><a class="wordmark" href="/pyoq-sql/" aria-label="PyOQ documentation home"><img class="brand-image" src="/pyoq-sql/brand/pyoq-mark.svg" width="30" height="30" alt=""><span class="brand-name">PyOQ</span><span class="brand-context">docs</span></a><div class="search" data-pagefind-ignore><svg class="glass" viewBox="0 0 20 20" width="15" height="15" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.8" d="M8.5 14.5a6 6 0 1 1 0-12 6 6 0 0 1 0 12Zm4.5-1.5 4 4"></path></svg><input id="search" type="search" placeholder="Search the documentation" autocomplete="off" spellcheck="false" aria-label="Search the documentation" aria-expanded="false" aria-controls="results"><kbd>/</kbd><div id="results" role="listbox" hidden></div></div><script>(function(){const runtime = "/pyoq-sql/pagefind/pagefind.js";
+const baseUrl = "/pyoq-sql/";
+
+  const field = document.getElementById("search");
+  const panel = document.getElementById("results");
+  let engine = null;
+  let chosen = -1;
+
+  async function ready() {
+    if (engine) return engine;
+    try {
+      engine = await import(runtime);
+      await engine.options({ baseUrl, excerptLength: 24 });
+      await engine.init();
+    } catch {
+      engine = "unavailable";
+    }
+    return engine;
+  }
+
+  function close() {
+    panel.hidden = true;
+    field.setAttribute("aria-expanded", "false");
+    chosen = -1;
+  }
+
+  function draw(results) {
+    if (!results.length) {
+      panel.innerHTML = '<p class="none">Nothing matches that.</p>';
+    } else {
+      panel.innerHTML = results
+        .map((result) => {
+          const where = result.meta?.group ?? "Documentation";
+          const title = result.meta?.title ?? "Untitled";
+          return `<a role="option" href="${result.url}">
+            <span class="where">${where}</span>
+            <span class="what">${title}</span>
+            <span class="bit">${result.excerpt}</span>
+          </a>`;
+        })
+        .join("");
+    }
+    panel.hidden = false;
+    field.setAttribute("aria-expanded", "true");
+    chosen = -1;
+  }
+
+  let running = 0;
+  async function run() {
+    const wanted = field.value.trim();
+    if (!wanted) return close();
+    const engine = await ready();
+    if (engine === "unavailable") {
+      panel.innerHTML =
+        '<p class="none">Search is built with the site. Run <code>bun run build</code>.</p>';
+      panel.hidden = false;
+      return;
+    }
+    const token = ++running;
+    const found = await engine.search(wanted);
+    if (token !== running) return;
+    const top = await Promise.all(found.results.slice(0, 8).map((one) => one.data()));
+    if (token !== running) return;
+    draw(top);
+  }
+
+  function move(step) {
+    const links = panel.querySelectorAll("a");
+    if (!links.length) return;
+    chosen = (chosen + step + links.length) % links.length;
+    links.forEach((link, at) => link.classList.toggle("on", at === chosen));
+    links[chosen].scrollIntoView({ block: "nearest" });
+  }
+
+  let waiting;
+  field?.addEventListener("input", () => {
+    clearTimeout(waiting);
+    waiting = setTimeout(run, 120);
+  });
+  field?.addEventListener("focus", ready);
+
+  field?.addEventListener("keydown", (event) => {
+    if (event.key === "ArrowDown") {
+      event.preventDefault();
+      move(1);
+    } else if (event.key === "ArrowUp") {
+      event.preventDefault();
+      move(-1);
+    } else if (event.key === "Enter" && chosen >= 0) {
+      event.preventDefault();
+      panel.querySelectorAll("a")[chosen].click();
+    } else if (event.key === "Escape") {
+      field.blur();
+      close();
+    }
+  });
+
+  document.addEventListener("click", (event) => {
+    if (!panel.contains(event.target) && event.target !== field) close();
+  });
+
+  // "/" reaches the field from anywhere, which is where a reader goes first.
+  document.addEventListener("keydown", (event) => {
+    const typing = /^(INPUT|TEXTAREA)$/.test(document.activeElement?.tagName ?? "");
+    if (event.key === "/" && !typing) {
+      event.preventDefault();
+      field.focus();
+      field.select();
+    }
+  });
+})();</script><button id="appearance" type="button" aria-label="Switch appearance"><svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M10 2a8 8 0 1 0 0 16 8 8 0 0 0 0-16Zm0 1.6V16.4a6.4 6.4 0 0 1 0-12.8Z"></path></svg></button><script type="module">var e=document.documentElement;document.getElementById(`appearance`)?.addEventListener(`click`,()=>{let t=e.dataset.appearance===`dark`?`light`:`dark`;e.dataset.appearance=t;try{localStorage.setItem(`pyoq-appearance`,t)}catch{}});</script></header><div class="page"><nav class="side" aria-label="Documentation"><details class="side-toggle"><summary>Contents</summary></details><div class="side-body"><details class="side-group" data-group="Start here"><summary class="group" title="What this is, whether it suits you, and getting it running."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>Start here</summary><ul><li><a href="/pyoq-sql/overview/">What PyOQ is</a></li><li><a href="/pyoq-sql/when-to-use/">When to use what</a></li><li><a href="/pyoq-sql/installing/">Installing</a></li><li><a href="/pyoq-sql/generating/">Generating your types</a></li><li><a href="/pyoq-sql/first-query/">Your first query</a></li></ul></details><details class="side-group" data-group="For LLMs"><summary class="group" title="A compact project model and source map for coding agents."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>For LLMs</summary><ul><li><a href="/pyoq-sql/agents/">LLM agent guide</a></li></ul></details><details class="side-group" data-group="Reading"><summary class="group" title="Everything that ends in rows coming back."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>Reading</summary><ul><li><a href="/pyoq-sql/selecting/">Selecting rows</a></li><li><a href="/pyoq-sql/expressions/">Expressions and conditions</a></li><li><a href="/pyoq-sql/joins/">Joins and set operations</a></li><li><a href="/pyoq-sql/routines/">Stored routines</a></li><li><a href="/pyoq-sql/results/">Reading results</a></li></ul></details><details class="side-group" data-group="Writing"><summary class="group" title="Everything that changes what is in the database."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>Writing</summary><ul><li><a href="/pyoq-sql/inserting/">Inserting rows</a></li><li><a href="/pyoq-sql/updating/">Updating and deleting</a></li><li><a href="/pyoq-sql/conflicts/">Conflict resolution</a></li><li><a href="/pyoq-sql/bulk/">Bulk writes</a></li></ul></details><details class="side-group" data-group="Your data"><summary class="group" title="What the schema says, and how PyOQ reads it back."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>Your data</summary><ul><li><a href="/pyoq-sql/relations/">Relations</a></li><li><a href="/pyoq-sql/types/">Column types</a></li><li><a href="/pyoq-sql/snapshots/">Snapshots and drift</a></li><li><a href="/pyoq-sql/migrations/">Migration lifecycle</a></li></ul></details><details class="side-group" data-group="Running statements"><summary class="group" title="What happens between a built statement and a row."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>Running statements</summary><ul><li><a href="/pyoq-sql/connections/">Connections and pools</a></li><li><a href="/pyoq-sql/mysql-application/">MySQL without a framework</a></li><li><a href="/pyoq-sql/async/">Asynchronous execution</a></li><li><a href="/pyoq-sql/transactions/">Transactions and streaming</a></li><li><a href="/pyoq-sql/dialects/">Dialects</a></li><li><a href="/pyoq-sql/diagnostics/">Diagnostics</a></li><li><a href="/pyoq-sql/policies/">Policies</a></li><li><a href="/pyoq-sql/security/">Security</a></li><li><a href="/pyoq-sql/performance/">Performance</a></li></ul></details><details class="side-group" data-group="Frameworks"><summary class="group" title="Running inside something that already owns the connection."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>Frameworks</summary><ul><li><a href="/pyoq-sql/alembic/">Alembic</a></li><li><a href="/pyoq-sql/django/">Django</a></li><li><a href="/pyoq-sql/fastapi/">FastAPI</a></li><li><a href="/pyoq-sql/sanic/">Sanic</a></li><li><a href="/pyoq-sql/serving/">Standalone services</a></li></ul></details><details class="side-group" data-group="Reference" open><summary class="group" title="The details, once you know what you are looking for."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>Reference</summary><ul><li><a href="/pyoq-sql/cli/">Command line</a></li><li><a href="/pyoq-sql/configuration/">Configuration</a></li><li><a href="/pyoq-sql/errors/">Errors</a></li><li><a href="/pyoq-sql/troubleshooting/">Troubleshooting</a></li><li><a href="/pyoq-sql/testing/">Testing applications</a></li><li><a href="/pyoq-sql/releasing/" class="active" aria-current="page">Releasing</a></li><li><a href="/pyoq-sql/licence/">Licence</a></li></ul></details><details class="side-group" data-group="APIs"><summary class="group" title="Every package, every name it exports, and what each one does."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>APIs</summary><ul><li><a href="/pyoq-sql/api/references/">All references</a></li><li><a href="/pyoq-sql/api/internals/">Internals</a></li><li><a href="/pyoq-sql/api/pyoq/">pyoq</a></li><li><a href="/pyoq-sql/api/commands/">pyoq commands</a></li><li><a href="/pyoq-sql/api/native/">pyoq._native</a></li><li><a href="/pyoq-sql/api/cli/">pyoq.cli</a></li><li><a href="/pyoq-sql/api/config/">pyoq.config</a></li><li><a href="/pyoq-sql/api/descriptors/">pyoq.descriptors</a></li><li><a href="/pyoq-sql/api/diagnostics/">pyoq.diagnostics</a></li><li><a href="/pyoq-sql/api/django/">pyoq.django</a></li><li><a href="/pyoq-sql/api/dsl/">pyoq.dsl</a></li><li><a href="/pyoq-sql/api/errors/">pyoq.errors</a></li><li><a href="/pyoq-sql/api/fastapi/">pyoq.fastapi</a></li><li><a href="/pyoq-sql/api/fetching/">pyoq.fetching</a></li><li><a href="/pyoq-sql/api/generation/">pyoq.generation</a></li><li><a href="/pyoq-sql/api/hydration/">pyoq.hydration</a></li><li><a href="/pyoq-sql/api/migrations/">pyoq.migrations</a></li><li><a href="/pyoq-sql/api/naming/">pyoq.naming</a></li><li><a href="/pyoq-sql/api/policies/">pyoq.policies</a></li><li><a href="/pyoq-sql/api/query/">pyoq.query</a></li><li><a href="/pyoq-sql/api/query-expressions/">pyoq.query expressions</a></li><li><a href="/pyoq-sql/api/query-functions/">pyoq.query functions</a></li><li><a href="/pyoq-sql/api/query-execution/">pyoq.query.execution</a></li><li><a href="/pyoq-sql/api/query-mysql/">pyoq.query.mysql</a></li><li><a href="/pyoq-sql/api/query-postgres/">pyoq.query.postgres</a></li><li><a href="/pyoq-sql/api/query-sqlite/">pyoq.query.sqlite</a></li><li><a href="/pyoq-sql/api/relations/">pyoq.relations</a></li><li><a href="/pyoq-sql/api/runtime/">pyoq.runtime</a></li><li><a href="/pyoq-sql/api/sanic/">pyoq.sanic</a></li><li><a href="/pyoq-sql/api/schema/">pyoq.schema</a></li><li><a href="/pyoq-sql/api/schema-dialects/">pyoq.schema dialects</a></li><li><a href="/pyoq-sql/api/serving/">pyoq.serving</a></li><li><a href="/pyoq-sql/api/snapshots/">pyoq.snapshots</a></li><li><a href="/pyoq-sql/api/tracing/">pyoq.tracing</a></li></ul></details></div></nav><script type="module">var e=`pyoq-sidebar`;function t(){try{return JSON.parse(sessionStorage.getItem(e)??`{}`)}catch{return{}}}function n(t){try{sessionStorage.setItem(e,JSON.stringify(t))}catch{}}var r=document.querySelector(`.side`),i=[...document.querySelectorAll(`.side-group`)],a=t();for(let e of i){let t=e.dataset.group;t&&(t in a&&(e.open=a[t]),e.addEventListener(`toggle`,()=>{a[t]=e.open,n(a)}))}function o(){if(!r||r.scrollHeight<=r.clientHeight)return;let e=r.querySelector(`a.active`);if(!e)return;let t=r.getBoundingClientRect(),n=e.getBoundingClientRect();n.top>=t.top&&n.bottom<=t.bottom||(r.scrollTop+=n.top-t.top-r.clientHeight/2+n.height/2)}requestAnimationFrame(o);</script><main id="content" data-pagefind-body><p class="crumb" data-pagefind-meta="group:Reference">Reference</p><article><h1>Releasing</h1><p class="lede" data-pagefind-ignore>What a release is held to, what it is built from, and how one is withdrawn.</p><p>This page is the process every release follows. It was written before the
+first one rather than after it, so it describes what is done rather than what
+happened to be done.</p>
+<h2 id="what-is-supported">What is supported</h2>
+<p>What a release is tested against, which is a different statement from what it
+happens to work on:</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th></th><th>Declared</th><th>Tested against</th></tr></thead><tbody><tr><td>Python</td><td>3.11 and newer</td><td>3.11, 3.12, 3.13, 3.14</td></tr><tr><td>Django</td><td>4.2 up to but not including 7</td><td>4.2 and 6.1, the ends of that range</td></tr><tr><td>PostgreSQL</td><td>no minimum is claimed</td><td>17</td></tr><tr><td>MySQL</td><td>no minimum is claimed</td><td>8.4</td></tr><tr><td>SQLite</td><td>whatever the Python build carries</td><td>the runner’s own</td></tr><tr><td>Operating systems</td><td>Linux on x86-64 and aarch64, glibc and musl; macOS on x86-64 and Apple silicon; Windows on x86-64 and aarch64</td><td>a wheel is built for every one; five of the eight are also installed and imported</td></tr></tbody></table>
+<p>Three of the eight platform wheels are built and not run: both musl targets,
+because a musl wheel cannot be imported on the glibc runner that builds it,
+and macOS on x86-64, because the runner that builds it is Apple silicon.
+Those three are checked for their contents and their metadata like every
+other wheel, and are not claimed to have been executed.</p>
+<p>No minimum server version is claimed for PostgreSQL or MySQL, because none has
+been established by testing one. Individual features do state what they need,
+next to the feature: <code>RETURNING</code> needs SQLite 3.35, window functions need
+SQLite 3.25, ordering inside a collection needs SQLite 3.44, and one MySQL
+spelling needs 8.0.19. Where a server cannot do something, it is refused with
+a message saying so rather than answered with something else.</p>
+<p>The compiled extension is built against the stable ABI for Python 3.11, so one
+binary serves every supported version.</p>
+<p>Where no native wheel matches a platform, the <strong>portable wheel</strong> installs. It
+carries no compiled code and runs the Python implementation of every kernel,
+so it needs no compiler. That is the fallback.</p>
+<p>The <strong>source archive</strong> is not. It builds through the same backend the native
+wheels use, so installing it needs a Rust toolchain. It is for building from
+source deliberately, not for platforms that lack a wheel.</p>
+<h2 id="where-a-version-is-decided">Where a version is decided</h2>
+<p>Each version this project pins is decided in one place, and nothing restates
+it without being held to it.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Version</th><th>Decided in</th></tr></thead><tbody><tr><td>uv</td><td><code>pyproject.toml</code>, under <code>[tool.uv]</code>, which uv reads and refuses to run against a mismatch</td></tr><tr><td>Rust toolchain</td><td><code>rust-toolchain.toml</code>, which the toolchain reads</td></tr><tr><td>Python floor</td><td><code>pyproject.toml</code>, as <code>requires-python</code></td></tr><tr><td>Django range</td><td><code>pyproject.toml</code>, as the <code>django</code> extra</td></tr><tr><td>PostgreSQL and MySQL servers</td><td><code>tests/conftest.py</code>, which is what starts them</td></tr></tbody></table>
+<p>A workflow cannot read a file to decide which container a service starts from
+or which versions a matrix holds, because both are settled before any step
+runs. Those keep a copy, and a test holds every copy to the place that decides
+it, so a version that drifts fails a test rather than a job.</p>
+<h2 id="what-ships">What ships</h2>
+<p>Three kinds of artifact, each checked before it is published:</p>
+<ul>
+<li><strong>Native wheels</strong>, one per supported platform, carrying the compiled
+extension.</li>
+<li><strong>A portable wheel</strong>, carrying no compiled code, for anything else.</li>
+<li><strong>A source archive</strong>, for building from source.</li>
+</ul>
+<p>A wheel ships a declared set of packages, so what it holds is decided by
+configuration. A source archive ships a directory, so what it holds is decided
+by what was lying in that directory. Both are read before release: the wheels
+for their contents, their licence, their type marker and their metadata, and
+the archive for what it needs and for anything that merely travelled with it.</p>
+<h2 id="what-a-release-is-held-to">What a release is held to</h2>
+<p>Every one of these runs before anything is published, and each is a gate
+rather than a report:</p>
+<ul>
+<li>The full test suite, at complete statement and branch coverage, against real
+PostgreSQL and MySQL servers rather than recorded stand-ins.</li>
+<li>Strict type checking under two checkers, and linting and formatting.</li>
+<li>The Rust suite, its formatter, and its linter with warnings denied.</li>
+<li>Five performance contracts, including throughput and statement counts for
+carrying out a fetch plan.</li>
+<li>Every shipped example, run from an environment that installed the built
+package and nothing else.</li>
+<li>The documentation site’s own check and its production build.</li>
+<li>Dependency audits for both ecosystems, and a secret scan of the history.</li>
+<li><strong>A reproducible build:</strong> the wheel is built twice from one commit and the
+two have to be the same bytes. A build that differs run to run cannot be
+checked against a published hash by anyone who did not run it.</li>
+</ul>
+<h2 id="publishing">Publishing</h2>
+<p>A release happens on a version tag and on nothing else. Pushing to a branch
+runs the checks, and the checks cannot publish: they hold no publishing
+identity, and a test refuses one being added to them.</p>
+<p>Tagging runs a separate workflow that builds the artifacts through the same
+definition the checks use, so what is published is built by the path that was
+verified rather than by a second copy of it.</p>
+<p>It then does five things in order, and each has to succeed before the next
+begins:</p>
+<ol>
+<li>Builds every wheel and the source archive.</li>
+<li>Reads them with this project’s own contracts, and refuses a tag that does
+not name the version being published.</li>
+<li>Publishes to a test index.</li>
+<li>Installs from that index into a clean environment and imports the package.
+This is the only step that installs from an index rather than a directory,
+which is how everyone else will get it.</li>
+<li>Publishes the same files to the real index.</li>
+</ol>
+<p>Steps three and five use trusted publishing. No API token is stored anywhere:
+the index is told which repository and which environment may publish, and a
+short-lived identity is issued to that job alone. Each of those two steps also
+sits behind a named environment, so a required reviewer can be asked for
+before either runs.</p>
+<p>Nothing rebuilds between the test index and the real one. The files the second
+publishes are the files the first installed and imported.</p>
+<h2 id="withdrawing-a-release">Withdrawing a release</h2>
+<p>A published version is never deleted. Deleting one breaks every install that
+pins it and every lockfile that records its hash.</p>
+<p>A release that should not be used is yanked instead, which leaves the files
+where they are so existing pins keep resolving, and stops the version being
+chosen by anything that did not ask for it by name. <code>SECURITY.md</code> carries the
+steps and the reporting process.</p></article><nav class="pager" aria-label="Neighbouring pages"><a class="previous" href="/pyoq-sql/testing/"><span>Previous</span>Testing applications</a><a class="next" href="/pyoq-sql/licence/"><span>Next</span>Licence</a></nav><footer class="page-footer"><p>PyOQ is released under the <a href="/pyoq-sql/licence/" rel="license">MPL-2.0</a> licence.</p></footer></main><nav class="contents" aria-label="On this page"><p>On this page</p><ul><li><a href="#what-is-supported">What is supported</a></li><li><a href="#where-a-version-is-decided">Where a version is decided</a></li><li><a href="#what-ships">What ships</a></li><li><a href="#what-a-release-is-held-to">What a release is held to</a></li><li><a href="#publishing">Publishing</a></li><li><a href="#withdrawing-a-release">Withdrawing a release</a></li></ul></nav></div><script type="module">document.addEventListener(`click`,e=>{let t=e.target?.closest(`[data-copy]`);if(!t)return;let n=(t.closest(`.code-shell`)?.querySelector(`pre`)?.textContent??``).replace(/\n$/,``);if(!n)return;let r=e=>{let n=t.querySelector(`[data-copy-label]`);n&&(n.textContent=e)};navigator.clipboard.writeText(n).then(()=>{t.dataset.copied=``,r(`Copied`),setTimeout(()=>{delete t.dataset.copied,r(`Copy`)},1600)},()=>r(`Press ⌘C`))});</script><script type="module" src="/pyoq-sql/_astro/CodeEditors.astro_astro_type_script_index_0_lang.C8S0YAI5.js"></script><script type="module" src="/pyoq-sql/_astro/Diagrams.astro_astro_type_script_index_0_lang.BNJty66e.js"></script></body></html>

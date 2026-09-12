@@ -1,0 +1,423 @@
+<!DOCTYPE html><html lang="en" data-appearance="light"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Relations · PyOQ</title><meta name="description" content="The graph generation derives, and fetching across it."><link rel="canonical" href="https://teqpod.com/pyoq-sql/relations/"><meta name="robots" content="index, follow, max-image-preview:large"><meta name="theme-color" content="#1b6ef3"><link rel="sitemap" type="application/xml" href="/pyoq-sql/sitemap.xml"><meta property="og:type" content="article"><meta property="og:site_name" content="PyOQ"><meta property="og:locale" content="en"><meta property="og:title" content="Relations · PyOQ"><meta property="og:description" content="The graph generation derives, and fetching across it."><meta property="og:url" content="https://teqpod.com/pyoq-sql/relations/"><meta property="og:image" content="https://teqpod.com/pyoq-sql/brand/pyoq-banner.png"><meta property="og:image:type" content="image/png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="PyOQ, fully typed database-first SQL for Python"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Relations · PyOQ"><meta name="twitter:description" content="The graph generation derives, and fetching across it."><meta name="twitter:image" content="https://teqpod.com/pyoq-sql/brand/pyoq-banner.png"><link rel="icon" type="image/svg+xml" href="/pyoq-sql/brand/pyoq-mark.svg"><link rel="icon" type="image/png" sizes="32x32" href="/pyoq-sql/brand/pyoq-favicon-32.png"><link rel="apple-touch-icon" href="/pyoq-sql/brand/pyoq-mark-180.png"><script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://teqpod.com/pyoq-sql/#site","name":"PyOQ","url":"https://teqpod.com/pyoq-sql/","description":"A database-first SQL toolkit with generated types, explicit execution, and native acceleration for Python applications."},{"@type":"SoftwareApplication","@id":"https://teqpod.com/pyoq-sql/#project","name":"PyOQ","description":"A database-first SQL toolkit with generated types, explicit execution, and native acceleration for Python applications.","url":"https://teqpod.com/pyoq-sql/","sameAs":["https://pypi.org/project/pyoq-sql/"],"applicationCategory":"DeveloperApplication","operatingSystem":"Linux, macOS, Windows","programmingLanguage":"Python","license":"https://teqpod.com/pyoq-sql/licence/","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}},{"@type":"TechArticle","headline":"Relations · PyOQ","description":"The graph generation derives, and fetching across it.","url":"https://teqpod.com/pyoq-sql/relations/","image":"https://teqpod.com/pyoq-sql/brand/pyoq-banner.png","isPartOf":{"@id":"https://teqpod.com/pyoq-sql/#site"},"about":{"@id":"https://teqpod.com/pyoq-sql/#project"},"inLanguage":"en","articleSection":"Your data"}]}</script><script>
+  (() => {
+    let chosen = null;
+    try {
+      chosen = localStorage.getItem("pyoq-appearance");
+    } catch {}
+    const dark = matchMedia("(prefers-color-scheme: dark)").matches;
+    document.documentElement.dataset.appearance = chosen ?? (dark ? "dark" : "light");
+  })();
+</script><link rel="stylesheet" href="/pyoq-sql/_astro/app.CXhD3KCe.css"></head><body><a class="skip" href="#content">Skip to content</a><header class="bar"><a class="wordmark" href="/pyoq-sql/" aria-label="PyOQ documentation home"><img class="brand-image" src="/pyoq-sql/brand/pyoq-mark.svg" width="30" height="30" alt=""><span class="brand-name">PyOQ</span><span class="brand-context">docs</span></a><div class="search" data-pagefind-ignore><svg class="glass" viewBox="0 0 20 20" width="15" height="15" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.8" d="M8.5 14.5a6 6 0 1 1 0-12 6 6 0 0 1 0 12Zm4.5-1.5 4 4"></path></svg><input id="search" type="search" placeholder="Search the documentation" autocomplete="off" spellcheck="false" aria-label="Search the documentation" aria-expanded="false" aria-controls="results"><kbd>/</kbd><div id="results" role="listbox" hidden></div></div><script>(function(){const runtime = "/pyoq-sql/pagefind/pagefind.js";
+const baseUrl = "/pyoq-sql/";
+
+  const field = document.getElementById("search");
+  const panel = document.getElementById("results");
+  let engine = null;
+  let chosen = -1;
+
+  async function ready() {
+    if (engine) return engine;
+    try {
+      engine = await import(runtime);
+      await engine.options({ baseUrl, excerptLength: 24 });
+      await engine.init();
+    } catch {
+      engine = "unavailable";
+    }
+    return engine;
+  }
+
+  function close() {
+    panel.hidden = true;
+    field.setAttribute("aria-expanded", "false");
+    chosen = -1;
+  }
+
+  function draw(results) {
+    if (!results.length) {
+      panel.innerHTML = '<p class="none">Nothing matches that.</p>';
+    } else {
+      panel.innerHTML = results
+        .map((result) => {
+          const where = result.meta?.group ?? "Documentation";
+          const title = result.meta?.title ?? "Untitled";
+          return `<a role="option" href="${result.url}">
+            <span class="where">${where}</span>
+            <span class="what">${title}</span>
+            <span class="bit">${result.excerpt}</span>
+          </a>`;
+        })
+        .join("");
+    }
+    panel.hidden = false;
+    field.setAttribute("aria-expanded", "true");
+    chosen = -1;
+  }
+
+  let running = 0;
+  async function run() {
+    const wanted = field.value.trim();
+    if (!wanted) return close();
+    const engine = await ready();
+    if (engine === "unavailable") {
+      panel.innerHTML =
+        '<p class="none">Search is built with the site. Run <code>bun run build</code>.</p>';
+      panel.hidden = false;
+      return;
+    }
+    const token = ++running;
+    const found = await engine.search(wanted);
+    if (token !== running) return;
+    const top = await Promise.all(found.results.slice(0, 8).map((one) => one.data()));
+    if (token !== running) return;
+    draw(top);
+  }
+
+  function move(step) {
+    const links = panel.querySelectorAll("a");
+    if (!links.length) return;
+    chosen = (chosen + step + links.length) % links.length;
+    links.forEach((link, at) => link.classList.toggle("on", at === chosen));
+    links[chosen].scrollIntoView({ block: "nearest" });
+  }
+
+  let waiting;
+  field?.addEventListener("input", () => {
+    clearTimeout(waiting);
+    waiting = setTimeout(run, 120);
+  });
+  field?.addEventListener("focus", ready);
+
+  field?.addEventListener("keydown", (event) => {
+    if (event.key === "ArrowDown") {
+      event.preventDefault();
+      move(1);
+    } else if (event.key === "ArrowUp") {
+      event.preventDefault();
+      move(-1);
+    } else if (event.key === "Enter" && chosen >= 0) {
+      event.preventDefault();
+      panel.querySelectorAll("a")[chosen].click();
+    } else if (event.key === "Escape") {
+      field.blur();
+      close();
+    }
+  });
+
+  document.addEventListener("click", (event) => {
+    if (!panel.contains(event.target) && event.target !== field) close();
+  });
+
+  // "/" reaches the field from anywhere, which is where a reader goes first.
+  document.addEventListener("keydown", (event) => {
+    const typing = /^(INPUT|TEXTAREA)$/.test(document.activeElement?.tagName ?? "");
+    if (event.key === "/" && !typing) {
+      event.preventDefault();
+      field.focus();
+      field.select();
+    }
+  });
+})();</script><button id="appearance" type="button" aria-label="Switch appearance"><svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M10 2a8 8 0 1 0 0 16 8 8 0 0 0 0-16Zm0 1.6V16.4a6.4 6.4 0 0 1 0-12.8Z"></path></svg></button><script type="module">var e=document.documentElement;document.getElementById(`appearance`)?.addEventListener(`click`,()=>{let t=e.dataset.appearance===`dark`?`light`:`dark`;e.dataset.appearance=t;try{localStorage.setItem(`pyoq-appearance`,t)}catch{}});</script></header><div class="page"><nav class="side" aria-label="Documentation"><details class="side-toggle"><summary>Contents</summary></details><div class="side-body"><details class="side-group" data-group="Start here"><summary class="group" title="What this is, whether it suits you, and getting it running."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>Start here</summary><ul><li><a href="/pyoq-sql/overview/">What PyOQ is</a></li><li><a href="/pyoq-sql/when-to-use/">When to use what</a></li><li><a href="/pyoq-sql/installing/">Installing</a></li><li><a href="/pyoq-sql/generating/">Generating your types</a></li><li><a href="/pyoq-sql/first-query/">Your first query</a></li></ul></details><details class="side-group" data-group="For LLMs"><summary class="group" title="A compact project model and source map for coding agents."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>For LLMs</summary><ul><li><a href="/pyoq-sql/agents/">LLM agent guide</a></li></ul></details><details class="side-group" data-group="Reading"><summary class="group" title="Everything that ends in rows coming back."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>Reading</summary><ul><li><a href="/pyoq-sql/selecting/">Selecting rows</a></li><li><a href="/pyoq-sql/expressions/">Expressions and conditions</a></li><li><a href="/pyoq-sql/joins/">Joins and set operations</a></li><li><a href="/pyoq-sql/routines/">Stored routines</a></li><li><a href="/pyoq-sql/results/">Reading results</a></li></ul></details><details class="side-group" data-group="Writing"><summary class="group" title="Everything that changes what is in the database."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>Writing</summary><ul><li><a href="/pyoq-sql/inserting/">Inserting rows</a></li><li><a href="/pyoq-sql/updating/">Updating and deleting</a></li><li><a href="/pyoq-sql/conflicts/">Conflict resolution</a></li><li><a href="/pyoq-sql/bulk/">Bulk writes</a></li></ul></details><details class="side-group" data-group="Your data" open><summary class="group" title="What the schema says, and how PyOQ reads it back."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>Your data</summary><ul><li><a href="/pyoq-sql/relations/" class="active" aria-current="page">Relations</a></li><li><a href="/pyoq-sql/types/">Column types</a></li><li><a href="/pyoq-sql/snapshots/">Snapshots and drift</a></li><li><a href="/pyoq-sql/migrations/">Migration lifecycle</a></li></ul></details><details class="side-group" data-group="Running statements"><summary class="group" title="What happens between a built statement and a row."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>Running statements</summary><ul><li><a href="/pyoq-sql/connections/">Connections and pools</a></li><li><a href="/pyoq-sql/mysql-application/">MySQL without a framework</a></li><li><a href="/pyoq-sql/async/">Asynchronous execution</a></li><li><a href="/pyoq-sql/transactions/">Transactions and streaming</a></li><li><a href="/pyoq-sql/dialects/">Dialects</a></li><li><a href="/pyoq-sql/diagnostics/">Diagnostics</a></li><li><a href="/pyoq-sql/policies/">Policies</a></li><li><a href="/pyoq-sql/security/">Security</a></li><li><a href="/pyoq-sql/performance/">Performance</a></li></ul></details><details class="side-group" data-group="Frameworks"><summary class="group" title="Running inside something that already owns the connection."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>Frameworks</summary><ul><li><a href="/pyoq-sql/alembic/">Alembic</a></li><li><a href="/pyoq-sql/django/">Django</a></li><li><a href="/pyoq-sql/fastapi/">FastAPI</a></li><li><a href="/pyoq-sql/sanic/">Sanic</a></li><li><a href="/pyoq-sql/serving/">Standalone services</a></li></ul></details><details class="side-group" data-group="Reference"><summary class="group" title="The details, once you know what you are looking for."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>Reference</summary><ul><li><a href="/pyoq-sql/cli/">Command line</a></li><li><a href="/pyoq-sql/configuration/">Configuration</a></li><li><a href="/pyoq-sql/errors/">Errors</a></li><li><a href="/pyoq-sql/troubleshooting/">Troubleshooting</a></li><li><a href="/pyoq-sql/testing/">Testing applications</a></li><li><a href="/pyoq-sql/releasing/">Releasing</a></li><li><a href="/pyoq-sql/licence/">Licence</a></li></ul></details><details class="side-group" data-group="APIs"><summary class="group" title="Every package, every name it exports, and what each one does."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>APIs</summary><ul><li><a href="/pyoq-sql/api/references/">All references</a></li><li><a href="/pyoq-sql/api/internals/">Internals</a></li><li><a href="/pyoq-sql/api/pyoq/">pyoq</a></li><li><a href="/pyoq-sql/api/commands/">pyoq commands</a></li><li><a href="/pyoq-sql/api/native/">pyoq._native</a></li><li><a href="/pyoq-sql/api/cli/">pyoq.cli</a></li><li><a href="/pyoq-sql/api/config/">pyoq.config</a></li><li><a href="/pyoq-sql/api/descriptors/">pyoq.descriptors</a></li><li><a href="/pyoq-sql/api/diagnostics/">pyoq.diagnostics</a></li><li><a href="/pyoq-sql/api/django/">pyoq.django</a></li><li><a href="/pyoq-sql/api/dsl/">pyoq.dsl</a></li><li><a href="/pyoq-sql/api/errors/">pyoq.errors</a></li><li><a href="/pyoq-sql/api/fastapi/">pyoq.fastapi</a></li><li><a href="/pyoq-sql/api/fetching/">pyoq.fetching</a></li><li><a href="/pyoq-sql/api/generation/">pyoq.generation</a></li><li><a href="/pyoq-sql/api/hydration/">pyoq.hydration</a></li><li><a href="/pyoq-sql/api/migrations/">pyoq.migrations</a></li><li><a href="/pyoq-sql/api/naming/">pyoq.naming</a></li><li><a href="/pyoq-sql/api/policies/">pyoq.policies</a></li><li><a href="/pyoq-sql/api/query/">pyoq.query</a></li><li><a href="/pyoq-sql/api/query-expressions/">pyoq.query expressions</a></li><li><a href="/pyoq-sql/api/query-functions/">pyoq.query functions</a></li><li><a href="/pyoq-sql/api/query-execution/">pyoq.query.execution</a></li><li><a href="/pyoq-sql/api/query-mysql/">pyoq.query.mysql</a></li><li><a href="/pyoq-sql/api/query-postgres/">pyoq.query.postgres</a></li><li><a href="/pyoq-sql/api/query-sqlite/">pyoq.query.sqlite</a></li><li><a href="/pyoq-sql/api/relations/">pyoq.relations</a></li><li><a href="/pyoq-sql/api/runtime/">pyoq.runtime</a></li><li><a href="/pyoq-sql/api/sanic/">pyoq.sanic</a></li><li><a href="/pyoq-sql/api/schema/">pyoq.schema</a></li><li><a href="/pyoq-sql/api/schema-dialects/">pyoq.schema dialects</a></li><li><a href="/pyoq-sql/api/serving/">pyoq.serving</a></li><li><a href="/pyoq-sql/api/snapshots/">pyoq.snapshots</a></li><li><a href="/pyoq-sql/api/tracing/">pyoq.tracing</a></li></ul></details></div></nav><script type="module">var e=`pyoq-sidebar`;function t(){try{return JSON.parse(sessionStorage.getItem(e)??`{}`)}catch{return{}}}function n(t){try{sessionStorage.setItem(e,JSON.stringify(t))}catch{}}var r=document.querySelector(`.side`),i=[...document.querySelectorAll(`.side-group`)],a=t();for(let e of i){let t=e.dataset.group;t&&(t in a&&(e.open=a[t]),e.addEventListener(`toggle`,()=>{a[t]=e.open,n(a)}))}function o(){if(!r||r.scrollHeight<=r.clientHeight)return;let e=r.querySelector(`a.active`);if(!e)return;let t=r.getBoundingClientRect(),n=e.getBoundingClientRect();n.top>=t.top&&n.bottom<=t.bottom||(r.scrollTop+=n.top-t.top-r.clientHeight/2+n.height/2)}requestAnimationFrame(o);</script><main id="content" data-pagefind-body><p class="crumb" data-pagefind-meta="group:Your data">Your data</p><article><h1>Relations</h1><p class="lede" data-pagefind-ignore>The graph generation derives, and fetching across it.</p><p>Generation reads every foreign key and writes a descriptor for it, in both directions, because a relation you can only follow one way is half a fact.</p>
+<div class="code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#AF00DB;--shiki-dark:#C586C0">from</span><span style="color:#000000;--shiki-dark:#D4D4D4"> generated.relations </span><span style="color:#AF00DB;--shiki-dark:#C586C0">import</span><span style="color:#000000;--shiki-dark:#D4D4D4"> (</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">    CATALOG_TITLE_PUBLISHER_ID_FORWARD,   </span><span style="color:#008000;--shiki-dark:#6A9955"># a title to its publisher</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">    CATALOG_PUBLISHER_TITLE_REVERSE,      </span><span style="color:#008000;--shiki-dark:#6A9955"># a publisher to its titles</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">)</span></span></code></pre>
+<div class="monaco-host"></div></div>
+<p>Each descriptor carries what the database said: the columns on both sides,
+the constraint name, the referential actions, the direction, the cardinality,
+and whether it is optional.</p>
+<h2 id="direction-and-cardinality">Direction and cardinality</h2>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Term</th><th>Means</th></tr></thead><tbody><tr><td>Forward</td><td>from the table holding the key, to the one it points at</td></tr><tr><td>Reverse</td><td>the same relation read the other way</td></tr><tr><td>To one</td><td>the far side is a single row, or none</td></tr><tr><td>To many</td><td>the far side is a collection</td></tr></tbody></table>
+<p>Cardinality is derived rather than declared: a foreign key whose columns are
+also a unique key is to-one in both directions, and otherwise the reverse
+side is to-many. Optionality follows from whether the key columns are
+nullable.</p>
+<h2 id="fetching-across-a-relation">Fetching across a relation</h2>
+<p>Loading related rows one query at a time is the classic mistake, the N+1: a
+hundred parents becomes a hundred and one queries. PyOQ plans the fetch
+instead.</p>
+<div class="code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#AF00DB;--shiki-dark:#C586C0">from</span><span style="color:#000000;--shiki-dark:#D4D4D4"> pyoq.relations </span><span style="color:#AF00DB;--shiki-dark:#C586C0">import</span><span style="color:#000000;--shiki-dark:#D4D4D4"> FetchPlan</span></span></code></pre>
+<div class="monaco-host"></div></div>
+<p>A plan describes what to load and how, and the executor carries it out with a
+bounded number of statements. Related rows are gathered by key in batches, so
+the number of queries follows the number of <em>relations</em> you asked for, not
+the number of rows you got back.</p>
+<h3 id="how-the-plan-is-chosen">How the plan is chosen</h3>
+<p>Planning across more than one query is what keeps the count bounded. A plan
+picks between two strategies per relation:</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Strategy</th><th>Used when</th><th>Costs</th></tr></thead><tbody><tr><td>joined</td><td>the relation is to-one</td><td>one query, wider rows</td></tr><tr><td>select-in</td><td>a to-many the dialect cannot gather inline, or one that is ordered or limited</td><td>one more query per relation level</td></tr></tbody></table>
+<p>Either way the number of statements follows the shape of what you asked for
+rather than the number of rows that came back, which is the whole point.
+<a href="../diagnostics/">Diagnostics</a> counts them, so an N+1 that creeps back in
+shows up as a number rather than a suspicion.</p>
+<h2 id="not-loaded-is-not-empty">Not loaded is not empty</h2>
+<p>A relation you did not ask for is not an empty list. Reading it raises
+<code>RelationNotLoadedError</code>, because “no publisher” and “you never asked for the
+publisher” are different facts, and quietly returning <code>None</code> for both is how
+data goes missing without anybody noticing.</p>
+<h2 id="nested-collections-in-one-query">Nested collections in one query</h2>
+<p>Where the dialect can do it, a to-many relation is gathered in the same query
+rather than a second one, using the server’s own JSON aggregation:</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Dialect</th><th>Uses</th></tr></thead><tbody><tr><td>SQLite</td><td><code>json_group_array</code>, needing 3.44 or later for ordering inside it</td></tr><tr><td>PostgreSQL</td><td><code>json_agg</code></td></tr><tr><td>MySQL</td><td><code>JSON_ARRAYAGG</code>, <code>JSON_OBJECT</code></td></tr></tbody></table>
+<p>An empty relation comes back as an empty collection rather than a row of
+nulls. Where a dialect cannot order inside the aggregate, PyOQ says so rather
+than returning rows in an order it cannot promise.</p>
+<h2 id="keeping-only-the-first-few">Keeping only the first few</h2>
+<p>Where only the top of a collection matters, say how many. The rows kept are
+the ones the order put first, so a limit without an order is refused rather
+than answered with whichever few the database happened to reach:</p>
+<div class="code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">FetchRequest(relation, </span><span style="color:#001080;--shiki-dark:#9CDCFE">order_by</span><span style="color:#000000;--shiki-dark:#D4D4D4">=(by_column(</span><span style="color:#A31515;--shiki-dark:#CE9178">"published"</span><span style="color:#000000;--shiki-dark:#D4D4D4">),), </span><span style="color:#001080;--shiki-dark:#9CDCFE">limit</span><span style="color:#000000;--shiki-dark:#D4D4D4">=</span><span style="color:#098658;--shiki-dark:#B5CEA8">5</span><span style="color:#000000;--shiki-dark:#D4D4D4">)</span></span></code></pre>
+<div class="monaco-host"></div></div>
+<p>MySQL cannot order rows inside an aggregate, so it cannot keep the ones an
+order chose either. A limited collection there is fetched with select-in
+instead, and asking for it nested is refused rather than answered with rows
+nobody picked.</p>
+<h2 id="reading-a-table-alongside-the-collection">Reading a table alongside the collection</h2>
+<p>A collection is the rows of one relation. A join widens what each of those
+rows carries without changing which rows there are, so a value from a second
+table can travel with them.</p>
+<div class="code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#AF00DB;--shiki-dark:#C586C0">from</span><span style="color:#000000;--shiki-dark:#D4D4D4"> pyoq.relations </span><span style="color:#AF00DB;--shiki-dark:#C586C0">import</span><span style="color:#000000;--shiki-dark:#D4D4D4"> FetchJoin</span></span>
+<span class="line"><span style="color:#AF00DB;--shiki-dark:#C586C0">from</span><span style="color:#000000;--shiki-dark:#D4D4D4"> pyoq.schema </span><span style="color:#AF00DB;--shiki-dark:#C586C0">import</span><span style="color:#000000;--shiki-dark:#D4D4D4"> Identifier</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">FetchRequest(</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">    posts,</span></span>
+<span class="line"><span style="color:#001080;--shiki-dark:#9CDCFE">    order_by</span><span style="color:#000000;--shiki-dark:#D4D4D4">=(by_column(</span><span style="color:#A31515;--shiki-dark:#CE9178">"published"</span><span style="color:#000000;--shiki-dark:#D4D4D4">),),</span></span>
+<span class="line"><span style="color:#001080;--shiki-dark:#9CDCFE">    joins</span><span style="color:#000000;--shiki-dark:#D4D4D4">=(FetchJoin(author, (Identifier(</span><span style="color:#A31515;--shiki-dark:#CE9178">"display_name"</span><span style="color:#000000;--shiki-dark:#D4D4D4">),)),),</span></span>
+<span class="line"><span style="color:#001080;--shiki-dark:#9CDCFE">    limit</span><span style="color:#000000;--shiki-dark:#D4D4D4">=</span><span style="color:#098658;--shiki-dark:#B5CEA8">5</span><span style="color:#000000;--shiki-dark:#D4D4D4">,</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">)</span></span></code></pre>
+<div class="monaco-host"></div></div>
+<p>The joined table is named by the relation that reaches it rather than by a
+table and a condition you write out, so the schema decides what can be joined.
+That relation is to-one: a to-many would change which rows there are, and is
+refused with a pointer to fetching it as a collection of its own. A plan is
+checked before it runs, so a join the schema cannot reach from the collection,
+or one carrying a column the joined table has not got, is a mistake reported
+against the schema rather than as SQL a server rejects.</p>
+<p>When the executor carries the plan out, a joined table is read whole and comes
+back as a relation of each row of the collection, exactly like one reached any
+other way:</p>
+<div class="code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#AF00DB;--shiki-dark:#C586C0">for</span><span style="color:#000000;--shiki-dark:#D4D4D4"> note </span><span style="color:#AF00DB;--shiki-dark:#C586C0">in</span><span style="color:#000000;--shiki-dark:#D4D4D4"> row.rows_of(notes):</span></span>
+<span class="line"><span style="color:#AF00DB;--shiki-dark:#C586C0">    for</span><span style="color:#000000;--shiki-dark:#D4D4D4"> topic </span><span style="color:#AF00DB;--shiki-dark:#C586C0">in</span><span style="color:#000000;--shiki-dark:#D4D4D4"> note.rows_of(topic_of_note):</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">        ...</span></span></code></pre>
+<div class="monaco-host"></div></div>
+<p>A note whose join matched nothing reads as absent there, not as a row of
+nulls, which is the same answer a join in the parent’s own statement gives.</p>
+<p>Reading <code>collection_for</code> directly instead, a joined column is carried under
+the name that appearance answers to, as <code>pyoq_t2.title</code>, because a collection
+may join one table twice and a row cannot carry one key twice. That is how a
+collection encodes its row so it can be read back, and the executor is what
+reads it.</p>
+<p>Every such join is a left join. A join widens what each row carries and does
+not decide which rows there are, so a row whose join matched nothing stays and
+carries null for what the join would have added. An inner join would drop it,
+which is a row the collection was asked for going missing. That holds whether
+the relation is optional or not: a required relation still matches nothing
+when the row it points at is not there.</p>
+<p>The rows are chosen first and the values are gathered after, which is what
+lets a limited collection carry a joined value: a join’s columns are not
+reachable through the single name a bounded set answers under, so the values
+travel out of it and the row is built where the aggregate is.</p>
+<h2 id="turning-a-plan-into-a-query">Turning a plan into a query</h2>
+<p>A resolved plan says what to fetch. <code>collection_for</code> turns one of its fetches
+into the node a dialect renders, which is the seam between knowing what a
+relation is and knowing what a collection looks like.</p>
+<div class="code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#AF00DB;--shiki-dark:#C586C0">from</span><span style="color:#000000;--shiki-dark:#D4D4D4"> pyoq.fetching </span><span style="color:#AF00DB;--shiki-dark:#C586C0">import</span><span style="color:#000000;--shiki-dark:#D4D4D4"> collection_for</span></span>
+<span class="line"><span style="color:#AF00DB;--shiki-dark:#C586C0">from</span><span style="color:#000000;--shiki-dark:#D4D4D4"> pyoq.relations </span><span style="color:#AF00DB;--shiki-dark:#C586C0">import</span><span style="color:#000000;--shiki-dark:#D4D4D4"> resolve_fetch_plan</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">resolved = resolve_fetch_plan(plan, capabilities)</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">node = collection_for(resolved.fetches[</span><span style="color:#098658;--shiki-dark:#B5CEA8">0</span><span style="color:#000000;--shiki-dark:#D4D4D4">], (Identifier(</span><span style="color:#A31515;--shiki-dark:#CE9178">"title"</span><span style="color:#000000;--shiki-dark:#D4D4D4">),))</span></span></code></pre>
+<div class="monaco-host"></div></div>
+<p>The columns each row carries are given rather than derived, because a caller
+asks for what it wants and a collection carrying every column would read more
+than was asked for. Nothing here reaches a database: it builds a node, the way
+every other builder in this toolkit does.</p>
+<h2 id="saying-what-a-collection-is-ordered-by">Saying what a collection is ordered by</h2>
+<div class="code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#AF00DB;--shiki-dark:#C586C0">from</span><span style="color:#000000;--shiki-dark:#D4D4D4"> pyoq.relations </span><span style="color:#AF00DB;--shiki-dark:#C586C0">import</span><span style="color:#000000;--shiki-dark:#D4D4D4"> by_column, by_expression</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">FetchRequest(</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">    employees,</span></span>
+<span class="line"><span style="color:#001080;--shiki-dark:#9CDCFE">    order_by</span><span style="color:#000000;--shiki-dark:#D4D4D4">=(by_expression(</span><span style="color:#A31515;--shiki-dark:#CE9178">"lower(name)"</span><span style="color:#000000;--shiki-dark:#D4D4D4">), by_column(</span><span style="color:#A31515;--shiki-dark:#CE9178">"id"</span><span style="color:#000000;--shiki-dark:#D4D4D4">, </span><span style="color:#001080;--shiki-dark:#9CDCFE">descending</span><span style="color:#000000;--shiki-dark:#D4D4D4">=</span><span style="color:#0000FF;--shiki-dark:#569CD6">True</span><span style="color:#000000;--shiki-dark:#D4D4D4">)),</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">)</span></span></code></pre>
+<div class="monaco-host"></div></div>
+<p>A column is checked against the related table, because the plan can see the
+schema. An expression is <strong>named</strong> rather than carried: a plan is built below
+the layer that writes queries and does not reach up into one. Naming it is
+enough to plan with, because what decides how a collection can be fetched is
+whether it is ordered at all, not what it is ordered by. The name is what the
+plan reports when it explains itself.</p>
+<h2 id="running-a-plan">Running a plan</h2>
+<p><code>FetchExecutor</code> carries a resolved plan out. It builds the statements, runs
+them, and hands back rows with their relations loaded.</p>
+<div class="code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#AF00DB;--shiki-dark:#C586C0">from</span><span style="color:#000000;--shiki-dark:#D4D4D4"> pyoq.fetching </span><span style="color:#AF00DB;--shiki-dark:#C586C0">import</span><span style="color:#000000;--shiki-dark:#D4D4D4"> FetchExecutor</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">executor = FetchExecutor(operations, graph, </span><span style="color:#001080;--shiki-dark:#9CDCFE">maximum_parameters</span><span style="color:#000000;--shiki-dark:#D4D4D4">=</span><span style="color:#098658;--shiki-dark:#B5CEA8">999</span><span style="color:#000000;--shiki-dark:#D4D4D4">)</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">rows = executor.fetch(resolved, </span><span style="color:#001080;--shiki-dark:#9CDCFE">where</span><span style="color:#000000;--shiki-dark:#D4D4D4">=people.active.eq(</span><span style="color:#0000FF;--shiki-dark:#569CD6">True</span><span style="color:#000000;--shiki-dark:#D4D4D4">))</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#AF00DB;--shiki-dark:#C586C0">for</span><span style="color:#000000;--shiki-dark:#D4D4D4"> row </span><span style="color:#AF00DB;--shiki-dark:#C586C0">in</span><span style="color:#000000;--shiki-dark:#D4D4D4"> rows:</span></span>
+<span class="line"><span style="color:#AF00DB;--shiki-dark:#C586C0">    for</span><span style="color:#000000;--shiki-dark:#D4D4D4"> note </span><span style="color:#AF00DB;--shiki-dark:#C586C0">in</span><span style="color:#000000;--shiki-dark:#D4D4D4"> row.rows_of(notes):</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">        ...</span></span></code></pre>
+<div class="monaco-host"></div></div>
+<p><code>AsyncFetchExecutor</code> is the same against a database that does not block:</p>
+<div class="code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#AF00DB;--shiki-dark:#C586C0">from</span><span style="color:#000000;--shiki-dark:#D4D4D4"> pyoq.fetching </span><span style="color:#AF00DB;--shiki-dark:#C586C0">import</span><span style="color:#000000;--shiki-dark:#D4D4D4"> AsyncFetchExecutor</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">executor = AsyncFetchExecutor(operations, graph, </span><span style="color:#001080;--shiki-dark:#9CDCFE">maximum_parameters</span><span style="color:#000000;--shiki-dark:#D4D4D4">=</span><span style="color:#098658;--shiki-dark:#B5CEA8">999</span><span style="color:#000000;--shiki-dark:#D4D4D4">)</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">rows = </span><span style="color:#AF00DB;--shiki-dark:#C586C0">await</span><span style="color:#000000;--shiki-dark:#D4D4D4"> executor.fetch(resolved)</span></span></code></pre>
+<div class="monaco-host"></div></div>
+<p>Both share one traversal. <code>FetchAssembly</code> decides what to run and what the
+answers mean, and asks for the rows of a query rather than running one, so the
+two executors differ only in how they ask. A plan therefore means the same
+thing either way, rather than meaning whatever two copies of the logic happen
+to agree on.</p>
+<p>The parameter limit is given rather than read from the compiler, because a
+compiler is asked to compile and nothing else. It is the same limit a bulk
+planner is built with, and it decides how many parents one select-in statement
+can ask about.</p>
+<p>What comes back is uniform. However a row arrived, joined into its parent’s
+row, gathered as JSON beside it, or read by a statement of its own, it is a
+row of its table in that table’s own column order, carrying its own relations
+the same way.</p>
+<h3 id="reading-a-row-as-what-it-holds">Reading a row as what it holds</h3>
+<p><code>values</code> is what came back, and nothing there says which column is which, so
+it reads as <code>object</code>. A generated table constant carries the class its rows
+read back as, and a generated relationship constant carries the class the
+table it reaches reads back as, so reading through either keeps every declared
+type:</p>
+<div class="code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">team = row.read(TEAM)                       </span><span style="color:#008000;--shiki-dark:#6A9955"># TeamRow</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">team.name                                   </span><span style="color:#008000;--shiki-dark:#6A9955"># str</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">people = row.read_all(TEAM_PERSON_REVERSE)  </span><span style="color:#008000;--shiki-dark:#6A9955"># tuple[PersonRow, ...]</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">people[</span><span style="color:#098658;--shiki-dark:#B5CEA8">0</span><span style="color:#000000;--shiki-dark:#D4D4D4">].nick                              </span><span style="color:#008000;--shiki-dark:#6A9955"># str</span></span></code></pre>
+<div class="monaco-host"></div></div>
+<p>The values came back in the order the table declares its columns, which is the
+order that class names its fields, so the row it builds holds each value under
+the name and the type its column was declared with.</p>
+<p>A row is read through the table it came from, and only that one. It carries
+which table produced it, so a constant naming another is refused rather than
+believed: reading a row as a table it did not come from would put its values
+under names that were never theirs, and the type checker would agree.</p>
+<p>Both sides of a relation constant carry their schema and catalog too. Two
+schemas may each hold a <code>parent</code> reaching a <code>child</code> over the same columns, and
+a constant that named only the tables would describe both of them.</p>
+<p>A table written by hand names no row class and says so rather than guessing,
+the same way one names no columns and cannot be selected from without saying
+which. A relation nobody fetched raises when read by its constant, exactly as
+it does when read by its relation. Which strategy a dialect chose is not something the caller can
+see in the answer, which is the reason for choosing it below them.</p>
+<p>Every relation is loaded for the whole result at once. A relation reached
+through a joined table is still one statement, not one per row, and a
+select-in is split only when a batch would exceed the parameter limit.</p>
+<p>A to-one relation that resolved to nothing reads as absent, whether it was
+joined or read by a statement of its own, and whether it resolved to nothing
+because its key was null or because the row it named is not there. A to-many
+with no rows reads as an empty collection, because a relation with no children
+was answered rather than unanswered. A relation nobody fetched raises when
+read, which is the difference the three states exist to keep.</p>
+<p>A parent whose key is null is not asked about at all. Null matches no row,
+including another null, so the question has an answer before it is asked.</p>
+<div class="code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">row.related[team].is_absent   </span><span style="color:#008000;--shiki-dark:#6A9955"># the join matched nothing</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">row.rows_of(notes)            </span><span style="color:#008000;--shiki-dark:#6A9955"># (), or the rows there were</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">row.rows_of(unfetched)        </span><span style="color:#008000;--shiki-dark:#6A9955"># raises RelationNotLoadedError</span></span></code></pre>
+<div class="monaco-host"></div></div>
+<h2 id="reading-one-table-more-than-once">Reading one table more than once</h2>
+<p>Two relations to the same table, and a relation to the table it starts from,
+are ordinary shapes. An issue has a creator and a reviewer, both accounts. An
+employee has a manager and reports, both employees.</p>
+<p>A statement keeps the name of the table it starts from and gives every other
+appearance a name of its own, numbered in the order the plan is walked. That
+is what a column is qualified by, because a column qualified by a table name
+says nothing when the statement reads that table twice.</p>
+<div class="code-shell" data-lang="sql"><div class="code-head"><span class="code-lang">SQL</span><button class="code-copy" type="button" data-copy="" aria-label="Copy SQL code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="sql"><code><span class="line"><span style="color:#0000FF;--shiki-dark:#569CD6">SELECT</span><span style="color:#A31515;--shiki-dark:#CE9178"> "issue"</span><span style="color:#000000;--shiki-dark:#D4D4D4">.</span><span style="color:#A31515;--shiki-dark:#CE9178">"id"</span><span style="color:#000000;--shiki-dark:#D4D4D4">, </span><span style="color:#A31515;--shiki-dark:#CE9178">"pyoq_t1"</span><span style="color:#000000;--shiki-dark:#D4D4D4">.</span><span style="color:#A31515;--shiki-dark:#CE9178">"name"</span><span style="color:#000000;--shiki-dark:#D4D4D4">, </span><span style="color:#A31515;--shiki-dark:#CE9178">"pyoq_t2"</span><span style="color:#000000;--shiki-dark:#D4D4D4">.</span><span style="color:#A31515;--shiki-dark:#CE9178">"name"</span></span>
+<span class="line"><span style="color:#0000FF;--shiki-dark:#569CD6">FROM</span><span style="color:#A31515;--shiki-dark:#CE9178"> "issue"</span></span>
+<span class="line"><span style="color:#0000FF;--shiki-dark:#569CD6">LEFT JOIN</span><span style="color:#A31515;--shiki-dark:#CE9178"> "account"</span><span style="color:#0000FF;--shiki-dark:#569CD6"> AS</span><span style="color:#A31515;--shiki-dark:#CE9178"> "pyoq_t1"</span><span style="color:#0000FF;--shiki-dark:#569CD6"> ON</span><span style="color:#000000;--shiki-dark:#D4D4D4"> (</span><span style="color:#A31515;--shiki-dark:#CE9178">"issue"</span><span style="color:#000000;--shiki-dark:#D4D4D4">.</span><span style="color:#A31515;--shiki-dark:#CE9178">"creator_id"</span><span style="color:#000000;--shiki-dark:#D4D4D4"> = </span><span style="color:#A31515;--shiki-dark:#CE9178">"pyoq_t1"</span><span style="color:#000000;--shiki-dark:#D4D4D4">.</span><span style="color:#A31515;--shiki-dark:#CE9178">"id"</span><span style="color:#000000;--shiki-dark:#D4D4D4">)</span></span>
+<span class="line"><span style="color:#0000FF;--shiki-dark:#569CD6">LEFT JOIN</span><span style="color:#A31515;--shiki-dark:#CE9178"> "account"</span><span style="color:#0000FF;--shiki-dark:#569CD6"> AS</span><span style="color:#A31515;--shiki-dark:#CE9178"> "pyoq_t2"</span><span style="color:#0000FF;--shiki-dark:#569CD6"> ON</span><span style="color:#000000;--shiki-dark:#D4D4D4"> (</span><span style="color:#A31515;--shiki-dark:#CE9178">"issue"</span><span style="color:#000000;--shiki-dark:#D4D4D4">.</span><span style="color:#A31515;--shiki-dark:#CE9178">"reviewer_id"</span><span style="color:#000000;--shiki-dark:#D4D4D4"> = </span><span style="color:#A31515;--shiki-dark:#CE9178">"pyoq_t2"</span><span style="color:#000000;--shiki-dark:#D4D4D4">.</span><span style="color:#A31515;--shiki-dark:#CE9178">"id"</span><span style="color:#000000;--shiki-dark:#D4D4D4">)</span></span></code></pre>
+<div class="monaco-host"></div></div>
+<p>A collection is given a name of its own for the same reason, and it matters
+more there. A collection of a table’s own rows correlates that table to
+itself, and without two names the correlation compares a table with itself and
+gathers nothing at all, on every dialect, without an error.</p>
+<p>The names are fixed by the plan, so one plan always compiles to the same SQL.
+They also avoid every name the schema already uses. <code>pyoq_t1</code> is a legal table
+name and a legal column name, and a generated name that took it would shadow
+the real one, so what the schema calls things is reserved and skipped.</p>
+<h2 id="row-identity">Row identity</h2>
+<p>Hydrating a nested result means knowing which rows are the same row. That
+comes from the primary key where there is one, and PyOQ refuses to guess when
+there is not. See <a href="/pyoq-sql/types/">Column types</a> for what identity is built from.</p></article><nav class="pager" aria-label="Neighbouring pages"><a class="previous" href="/pyoq-sql/bulk/"><span>Previous</span>Bulk writes</a><a class="next" href="/pyoq-sql/types/"><span>Next</span>Column types</a></nav><footer class="page-footer"><p>PyOQ is released under the <a href="/pyoq-sql/licence/" rel="license">MPL-2.0</a> licence.</p></footer></main><nav class="contents" aria-label="On this page"><p>On this page</p><ul><li><a href="#direction-and-cardinality">Direction and cardinality</a></li><li><a href="#fetching-across-a-relation">Fetching across a relation</a></li><li><a href="#not-loaded-is-not-empty">Not loaded is not empty</a></li><li><a href="#nested-collections-in-one-query">Nested collections in one query</a></li><li><a href="#keeping-only-the-first-few">Keeping only the first few</a></li><li><a href="#reading-a-table-alongside-the-collection">Reading a table alongside the collection</a></li><li><a href="#turning-a-plan-into-a-query">Turning a plan into a query</a></li><li><a href="#saying-what-a-collection-is-ordered-by">Saying what a collection is ordered by</a></li><li><a href="#running-a-plan">Running a plan</a></li><li><a href="#reading-one-table-more-than-once">Reading one table more than once</a></li><li><a href="#row-identity">Row identity</a></li></ul></nav></div><script type="module">document.addEventListener(`click`,e=>{let t=e.target?.closest(`[data-copy]`);if(!t)return;let n=(t.closest(`.code-shell`)?.querySelector(`pre`)?.textContent??``).replace(/\n$/,``);if(!n)return;let r=e=>{let n=t.querySelector(`[data-copy-label]`);n&&(n.textContent=e)};navigator.clipboard.writeText(n).then(()=>{t.dataset.copied=``,r(`Copied`),setTimeout(()=>{delete t.dataset.copied,r(`Copy`)},1600)},()=>r(`Press ⌘C`))});</script><script type="module" src="/pyoq-sql/_astro/CodeEditors.astro_astro_type_script_index_0_lang.C8S0YAI5.js"></script><script type="module" src="/pyoq-sql/_astro/Diagrams.astro_astro_type_script_index_0_lang.BNJty66e.js"></script></body></html>

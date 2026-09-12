@@ -1,0 +1,642 @@
+<!DOCTYPE html><html lang="en" data-appearance="light"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>pyoq.query expressions · PyOQ</title><meta name="description" content="Every comparison, operator and helper a column offers."><link rel="canonical" href="https://teqpod.com/pyoq-sql/api/query-expressions/"><meta name="robots" content="index, follow, max-image-preview:large"><meta name="theme-color" content="#1b6ef3"><link rel="sitemap" type="application/xml" href="/pyoq-sql/sitemap.xml"><meta property="og:type" content="article"><meta property="og:site_name" content="PyOQ"><meta property="og:locale" content="en"><meta property="og:title" content="pyoq.query expressions · PyOQ"><meta property="og:description" content="Every comparison, operator and helper a column offers."><meta property="og:url" content="https://teqpod.com/pyoq-sql/api/query-expressions/"><meta property="og:image" content="https://teqpod.com/pyoq-sql/brand/pyoq-banner.png"><meta property="og:image:type" content="image/png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="PyOQ, fully typed database-first SQL for Python"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="pyoq.query expressions · PyOQ"><meta name="twitter:description" content="Every comparison, operator and helper a column offers."><meta name="twitter:image" content="https://teqpod.com/pyoq-sql/brand/pyoq-banner.png"><link rel="icon" type="image/svg+xml" href="/pyoq-sql/brand/pyoq-mark.svg"><link rel="icon" type="image/png" sizes="32x32" href="/pyoq-sql/brand/pyoq-favicon-32.png"><link rel="apple-touch-icon" href="/pyoq-sql/brand/pyoq-mark-180.png"><script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://teqpod.com/pyoq-sql/#site","name":"PyOQ","url":"https://teqpod.com/pyoq-sql/","description":"A database-first SQL toolkit with generated types, explicit execution, and native acceleration for Python applications."},{"@type":"SoftwareApplication","@id":"https://teqpod.com/pyoq-sql/#project","name":"PyOQ","description":"A database-first SQL toolkit with generated types, explicit execution, and native acceleration for Python applications.","url":"https://teqpod.com/pyoq-sql/","sameAs":["https://pypi.org/project/pyoq-sql/"],"applicationCategory":"DeveloperApplication","operatingSystem":"Linux, macOS, Windows","programmingLanguage":"Python","license":"https://teqpod.com/pyoq-sql/licence/","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}},{"@type":"TechArticle","headline":"pyoq.query expressions · PyOQ","description":"Every comparison, operator and helper a column offers.","url":"https://teqpod.com/pyoq-sql/api/query-expressions/","image":"https://teqpod.com/pyoq-sql/brand/pyoq-banner.png","isPartOf":{"@id":"https://teqpod.com/pyoq-sql/#site"},"about":{"@id":"https://teqpod.com/pyoq-sql/#project"},"inLanguage":"en","articleSection":"APIs"}]}</script><script>
+  (() => {
+    let chosen = null;
+    try {
+      chosen = localStorage.getItem("pyoq-appearance");
+    } catch {}
+    const dark = matchMedia("(prefers-color-scheme: dark)").matches;
+    document.documentElement.dataset.appearance = chosen ?? (dark ? "dark" : "light");
+  })();
+</script><link rel="stylesheet" href="/pyoq-sql/_astro/app.CXhD3KCe.css"></head><body><a class="skip" href="#content">Skip to content</a><header class="bar"><a class="wordmark" href="/pyoq-sql/" aria-label="PyOQ documentation home"><img class="brand-image" src="/pyoq-sql/brand/pyoq-mark.svg" width="30" height="30" alt=""><span class="brand-name">PyOQ</span><span class="brand-context">docs</span></a><div class="search" data-pagefind-ignore><svg class="glass" viewBox="0 0 20 20" width="15" height="15" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.8" d="M8.5 14.5a6 6 0 1 1 0-12 6 6 0 0 1 0 12Zm4.5-1.5 4 4"></path></svg><input id="search" type="search" placeholder="Search the documentation" autocomplete="off" spellcheck="false" aria-label="Search the documentation" aria-expanded="false" aria-controls="results"><kbd>/</kbd><div id="results" role="listbox" hidden></div></div><script>(function(){const runtime = "/pyoq-sql/pagefind/pagefind.js";
+const baseUrl = "/pyoq-sql/";
+
+  const field = document.getElementById("search");
+  const panel = document.getElementById("results");
+  let engine = null;
+  let chosen = -1;
+
+  async function ready() {
+    if (engine) return engine;
+    try {
+      engine = await import(runtime);
+      await engine.options({ baseUrl, excerptLength: 24 });
+      await engine.init();
+    } catch {
+      engine = "unavailable";
+    }
+    return engine;
+  }
+
+  function close() {
+    panel.hidden = true;
+    field.setAttribute("aria-expanded", "false");
+    chosen = -1;
+  }
+
+  function draw(results) {
+    if (!results.length) {
+      panel.innerHTML = '<p class="none">Nothing matches that.</p>';
+    } else {
+      panel.innerHTML = results
+        .map((result) => {
+          const where = result.meta?.group ?? "Documentation";
+          const title = result.meta?.title ?? "Untitled";
+          return `<a role="option" href="${result.url}">
+            <span class="where">${where}</span>
+            <span class="what">${title}</span>
+            <span class="bit">${result.excerpt}</span>
+          </a>`;
+        })
+        .join("");
+    }
+    panel.hidden = false;
+    field.setAttribute("aria-expanded", "true");
+    chosen = -1;
+  }
+
+  let running = 0;
+  async function run() {
+    const wanted = field.value.trim();
+    if (!wanted) return close();
+    const engine = await ready();
+    if (engine === "unavailable") {
+      panel.innerHTML =
+        '<p class="none">Search is built with the site. Run <code>bun run build</code>.</p>';
+      panel.hidden = false;
+      return;
+    }
+    const token = ++running;
+    const found = await engine.search(wanted);
+    if (token !== running) return;
+    const top = await Promise.all(found.results.slice(0, 8).map((one) => one.data()));
+    if (token !== running) return;
+    draw(top);
+  }
+
+  function move(step) {
+    const links = panel.querySelectorAll("a");
+    if (!links.length) return;
+    chosen = (chosen + step + links.length) % links.length;
+    links.forEach((link, at) => link.classList.toggle("on", at === chosen));
+    links[chosen].scrollIntoView({ block: "nearest" });
+  }
+
+  let waiting;
+  field?.addEventListener("input", () => {
+    clearTimeout(waiting);
+    waiting = setTimeout(run, 120);
+  });
+  field?.addEventListener("focus", ready);
+
+  field?.addEventListener("keydown", (event) => {
+    if (event.key === "ArrowDown") {
+      event.preventDefault();
+      move(1);
+    } else if (event.key === "ArrowUp") {
+      event.preventDefault();
+      move(-1);
+    } else if (event.key === "Enter" && chosen >= 0) {
+      event.preventDefault();
+      panel.querySelectorAll("a")[chosen].click();
+    } else if (event.key === "Escape") {
+      field.blur();
+      close();
+    }
+  });
+
+  document.addEventListener("click", (event) => {
+    if (!panel.contains(event.target) && event.target !== field) close();
+  });
+
+  // "/" reaches the field from anywhere, which is where a reader goes first.
+  document.addEventListener("keydown", (event) => {
+    const typing = /^(INPUT|TEXTAREA)$/.test(document.activeElement?.tagName ?? "");
+    if (event.key === "/" && !typing) {
+      event.preventDefault();
+      field.focus();
+      field.select();
+    }
+  });
+})();</script><button id="appearance" type="button" aria-label="Switch appearance"><svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M10 2a8 8 0 1 0 0 16 8 8 0 0 0 0-16Zm0 1.6V16.4a6.4 6.4 0 0 1 0-12.8Z"></path></svg></button><script type="module">var e=document.documentElement;document.getElementById(`appearance`)?.addEventListener(`click`,()=>{let t=e.dataset.appearance===`dark`?`light`:`dark`;e.dataset.appearance=t;try{localStorage.setItem(`pyoq-appearance`,t)}catch{}});</script></header><div class="page"><nav class="side" aria-label="Documentation"><details class="side-toggle"><summary>Contents</summary></details><div class="side-body"><details class="side-group" data-group="Start here"><summary class="group" title="What this is, whether it suits you, and getting it running."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>Start here</summary><ul><li><a href="/pyoq-sql/overview/">What PyOQ is</a></li><li><a href="/pyoq-sql/when-to-use/">When to use what</a></li><li><a href="/pyoq-sql/installing/">Installing</a></li><li><a href="/pyoq-sql/generating/">Generating your types</a></li><li><a href="/pyoq-sql/first-query/">Your first query</a></li></ul></details><details class="side-group" data-group="For LLMs"><summary class="group" title="A compact project model and source map for coding agents."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>For LLMs</summary><ul><li><a href="/pyoq-sql/agents/">LLM agent guide</a></li></ul></details><details class="side-group" data-group="Reading"><summary class="group" title="Everything that ends in rows coming back."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>Reading</summary><ul><li><a href="/pyoq-sql/selecting/">Selecting rows</a></li><li><a href="/pyoq-sql/expressions/">Expressions and conditions</a></li><li><a href="/pyoq-sql/joins/">Joins and set operations</a></li><li><a href="/pyoq-sql/routines/">Stored routines</a></li><li><a href="/pyoq-sql/results/">Reading results</a></li></ul></details><details class="side-group" data-group="Writing"><summary class="group" title="Everything that changes what is in the database."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>Writing</summary><ul><li><a href="/pyoq-sql/inserting/">Inserting rows</a></li><li><a href="/pyoq-sql/updating/">Updating and deleting</a></li><li><a href="/pyoq-sql/conflicts/">Conflict resolution</a></li><li><a href="/pyoq-sql/bulk/">Bulk writes</a></li></ul></details><details class="side-group" data-group="Your data"><summary class="group" title="What the schema says, and how PyOQ reads it back."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>Your data</summary><ul><li><a href="/pyoq-sql/relations/">Relations</a></li><li><a href="/pyoq-sql/types/">Column types</a></li><li><a href="/pyoq-sql/snapshots/">Snapshots and drift</a></li><li><a href="/pyoq-sql/migrations/">Migration lifecycle</a></li></ul></details><details class="side-group" data-group="Running statements"><summary class="group" title="What happens between a built statement and a row."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>Running statements</summary><ul><li><a href="/pyoq-sql/connections/">Connections and pools</a></li><li><a href="/pyoq-sql/mysql-application/">MySQL without a framework</a></li><li><a href="/pyoq-sql/async/">Asynchronous execution</a></li><li><a href="/pyoq-sql/transactions/">Transactions and streaming</a></li><li><a href="/pyoq-sql/dialects/">Dialects</a></li><li><a href="/pyoq-sql/diagnostics/">Diagnostics</a></li><li><a href="/pyoq-sql/policies/">Policies</a></li><li><a href="/pyoq-sql/security/">Security</a></li><li><a href="/pyoq-sql/performance/">Performance</a></li></ul></details><details class="side-group" data-group="Frameworks"><summary class="group" title="Running inside something that already owns the connection."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>Frameworks</summary><ul><li><a href="/pyoq-sql/alembic/">Alembic</a></li><li><a href="/pyoq-sql/django/">Django</a></li><li><a href="/pyoq-sql/fastapi/">FastAPI</a></li><li><a href="/pyoq-sql/sanic/">Sanic</a></li><li><a href="/pyoq-sql/serving/">Standalone services</a></li></ul></details><details class="side-group" data-group="Reference"><summary class="group" title="The details, once you know what you are looking for."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>Reference</summary><ul><li><a href="/pyoq-sql/cli/">Command line</a></li><li><a href="/pyoq-sql/configuration/">Configuration</a></li><li><a href="/pyoq-sql/errors/">Errors</a></li><li><a href="/pyoq-sql/troubleshooting/">Troubleshooting</a></li><li><a href="/pyoq-sql/testing/">Testing applications</a></li><li><a href="/pyoq-sql/releasing/">Releasing</a></li><li><a href="/pyoq-sql/licence/">Licence</a></li></ul></details><details class="side-group" data-group="APIs" open><summary class="group" title="Every package, every name it exports, and what each one does."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>APIs</summary><ul><li><a href="/pyoq-sql/api/references/">All references</a></li><li><a href="/pyoq-sql/api/internals/">Internals</a></li><li><a href="/pyoq-sql/api/pyoq/">pyoq</a></li><li><a href="/pyoq-sql/api/commands/">pyoq commands</a></li><li><a href="/pyoq-sql/api/native/">pyoq._native</a></li><li><a href="/pyoq-sql/api/cli/">pyoq.cli</a></li><li><a href="/pyoq-sql/api/config/">pyoq.config</a></li><li><a href="/pyoq-sql/api/descriptors/">pyoq.descriptors</a></li><li><a href="/pyoq-sql/api/diagnostics/">pyoq.diagnostics</a></li><li><a href="/pyoq-sql/api/django/">pyoq.django</a></li><li><a href="/pyoq-sql/api/dsl/">pyoq.dsl</a></li><li><a href="/pyoq-sql/api/errors/">pyoq.errors</a></li><li><a href="/pyoq-sql/api/fastapi/">pyoq.fastapi</a></li><li><a href="/pyoq-sql/api/fetching/">pyoq.fetching</a></li><li><a href="/pyoq-sql/api/generation/">pyoq.generation</a></li><li><a href="/pyoq-sql/api/hydration/">pyoq.hydration</a></li><li><a href="/pyoq-sql/api/migrations/">pyoq.migrations</a></li><li><a href="/pyoq-sql/api/naming/">pyoq.naming</a></li><li><a href="/pyoq-sql/api/policies/">pyoq.policies</a></li><li><a href="/pyoq-sql/api/query/">pyoq.query</a></li><li><a href="/pyoq-sql/api/query-expressions/" class="active" aria-current="page">pyoq.query expressions</a></li><li><a href="/pyoq-sql/api/query-functions/">pyoq.query functions</a></li><li><a href="/pyoq-sql/api/query-execution/">pyoq.query.execution</a></li><li><a href="/pyoq-sql/api/query-mysql/">pyoq.query.mysql</a></li><li><a href="/pyoq-sql/api/query-postgres/">pyoq.query.postgres</a></li><li><a href="/pyoq-sql/api/query-sqlite/">pyoq.query.sqlite</a></li><li><a href="/pyoq-sql/api/relations/">pyoq.relations</a></li><li><a href="/pyoq-sql/api/runtime/">pyoq.runtime</a></li><li><a href="/pyoq-sql/api/sanic/">pyoq.sanic</a></li><li><a href="/pyoq-sql/api/schema/">pyoq.schema</a></li><li><a href="/pyoq-sql/api/schema-dialects/">pyoq.schema dialects</a></li><li><a href="/pyoq-sql/api/serving/">pyoq.serving</a></li><li><a href="/pyoq-sql/api/snapshots/">pyoq.snapshots</a></li><li><a href="/pyoq-sql/api/tracing/">pyoq.tracing</a></li></ul></details></div></nav><script type="module">var e=`pyoq-sidebar`;function t(){try{return JSON.parse(sessionStorage.getItem(e)??`{}`)}catch{return{}}}function n(t){try{sessionStorage.setItem(e,JSON.stringify(t))}catch{}}var r=document.querySelector(`.side`),i=[...document.querySelectorAll(`.side-group`)],a=t();for(let e of i){let t=e.dataset.group;t&&(t in a&&(e.open=a[t]),e.addEventListener(`toggle`,()=>{a[t]=e.open,n(a)}))}function o(){if(!r||r.scrollHeight<=r.clientHeight)return;let e=r.querySelector(`a.active`);if(!e)return;let t=r.getBoundingClientRect(),n=e.getBoundingClientRect();n.top>=t.top&&n.bottom<=t.bottom||(r.scrollTop+=n.top-t.top-r.clientHeight/2+n.height/2)}requestAnimationFrame(o);</script><main id="content" data-pagefind-body><p class="crumb" data-pagefind-meta="group:APIs">APIs</p><article><h1>pyoq.query expressions</h1><p class="lede" data-pagefind-ignore>Every comparison, operator and helper a column offers.</p><p>Everything on this page is a method of <code>Expression</code>, and every generated
+column is one. <code>TITLES.PRICE.gt(10)</code> is a <code>Condition</code>, which is what
+<code>where</code> and <code>having</code> take.</p>
+<div class="code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#AF00DB;--shiki-dark:#C586C0">from</span><span style="color:#000000;--shiki-dark:#D4D4D4"> decimal </span><span style="color:#AF00DB;--shiki-dark:#C586C0">import</span><span style="color:#000000;--shiki-dark:#D4D4D4"> Decimal</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">dsl.select(TITLES.NAME).from_(TITLES).where(</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">    TITLES.PRICE.gt(Decimal(</span><span style="color:#A31515;--shiki-dark:#CE9178">"10.00"</span><span style="color:#000000;--shiki-dark:#D4D4D4">)).and_(TITLES.NAME.starts_with(</span><span style="color:#A31515;--shiki-dark:#CE9178">"A"</span><span style="color:#000000;--shiki-dark:#D4D4D4">))</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">)</span></span></code></pre>
+<div class="monaco-host"></div></div>
+<p>A comparison returns a <code>Condition</code>; an operator returns another
+<code>Expression</code>, so they chain. Nothing here interpolates a value into SQL:
+every value becomes a bound parameter.</p>
+<h2 id="naming-and-ordering">Naming and ordering</h2>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Method</th><th>What it means</th></tr></thead><tbody><tr><td><code>as_(name)</code></td><td>Names the value in the result, which is what a row is keyed by.</td></tr><tr><td><code>asc()</code></td><td>Ascending order, as an order term.</td></tr><tr><td><code>desc()</code></td><td>Descending order.</td></tr></tbody></table>
+<h2 id="equality">Equality</h2>
+<p>Both sides must be the same family of type, so a text column cannot be compared with a number.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Method</th><th>What it means</th></tr></thead><tbody><tr><td><code>eq(other)</code></td><td>Equal to.</td></tr><tr><td><code>ne(other)</code></td><td>Not equal to.</td></tr><tr><td><code>is_distinct_from(other)</code></td><td>Differs, counting null as a value rather than as unknown.</td></tr><tr><td><code>is_not_distinct_from(other)</code></td><td>The same, counting two nulls as equal.</td></tr></tbody></table>
+<h2 id="ordering-comparisons">Ordering comparisons</h2>
+<p>Only for values with an order.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Method</th><th>What it means</th></tr></thead><tbody><tr><td><code>lt(other)</code></td><td>Less than.</td></tr><tr><td><code>le(other)</code></td><td>Less than or equal to.</td></tr><tr><td><code>gt(other)</code></td><td>Greater than.</td></tr><tr><td><code>ge(other)</code></td><td>Greater than or equal to.</td></tr><tr><td><code>between(lower, upper)</code></td><td>Within the two bounds, inclusive.</td></tr><tr><td><code>not_between(lower, upper)</code></td><td>Outside them.</td></tr></tbody></table>
+<h2 id="membership">Membership</h2>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Method</th><th>What it means</th></tr></thead><tbody><tr><td><code>in_(*values)</code></td><td>Equal to any of the values, which may be expressions or a subquery.</td></tr><tr><td><code>not_in(*values)</code></td><td>Equal to none of them.</td></tr></tbody></table>
+<h2 id="nulls-and-truth">Nulls and truth</h2>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Method</th><th>What it means</th></tr></thead><tbody><tr><td><code>is_null()</code></td><td>Holds no value.</td></tr><tr><td><code>is_not_null()</code></td><td>Holds one.</td></tr><tr><td><code>is_true()</code></td><td>True, distinguished from null.</td></tr><tr><td><code>is_false()</code></td><td>False, distinguished from null.</td></tr></tbody></table>
+<h2 id="text">Text</h2>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Method</th><th>What it means</th></tr></thead><tbody><tr><td><code>like(pattern)</code></td><td>Matches the pattern, in the database’s own <code>LIKE</code> syntax.</td></tr><tr><td><code>not_like(pattern)</code></td><td>Does not match it.</td></tr><tr><td><code>contains(value)</code></td><td>Contains the substring.</td></tr><tr><td><code>starts_with(value)</code></td><td>Begins with it.</td></tr><tr><td><code>ends_with(value)</code></td><td>Ends with it.</td></tr><tr><td><code>lower()</code></td><td>In lower case.</td></tr><tr><td><code>upper()</code></td><td>In upper case.</td></tr><tr><td><code>length()</code></td><td>How long the text is.</td></tr><tr><td><code>concat(other)</code></td><td>This value followed by the other.</td></tr></tbody></table>
+<h2 id="arithmetic">Arithmetic</h2>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Method</th><th>What it means</th></tr></thead><tbody><tr><td><code>add(other)</code></td><td>Sum.</td></tr><tr><td><code>subtract(other)</code></td><td>Difference.</td></tr><tr><td><code>multiply(other)</code></td><td>Product.</td></tr><tr><td><code>divide(other)</code></td><td>Quotient.</td></tr><tr><td><code>modulo(other)</code></td><td>Remainder.</td></tr><tr><td><code>negate()</code></td><td>The value with its sign reversed.</td></tr></tbody></table>
+<h2 id="dates-and-times">Dates and times</h2>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Method</th><th>What it means</th></tr></thead><tbody><tr><td><code>extract(part)</code></td><td>One part of a date or time, named by <code>DatePart</code>.</td></tr><tr><td><code>add_duration(duration)</code></td><td>This moment, later by a <code>timedelta</code>.</td></tr><tr><td><code>subtract_duration(duration)</code></td><td>Earlier by one.</td></tr><tr><td><code>difference(other)</code></td><td>The interval between two moments.</td></tr></tbody></table>
+<h2 id="arrays">Arrays</h2>
+<p>For a column whose values are arrays. Availability differs by dialect; a dialect that cannot express one refuses while the statement is being built.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Method</th><th>What it means</th></tr></thead><tbody><tr><td><code>has(value)</code></td><td>The array holds the value.</td></tr><tr><td><code>lacks(value)</code></td><td>It does not.</td></tr><tr><td><code>contains_all(values)</code></td><td>It holds every one of them.</td></tr><tr><td><code>contained_by(values)</code></td><td>Every element of it is among them.</td></tr><tr><td><code>overlaps(values)</code></td><td>The two share at least one element.</td></tr><tr><td><code>append(value)</code></td><td>The array with the value added at the end.</td></tr><tr><td><code>prepend(value)</code></td><td>With it added at the front.</td></tr><tr><td><code>concat_array(values)</code></td><td>The two arrays joined.</td></tr><tr><td><code>without(value)</code></td><td>With every occurrence of the value removed.</td></tr><tr><td><code>replacing(value, replacement)</code></td><td>With each occurrence swapped for another.</td></tr><tr><td><code>element(*position)</code></td><td>One element, by position, or nothing where there is none.</td></tr><tr><td><code>length_along(dimension)</code></td><td>How long the array is along one dimension.</td></tr><tr><td><code>dimensions()</code></td><td>How many dimensions it has.</td></tr></tbody></table>
+<h2 id="json">JSON</h2>
+<p>A path is given as the segments leading to it: <code>json_get("address", "city")</code>, and an integer segment indexes an array.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Method</th><th>What it means</th></tr></thead><tbody><tr><td><code>json_get(*path)</code></td><td>The value at the path, as JSON.</td></tr><tr><td><code>json_text(*path)</code></td><td>The value at the path, as text.</td></tr><tr><td><code>json_keys()</code></td><td>The keys the document holds.</td></tr><tr><td><code>json_length(*path)</code></td><td>How many entries are at the path.</td></tr><tr><td><code>json_has(*path)</code></td><td>Whether anything is at the path.</td></tr><tr><td><code>json_contains(value)</code></td><td>Whether the document contains the value.</td></tr><tr><td><code>json_set(*path, to=...)</code></td><td>The document with the path set, whether or not it was there.</td></tr><tr><td><code>json_insert(*path, to=...)</code></td><td>Set only where nothing was there.</td></tr><tr><td><code>json_replace(*path, to=...)</code></td><td>Set only where something was.</td></tr><tr><td><code>json_merge(value)</code></td><td>The two documents merged.</td></tr><tr><td><code>json_concat(value)</code></td><td>The two joined.</td></tr><tr><td><code>json_remove(*path)</code></td><td>The document without what was at the path.</td></tr></tbody></table>
+<h2 id="condition"><code>Condition</code></h2>
+<p>What a comparison returns, and what <code>where</code>, <code>having</code> and <code>on</code> take.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Method</th><th>What it means</th></tr></thead><tbody><tr><td><code>and_(other)</code></td><td>Both hold.</td></tr><tr><td><code>or_(other)</code></td><td>Either holds.</td></tr><tr><td><code>not_()</code></td><td>The negation.</td></tr></tbody></table>
+<p>Passing several conditions to <code>where</code> combines them with <code>and_</code> already, so
+<code>and_</code> is for the times a condition is built somewhere else.</p>
+<h2 id="rowvalue"><code>RowValue</code></h2>
+<p>Columns compared together, as wide as the tuples compared against them. Use
+<code>row(...)</code> to build one.</p>
+<div class="code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#AF00DB;--shiki-dark:#C586C0">from</span><span style="color:#000000;--shiki-dark:#D4D4D4"> pyoq.query </span><span style="color:#AF00DB;--shiki-dark:#C586C0">import</span><span style="color:#000000;--shiki-dark:#D4D4D4"> row</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">row(TITLES.PUBLISHER_ID, TITLES.NAME).in_((</span><span style="color:#098658;--shiki-dark:#B5CEA8">1</span><span style="color:#000000;--shiki-dark:#D4D4D4">, </span><span style="color:#A31515;--shiki-dark:#CE9178">"Dune"</span><span style="color:#000000;--shiki-dark:#D4D4D4">), (</span><span style="color:#098658;--shiki-dark:#B5CEA8">2</span><span style="color:#000000;--shiki-dark:#D4D4D4">, </span><span style="color:#A31515;--shiki-dark:#CE9178">"Emma"</span><span style="color:#000000;--shiki-dark:#D4D4D4">))</span></span></code></pre>
+<div class="monaco-host"></div></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Method</th><th>What it means</th></tr></thead><tbody><tr><td><code>eq(values)</code></td><td>The row equals the tuple.</td></tr><tr><td><code>ne(values)</code></td><td>It does not.</td></tr><tr><td><code>lt(values)</code>, <code>le(values)</code>, <code>gt(values)</code>, <code>ge(values)</code></td><td>Ordered comparison, left to right.</td></tr><tr><td><code>in_(*rows)</code></td><td>The row is one of those given.</td></tr><tr><td><code>not_in(*rows)</code></td><td>It is none of them.</td></tr></tbody></table>
+<h2 id="casebuilder-and-casebranches"><code>CaseBuilder</code> and <code>CaseBranches</code></h2>
+<p>A case with no branches is not a value yet, so <code>case()</code> returns a
+<code>CaseBuilder</code> and only <code>when</code> makes it one.</p>
+<div class="code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#AF00DB;--shiki-dark:#C586C0">from</span><span style="color:#000000;--shiki-dark:#D4D4D4"> pyoq.query </span><span style="color:#AF00DB;--shiki-dark:#C586C0">import</span><span style="color:#000000;--shiki-dark:#D4D4D4"> case</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#AF00DB;--shiki-dark:#C586C0">case</span><span style="color:#000000;--shiki-dark:#D4D4D4">().when(TITLES.PRICE.gt(</span><span style="color:#098658;--shiki-dark:#B5CEA8">20</span><span style="color:#000000;--shiki-dark:#D4D4D4">), </span><span style="color:#A31515;--shiki-dark:#CE9178">"dear"</span><span style="color:#000000;--shiki-dark:#D4D4D4">).otherwise(</span><span style="color:#A31515;--shiki-dark:#CE9178">"cheap"</span><span style="color:#000000;--shiki-dark:#D4D4D4">)</span></span></code></pre>
+<div class="monaco-host"></div></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Method</th><th>On</th><th>What it does</th></tr></thead><tbody><tr><td><code>when(condition, result)</code></td><td>both</td><td>Adds a branch, and fixes the type the whole case answers.</td></tr><tr><td><code>otherwise(result)</code></td><td><code>CaseBranches</code></td><td>The value when no branch matched. The case cannot be null.</td></tr><tr><td><code>end()</code></td><td><code>CaseBranches</code></td><td>Ends without a fallback, so the case may be null.</td></tr></tbody></table>
+<h2 id="windows">Windows</h2>
+<p>A window function means nothing until it is given a window to look through.</p>
+<div class="code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#AF00DB;--shiki-dark:#C586C0">from</span><span style="color:#000000;--shiki-dark:#D4D4D4"> pyoq.query </span><span style="color:#AF00DB;--shiki-dark:#C586C0">import</span><span style="color:#000000;--shiki-dark:#D4D4D4"> rank</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">rank().over().partition_by(TITLES.PUBLISHER_ID).order_by(TITLES.PRICE.desc())</span></span></code></pre>
+<div class="monaco-host"></div></div>
+<p><code>WindowFunction.over(window=None)</code> and <code>AggregateExpression.over(window=None)</code>
+both return a <code>Window</code>, which is already usable and which these refine:</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Method</th><th>What it does</th></tr></thead><tbody><tr><td><code>partition_by(*expressions)</code></td><td>Restarts the function for each group.</td></tr><tr><td><code>order_by(*terms)</code></td><td>The order within a partition.</td></tr><tr><td><code>rows(start, end=None)</code></td><td>A frame counted in rows.</td></tr><tr><td><code>range_(start, end=None)</code></td><td>A frame counted in values.</td></tr><tr><td><code>groups(start, end=None)</code></td><td>A frame counted in peer groups.</td></tr><tr><td><code>exclude(exclusion)</code></td><td>Leaves part of the frame out, named by <code>FrameExclusion</code>.</td></tr></tbody></table>
+<p>Frame edges come from <code>preceding</code>, <code>following</code>, <code>current_row</code>,
+<code>unbounded_preceding</code> and <code>unbounded_following</code>. See
+<a href="../query-functions/">functions</a> for those.</p></article><nav class="pager" aria-label="Neighbouring pages"><a class="previous" href="/pyoq-sql/api/query/"><span>Previous</span>pyoq.query</a><a class="next" href="/pyoq-sql/api/query-functions/"><span>Next</span>pyoq.query functions</a></nav><footer class="page-footer"><p>PyOQ is released under the <a href="/pyoq-sql/licence/" rel="license">MPL-2.0</a> licence.</p></footer></main><nav class="contents" aria-label="On this page"><p>On this page</p><ul><li><a href="#naming-and-ordering">Naming and ordering</a></li><li><a href="#equality">Equality</a></li><li><a href="#ordering-comparisons">Ordering comparisons</a></li><li><a href="#membership">Membership</a></li><li><a href="#nulls-and-truth">Nulls and truth</a></li><li><a href="#text">Text</a></li><li><a href="#arithmetic">Arithmetic</a></li><li><a href="#dates-and-times">Dates and times</a></li><li><a href="#arrays">Arrays</a></li><li><a href="#json">JSON</a></li><li><a href="#condition">Condition</a></li><li><a href="#rowvalue">RowValue</a></li><li><a href="#casebuilder-and-casebranches">CaseBuilder and CaseBranches</a></li><li><a href="#windows">Windows</a></li></ul></nav></div><script type="module">document.addEventListener(`click`,e=>{let t=e.target?.closest(`[data-copy]`);if(!t)return;let n=(t.closest(`.code-shell`)?.querySelector(`pre`)?.textContent??``).replace(/\n$/,``);if(!n)return;let r=e=>{let n=t.querySelector(`[data-copy-label]`);n&&(n.textContent=e)};navigator.clipboard.writeText(n).then(()=>{t.dataset.copied=``,r(`Copied`),setTimeout(()=>{delete t.dataset.copied,r(`Copy`)},1600)},()=>r(`Press ⌘C`))});</script><script type="module" src="/pyoq-sql/_astro/CodeEditors.astro_astro_type_script_index_0_lang.C8S0YAI5.js"></script><script type="module" src="/pyoq-sql/_astro/Diagrams.astro_astro_type_script_index_0_lang.BNJty66e.js"></script></body></html>

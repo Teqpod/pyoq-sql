@@ -1,0 +1,224 @@
+<!DOCTYPE html><html lang="en" data-appearance="light"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Snapshots and drift · PyOQ</title><meta name="description" content="Recording what the database holds, and noticing when it moves."><link rel="canonical" href="https://teqpod.com/pyoq-sql/snapshots/"><meta name="robots" content="index, follow, max-image-preview:large"><meta name="theme-color" content="#1b6ef3"><link rel="sitemap" type="application/xml" href="/pyoq-sql/sitemap.xml"><meta property="og:type" content="article"><meta property="og:site_name" content="PyOQ"><meta property="og:locale" content="en"><meta property="og:title" content="Snapshots and drift · PyOQ"><meta property="og:description" content="Recording what the database holds, and noticing when it moves."><meta property="og:url" content="https://teqpod.com/pyoq-sql/snapshots/"><meta property="og:image" content="https://teqpod.com/pyoq-sql/brand/pyoq-banner.png"><meta property="og:image:type" content="image/png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="PyOQ, fully typed database-first SQL for Python"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Snapshots and drift · PyOQ"><meta name="twitter:description" content="Recording what the database holds, and noticing when it moves."><meta name="twitter:image" content="https://teqpod.com/pyoq-sql/brand/pyoq-banner.png"><link rel="icon" type="image/svg+xml" href="/pyoq-sql/brand/pyoq-mark.svg"><link rel="icon" type="image/png" sizes="32x32" href="/pyoq-sql/brand/pyoq-favicon-32.png"><link rel="apple-touch-icon" href="/pyoq-sql/brand/pyoq-mark-180.png"><script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://teqpod.com/pyoq-sql/#site","name":"PyOQ","url":"https://teqpod.com/pyoq-sql/","description":"A database-first SQL toolkit with generated types, explicit execution, and native acceleration for Python applications."},{"@type":"SoftwareApplication","@id":"https://teqpod.com/pyoq-sql/#project","name":"PyOQ","description":"A database-first SQL toolkit with generated types, explicit execution, and native acceleration for Python applications.","url":"https://teqpod.com/pyoq-sql/","sameAs":["https://pypi.org/project/pyoq-sql/"],"applicationCategory":"DeveloperApplication","operatingSystem":"Linux, macOS, Windows","programmingLanguage":"Python","license":"https://teqpod.com/pyoq-sql/licence/","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}},{"@type":"TechArticle","headline":"Snapshots and drift · PyOQ","description":"Recording what the database holds, and noticing when it moves.","url":"https://teqpod.com/pyoq-sql/snapshots/","image":"https://teqpod.com/pyoq-sql/brand/pyoq-banner.png","isPartOf":{"@id":"https://teqpod.com/pyoq-sql/#site"},"about":{"@id":"https://teqpod.com/pyoq-sql/#project"},"inLanguage":"en","articleSection":"Your data"}]}</script><script>
+  (() => {
+    let chosen = null;
+    try {
+      chosen = localStorage.getItem("pyoq-appearance");
+    } catch {}
+    const dark = matchMedia("(prefers-color-scheme: dark)").matches;
+    document.documentElement.dataset.appearance = chosen ?? (dark ? "dark" : "light");
+  })();
+</script><link rel="stylesheet" href="/pyoq-sql/_astro/app.CXhD3KCe.css"></head><body><a class="skip" href="#content">Skip to content</a><header class="bar"><a class="wordmark" href="/pyoq-sql/" aria-label="PyOQ documentation home"><img class="brand-image" src="/pyoq-sql/brand/pyoq-mark.svg" width="30" height="30" alt=""><span class="brand-name">PyOQ</span><span class="brand-context">docs</span></a><div class="search" data-pagefind-ignore><svg class="glass" viewBox="0 0 20 20" width="15" height="15" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.8" d="M8.5 14.5a6 6 0 1 1 0-12 6 6 0 0 1 0 12Zm4.5-1.5 4 4"></path></svg><input id="search" type="search" placeholder="Search the documentation" autocomplete="off" spellcheck="false" aria-label="Search the documentation" aria-expanded="false" aria-controls="results"><kbd>/</kbd><div id="results" role="listbox" hidden></div></div><script>(function(){const runtime = "/pyoq-sql/pagefind/pagefind.js";
+const baseUrl = "/pyoq-sql/";
+
+  const field = document.getElementById("search");
+  const panel = document.getElementById("results");
+  let engine = null;
+  let chosen = -1;
+
+  async function ready() {
+    if (engine) return engine;
+    try {
+      engine = await import(runtime);
+      await engine.options({ baseUrl, excerptLength: 24 });
+      await engine.init();
+    } catch {
+      engine = "unavailable";
+    }
+    return engine;
+  }
+
+  function close() {
+    panel.hidden = true;
+    field.setAttribute("aria-expanded", "false");
+    chosen = -1;
+  }
+
+  function draw(results) {
+    if (!results.length) {
+      panel.innerHTML = '<p class="none">Nothing matches that.</p>';
+    } else {
+      panel.innerHTML = results
+        .map((result) => {
+          const where = result.meta?.group ?? "Documentation";
+          const title = result.meta?.title ?? "Untitled";
+          return `<a role="option" href="${result.url}">
+            <span class="where">${where}</span>
+            <span class="what">${title}</span>
+            <span class="bit">${result.excerpt}</span>
+          </a>`;
+        })
+        .join("");
+    }
+    panel.hidden = false;
+    field.setAttribute("aria-expanded", "true");
+    chosen = -1;
+  }
+
+  let running = 0;
+  async function run() {
+    const wanted = field.value.trim();
+    if (!wanted) return close();
+    const engine = await ready();
+    if (engine === "unavailable") {
+      panel.innerHTML =
+        '<p class="none">Search is built with the site. Run <code>bun run build</code>.</p>';
+      panel.hidden = false;
+      return;
+    }
+    const token = ++running;
+    const found = await engine.search(wanted);
+    if (token !== running) return;
+    const top = await Promise.all(found.results.slice(0, 8).map((one) => one.data()));
+    if (token !== running) return;
+    draw(top);
+  }
+
+  function move(step) {
+    const links = panel.querySelectorAll("a");
+    if (!links.length) return;
+    chosen = (chosen + step + links.length) % links.length;
+    links.forEach((link, at) => link.classList.toggle("on", at === chosen));
+    links[chosen].scrollIntoView({ block: "nearest" });
+  }
+
+  let waiting;
+  field?.addEventListener("input", () => {
+    clearTimeout(waiting);
+    waiting = setTimeout(run, 120);
+  });
+  field?.addEventListener("focus", ready);
+
+  field?.addEventListener("keydown", (event) => {
+    if (event.key === "ArrowDown") {
+      event.preventDefault();
+      move(1);
+    } else if (event.key === "ArrowUp") {
+      event.preventDefault();
+      move(-1);
+    } else if (event.key === "Enter" && chosen >= 0) {
+      event.preventDefault();
+      panel.querySelectorAll("a")[chosen].click();
+    } else if (event.key === "Escape") {
+      field.blur();
+      close();
+    }
+  });
+
+  document.addEventListener("click", (event) => {
+    if (!panel.contains(event.target) && event.target !== field) close();
+  });
+
+  // "/" reaches the field from anywhere, which is where a reader goes first.
+  document.addEventListener("keydown", (event) => {
+    const typing = /^(INPUT|TEXTAREA)$/.test(document.activeElement?.tagName ?? "");
+    if (event.key === "/" && !typing) {
+      event.preventDefault();
+      field.focus();
+      field.select();
+    }
+  });
+})();</script><button id="appearance" type="button" aria-label="Switch appearance"><svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M10 2a8 8 0 1 0 0 16 8 8 0 0 0 0-16Zm0 1.6V16.4a6.4 6.4 0 0 1 0-12.8Z"></path></svg></button><script type="module">var e=document.documentElement;document.getElementById(`appearance`)?.addEventListener(`click`,()=>{let t=e.dataset.appearance===`dark`?`light`:`dark`;e.dataset.appearance=t;try{localStorage.setItem(`pyoq-appearance`,t)}catch{}});</script></header><div class="page"><nav class="side" aria-label="Documentation"><details class="side-toggle"><summary>Contents</summary></details><div class="side-body"><details class="side-group" data-group="Start here"><summary class="group" title="What this is, whether it suits you, and getting it running."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>Start here</summary><ul><li><a href="/pyoq-sql/overview/">What PyOQ is</a></li><li><a href="/pyoq-sql/when-to-use/">When to use what</a></li><li><a href="/pyoq-sql/installing/">Installing</a></li><li><a href="/pyoq-sql/generating/">Generating your types</a></li><li><a href="/pyoq-sql/first-query/">Your first query</a></li></ul></details><details class="side-group" data-group="For LLMs"><summary class="group" title="A compact project model and source map for coding agents."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>For LLMs</summary><ul><li><a href="/pyoq-sql/agents/">LLM agent guide</a></li></ul></details><details class="side-group" data-group="Reading"><summary class="group" title="Everything that ends in rows coming back."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>Reading</summary><ul><li><a href="/pyoq-sql/selecting/">Selecting rows</a></li><li><a href="/pyoq-sql/expressions/">Expressions and conditions</a></li><li><a href="/pyoq-sql/joins/">Joins and set operations</a></li><li><a href="/pyoq-sql/routines/">Stored routines</a></li><li><a href="/pyoq-sql/results/">Reading results</a></li></ul></details><details class="side-group" data-group="Writing"><summary class="group" title="Everything that changes what is in the database."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>Writing</summary><ul><li><a href="/pyoq-sql/inserting/">Inserting rows</a></li><li><a href="/pyoq-sql/updating/">Updating and deleting</a></li><li><a href="/pyoq-sql/conflicts/">Conflict resolution</a></li><li><a href="/pyoq-sql/bulk/">Bulk writes</a></li></ul></details><details class="side-group" data-group="Your data" open><summary class="group" title="What the schema says, and how PyOQ reads it back."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>Your data</summary><ul><li><a href="/pyoq-sql/relations/">Relations</a></li><li><a href="/pyoq-sql/types/">Column types</a></li><li><a href="/pyoq-sql/snapshots/" class="active" aria-current="page">Snapshots and drift</a></li><li><a href="/pyoq-sql/migrations/">Migration lifecycle</a></li></ul></details><details class="side-group" data-group="Running statements"><summary class="group" title="What happens between a built statement and a row."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>Running statements</summary><ul><li><a href="/pyoq-sql/connections/">Connections and pools</a></li><li><a href="/pyoq-sql/mysql-application/">MySQL without a framework</a></li><li><a href="/pyoq-sql/async/">Asynchronous execution</a></li><li><a href="/pyoq-sql/transactions/">Transactions and streaming</a></li><li><a href="/pyoq-sql/dialects/">Dialects</a></li><li><a href="/pyoq-sql/diagnostics/">Diagnostics</a></li><li><a href="/pyoq-sql/policies/">Policies</a></li><li><a href="/pyoq-sql/security/">Security</a></li><li><a href="/pyoq-sql/performance/">Performance</a></li></ul></details><details class="side-group" data-group="Frameworks"><summary class="group" title="Running inside something that already owns the connection."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>Frameworks</summary><ul><li><a href="/pyoq-sql/alembic/">Alembic</a></li><li><a href="/pyoq-sql/django/">Django</a></li><li><a href="/pyoq-sql/fastapi/">FastAPI</a></li><li><a href="/pyoq-sql/sanic/">Sanic</a></li><li><a href="/pyoq-sql/serving/">Standalone services</a></li></ul></details><details class="side-group" data-group="Reference"><summary class="group" title="The details, once you know what you are looking for."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>Reference</summary><ul><li><a href="/pyoq-sql/cli/">Command line</a></li><li><a href="/pyoq-sql/configuration/">Configuration</a></li><li><a href="/pyoq-sql/errors/">Errors</a></li><li><a href="/pyoq-sql/troubleshooting/">Troubleshooting</a></li><li><a href="/pyoq-sql/testing/">Testing applications</a></li><li><a href="/pyoq-sql/releasing/">Releasing</a></li><li><a href="/pyoq-sql/licence/">Licence</a></li></ul></details><details class="side-group" data-group="APIs"><summary class="group" title="Every package, every name it exports, and what each one does."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>APIs</summary><ul><li><a href="/pyoq-sql/api/references/">All references</a></li><li><a href="/pyoq-sql/api/internals/">Internals</a></li><li><a href="/pyoq-sql/api/pyoq/">pyoq</a></li><li><a href="/pyoq-sql/api/commands/">pyoq commands</a></li><li><a href="/pyoq-sql/api/native/">pyoq._native</a></li><li><a href="/pyoq-sql/api/cli/">pyoq.cli</a></li><li><a href="/pyoq-sql/api/config/">pyoq.config</a></li><li><a href="/pyoq-sql/api/descriptors/">pyoq.descriptors</a></li><li><a href="/pyoq-sql/api/diagnostics/">pyoq.diagnostics</a></li><li><a href="/pyoq-sql/api/django/">pyoq.django</a></li><li><a href="/pyoq-sql/api/dsl/">pyoq.dsl</a></li><li><a href="/pyoq-sql/api/errors/">pyoq.errors</a></li><li><a href="/pyoq-sql/api/fastapi/">pyoq.fastapi</a></li><li><a href="/pyoq-sql/api/fetching/">pyoq.fetching</a></li><li><a href="/pyoq-sql/api/generation/">pyoq.generation</a></li><li><a href="/pyoq-sql/api/hydration/">pyoq.hydration</a></li><li><a href="/pyoq-sql/api/migrations/">pyoq.migrations</a></li><li><a href="/pyoq-sql/api/naming/">pyoq.naming</a></li><li><a href="/pyoq-sql/api/policies/">pyoq.policies</a></li><li><a href="/pyoq-sql/api/query/">pyoq.query</a></li><li><a href="/pyoq-sql/api/query-expressions/">pyoq.query expressions</a></li><li><a href="/pyoq-sql/api/query-functions/">pyoq.query functions</a></li><li><a href="/pyoq-sql/api/query-execution/">pyoq.query.execution</a></li><li><a href="/pyoq-sql/api/query-mysql/">pyoq.query.mysql</a></li><li><a href="/pyoq-sql/api/query-postgres/">pyoq.query.postgres</a></li><li><a href="/pyoq-sql/api/query-sqlite/">pyoq.query.sqlite</a></li><li><a href="/pyoq-sql/api/relations/">pyoq.relations</a></li><li><a href="/pyoq-sql/api/runtime/">pyoq.runtime</a></li><li><a href="/pyoq-sql/api/sanic/">pyoq.sanic</a></li><li><a href="/pyoq-sql/api/schema/">pyoq.schema</a></li><li><a href="/pyoq-sql/api/schema-dialects/">pyoq.schema dialects</a></li><li><a href="/pyoq-sql/api/serving/">pyoq.serving</a></li><li><a href="/pyoq-sql/api/snapshots/">pyoq.snapshots</a></li><li><a href="/pyoq-sql/api/tracing/">pyoq.tracing</a></li></ul></details></div></nav><script type="module">var e=`pyoq-sidebar`;function t(){try{return JSON.parse(sessionStorage.getItem(e)??`{}`)}catch{return{}}}function n(t){try{sessionStorage.setItem(e,JSON.stringify(t))}catch{}}var r=document.querySelector(`.side`),i=[...document.querySelectorAll(`.side-group`)],a=t();for(let e of i){let t=e.dataset.group;t&&(t in a&&(e.open=a[t]),e.addEventListener(`toggle`,()=>{a[t]=e.open,n(a)}))}function o(){if(!r||r.scrollHeight<=r.clientHeight)return;let e=r.querySelector(`a.active`);if(!e)return;let t=r.getBoundingClientRect(),n=e.getBoundingClientRect();n.top>=t.top&&n.bottom<=t.bottom||(r.scrollTop+=n.top-t.top-r.clientHeight/2+n.height/2)}requestAnimationFrame(o);</script><main id="content" data-pagefind-body><p class="crumb" data-pagefind-meta="group:Your data">Your data</p><article><h1>Snapshots and drift</h1><p class="lede" data-pagefind-ignore>Recording what the database holds, and noticing when it moves.</p><p>A snapshot is the one record of what a database holds. Written to a file it
+becomes something you can read in a diff, and something PyOQ can generate from
+when there is no database to connect to.</p>
+<h2 id="record-the-schema">Record the schema</h2>
+<p>Tell PyOQ where the record lives, then write it.</p>
+<div class="code-shell" data-lang="toml"><div class="code-head"><span class="code-lang">Configuration</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Configuration code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="toml"><code><span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">[tool.pyoq]</span></span>
+<span class="line"><span style="color:#001080;--shiki-dark:#9CDCFE">schema-snapshot</span><span style="color:#000000;--shiki-dark:#D4D4D4"> = </span><span style="color:#A31515;--shiki-dark:#CE9178">"schema.json"</span></span></code></pre>
+<div class="monaco-host"></div></div>
+<p>That is the flat-layout form. Profile layout keeps each record beside the
+profile it describes:</p>
+<div class="code-shell" data-lang="toml"><div class="code-head"><span class="code-lang">Configuration</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Configuration code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="toml"><code><span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">[tool.pyoq]</span></span>
+<span class="line"><span style="color:#001080;--shiki-dark:#9CDCFE">codegen-layout</span><span style="color:#000000;--shiki-dark:#D4D4D4"> = </span><span style="color:#A31515;--shiki-dark:#CE9178">"profiles"</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">[tool.pyoq.profiles.default]</span></span>
+<span class="line"><span style="color:#001080;--shiki-dark:#9CDCFE">dialect</span><span style="color:#000000;--shiki-dark:#D4D4D4"> = </span><span style="color:#A31515;--shiki-dark:#CE9178">"mysql"</span></span>
+<span class="line"><span style="color:#001080;--shiki-dark:#9CDCFE">schema-snapshot</span><span style="color:#000000;--shiki-dark:#D4D4D4"> = </span><span style="color:#A31515;--shiki-dark:#CE9178">"schemas/database.json"</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">[tool.pyoq.profiles.analytics]</span></span>
+<span class="line"><span style="color:#001080;--shiki-dark:#9CDCFE">dialect</span><span style="color:#000000;--shiki-dark:#D4D4D4"> = </span><span style="color:#A31515;--shiki-dark:#CE9178">"postgres"</span></span>
+<span class="line"><span style="color:#001080;--shiki-dark:#9CDCFE">schema-snapshot</span><span style="color:#000000;--shiki-dark:#D4D4D4"> = </span><span style="color:#A31515;--shiki-dark:#CE9178">"schemas/analytics.json"</span></span></code></pre>
+<div class="monaco-host"></div></div>
+<div class="code-shell" data-lang="bash" data-terminal=""><div class="code-head"><span class="code-lang">Terminal</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Terminal code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#795E26;--shiki-dark:#DCDCAA">pyoq</span><span style="color:#A31515;--shiki-dark:#CE9178"> snapshot</span></span></code></pre>
+<div class="monaco-host"></div></div>
+<p>Recording the same database twice writes the same bytes, so the file changes
+only when the schema does. That is what makes it worth reviewing: a diff on it
+is a diff of your schema, not of the order a catalog happened to answer in.</p>
+<p>The file is written beside its destination and moved into place, so a reader
+never sees half a snapshot, and a write that fails leaves the previous record
+exactly as it was.</p>
+<h2 id="generate-without-a-database">Generate without a database</h2>
+<p>With <code>schema-snapshot</code> set, generation reads the file instead of connecting.</p>
+<div class="code-shell" data-lang="bash" data-terminal=""><div class="code-head"><span class="code-lang">Terminal</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Terminal code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#795E26;--shiki-dark:#DCDCAA">pyoq</span><span style="color:#A31515;--shiki-dark:#CE9178"> generate</span></span></code></pre>
+<div class="monaco-host"></div></div>
+<p>Nothing else changes. The same pipeline serves both, and it does not know
+which one it got. This is what lets a continuous integration job check that
+the generated package is current without credentials, without a database, and
+without writing anything:</p>
+<div class="code-shell" data-lang="bash" data-terminal=""><div class="code-head"><span class="code-lang">Terminal</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Terminal code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#795E26;--shiki-dark:#DCDCAA">pyoq</span><span style="color:#A31515;--shiki-dark:#CE9178"> generate</span><span style="color:#0000FF;--shiki-dark:#569CD6"> --check</span></span>
+<span class="line"><span style="color:#795E26;--shiki-dark:#DCDCAA">pyoq</span><span style="color:#A31515;--shiki-dark:#CE9178"> generate</span><span style="color:#0000FF;--shiki-dark:#569CD6"> --all-profiles</span><span style="color:#0000FF;--shiki-dark:#569CD6"> --check</span></span></code></pre>
+<div class="monaco-host"></div></div>
+<p>That command reads. It does not repair what it finds.</p>
+<h2 id="notice-when-the-schema-moves">Notice when the schema moves</h2>
+<div class="code-shell" data-lang="bash" data-terminal=""><div class="code-head"><span class="code-lang">Terminal</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Terminal code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#795E26;--shiki-dark:#DCDCAA">pyoq</span><span style="color:#A31515;--shiki-dark:#CE9178"> drift</span></span></code></pre>
+<div class="monaco-host"></div></div>
+<p>The answer is in terms of the schema, not of the file, so it names the column
+that moved rather than the line that differs.</p>
+<div class="code-shell" data-lang="text"><div class="code-head"><span class="code-lang">Text</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Text code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="text"><code><span class="line"><span>1 schema difference(s): added column warehouse.public.parts.weight</span></span></code></pre>
+<div class="monaco-host"></div></div>
+<p>Things are matched by name and then by value. A renamed table therefore reads
+as one removed and one added, rather than as a change to something that is no
+longer there.</p>
+<p><code>pyoq drift</code> exits non-zero when the record and the database disagree, so it
+sits in the same place in a pipeline as any other check.</p>
+<h2 id="after-a-migration">After a migration</h2>
+<p>A migration changes the schema. That makes two things wrong at once: the
+generated package is stale, and the recorded snapshot describes a database
+that no longer exists. One call puts both back in step:</p>
+<div class="code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#AF00DB;--shiki-dark:#C586C0">from</span><span style="color:#000000;--shiki-dark:#D4D4D4"> pyoq.migrations </span><span style="color:#AF00DB;--shiki-dark:#C586C0">import</span><span style="color:#000000;--shiki-dark:#D4D4D4"> after_migration_at</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">after_migration_at(project_root)</span></span></code></pre>
+<div class="monaco-host"></div></div>
+<p>The snapshot is written first and the package is generated second. The other
+order would generate from the schema that has just been replaced.</p>
+<p>If you already hold a <code>Configuration</code>, call <code>after_migration</code> with it instead.
+The <a href="../migrations/">Migration lifecycle</a> guide shows where this belongs in
+Django, Alembic, and deployment workflows.</p>
+<h2 id="what-a-comparison-looks-at">What a comparison looks at</h2>
+<p>Every fact a snapshot records is compared, not only its columns. A key, a
+relation, an index, a check, a comment, a piece of metadata and the
+capabilities the database reported are all part of the recorded schema, and a
+change to any of them is drift.</p>
+<p>Named things are reported by name, so a key that appeared is reported as that
+key. Everything else a container holds is reported as the container, because
+a comment on a table has no name of its own to give.</p>
+<p>The comparison works by standing a container’s named children aside and
+comparing what is left, rather than by checking a written list of attributes.
+A fact added to the schema model is therefore compared from the day it exists,
+which is what keeps the check exhaustive as the model grows.</p>
+<h2 id="what-a-failed-recording-leaves">What a failed recording leaves</h2>
+<p>A snapshot is written beside where it is going and moved into place, so a
+reader never sees half of one and the snapshot already there survives a
+failure byte for byte.</p>
+<p>A recording can fail while the staged file is being written, while it is being
+closed, or as it is moved. Whichever it is, the staged file goes with it, so a
+failure leaves the directory as it found it rather than beside a partial file
+nobody will claim. A cleanup that cannot happen either is not allowed to
+replace the reason the recording failed.</p>
+<h2 id="where-a-snapshot-may-be-written">Where a snapshot may be written</h2>
+<p><code>schema-snapshot</code> is relative to the project root and has to stay inside it.
+An absolute path, a path that climbs out with <code>..</code>, and a symbolic link that
+points out of the project are all refused when the configuration is read,
+because recording a schema writes and replaces a file and that file belongs to
+the project. It is the same rule the generated directory and a SQLite database
+path are held to.</p>
+<p>In profile layout the same containment rule applies to every profile’s
+snapshot. A top-level snapshot is refused there because it would leave several
+databases sharing one ambiguous record.</p></article><nav class="pager" aria-label="Neighbouring pages"><a class="previous" href="/pyoq-sql/types/"><span>Previous</span>Column types</a><a class="next" href="/pyoq-sql/migrations/"><span>Next</span>Migration lifecycle</a></nav><footer class="page-footer"><p>PyOQ is released under the <a href="/pyoq-sql/licence/" rel="license">MPL-2.0</a> licence.</p></footer></main><nav class="contents" aria-label="On this page"><p>On this page</p><ul><li><a href="#record-the-schema">Record the schema</a></li><li><a href="#generate-without-a-database">Generate without a database</a></li><li><a href="#notice-when-the-schema-moves">Notice when the schema moves</a></li><li><a href="#after-a-migration">After a migration</a></li><li><a href="#what-a-comparison-looks-at">What a comparison looks at</a></li><li><a href="#what-a-failed-recording-leaves">What a failed recording leaves</a></li><li><a href="#where-a-snapshot-may-be-written">Where a snapshot may be written</a></li></ul></nav></div><script type="module">document.addEventListener(`click`,e=>{let t=e.target?.closest(`[data-copy]`);if(!t)return;let n=(t.closest(`.code-shell`)?.querySelector(`pre`)?.textContent??``).replace(/\n$/,``);if(!n)return;let r=e=>{let n=t.querySelector(`[data-copy-label]`);n&&(n.textContent=e)};navigator.clipboard.writeText(n).then(()=>{t.dataset.copied=``,r(`Copied`),setTimeout(()=>{delete t.dataset.copied,r(`Copy`)},1600)},()=>r(`Press ⌘C`))});</script><script type="module" src="/pyoq-sql/_astro/CodeEditors.astro_astro_type_script_index_0_lang.C8S0YAI5.js"></script><script type="module" src="/pyoq-sql/_astro/Diagrams.astro_astro_type_script_index_0_lang.BNJty66e.js"></script></body></html>

@@ -1,0 +1,265 @@
+<!DOCTYPE html><html lang="en" data-appearance="light"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Connections and pools · PyOQ</title><meta name="description" content="Opening, sizing, observing, and closing database connection pools."><link rel="canonical" href="https://teqpod.com/pyoq-sql/connections/"><meta name="robots" content="index, follow, max-image-preview:large"><meta name="theme-color" content="#1b6ef3"><link rel="sitemap" type="application/xml" href="/pyoq-sql/sitemap.xml"><meta property="og:type" content="article"><meta property="og:site_name" content="PyOQ"><meta property="og:locale" content="en"><meta property="og:title" content="Connections and pools · PyOQ"><meta property="og:description" content="Opening, sizing, observing, and closing database connection pools."><meta property="og:url" content="https://teqpod.com/pyoq-sql/connections/"><meta property="og:image" content="https://teqpod.com/pyoq-sql/brand/pyoq-banner.png"><meta property="og:image:type" content="image/png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="PyOQ, fully typed database-first SQL for Python"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Connections and pools · PyOQ"><meta name="twitter:description" content="Opening, sizing, observing, and closing database connection pools."><meta name="twitter:image" content="https://teqpod.com/pyoq-sql/brand/pyoq-banner.png"><link rel="icon" type="image/svg+xml" href="/pyoq-sql/brand/pyoq-mark.svg"><link rel="icon" type="image/png" sizes="32x32" href="/pyoq-sql/brand/pyoq-favicon-32.png"><link rel="apple-touch-icon" href="/pyoq-sql/brand/pyoq-mark-180.png"><script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://teqpod.com/pyoq-sql/#site","name":"PyOQ","url":"https://teqpod.com/pyoq-sql/","description":"A database-first SQL toolkit with generated types, explicit execution, and native acceleration for Python applications."},{"@type":"SoftwareApplication","@id":"https://teqpod.com/pyoq-sql/#project","name":"PyOQ","description":"A database-first SQL toolkit with generated types, explicit execution, and native acceleration for Python applications.","url":"https://teqpod.com/pyoq-sql/","sameAs":["https://pypi.org/project/pyoq-sql/"],"applicationCategory":"DeveloperApplication","operatingSystem":"Linux, macOS, Windows","programmingLanguage":"Python","license":"https://teqpod.com/pyoq-sql/licence/","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}},{"@type":"TechArticle","headline":"Connections and pools · PyOQ","description":"Opening, sizing, observing, and closing database connection pools.","url":"https://teqpod.com/pyoq-sql/connections/","image":"https://teqpod.com/pyoq-sql/brand/pyoq-banner.png","isPartOf":{"@id":"https://teqpod.com/pyoq-sql/#site"},"about":{"@id":"https://teqpod.com/pyoq-sql/#project"},"inLanguage":"en","articleSection":"Running statements"}]}</script><script>
+  (() => {
+    let chosen = null;
+    try {
+      chosen = localStorage.getItem("pyoq-appearance");
+    } catch {}
+    const dark = matchMedia("(prefers-color-scheme: dark)").matches;
+    document.documentElement.dataset.appearance = chosen ?? (dark ? "dark" : "light");
+  })();
+</script><link rel="stylesheet" href="/pyoq-sql/_astro/app.CXhD3KCe.css"></head><body><a class="skip" href="#content">Skip to content</a><header class="bar"><a class="wordmark" href="/pyoq-sql/" aria-label="PyOQ documentation home"><img class="brand-image" src="/pyoq-sql/brand/pyoq-mark.svg" width="30" height="30" alt=""><span class="brand-name">PyOQ</span><span class="brand-context">docs</span></a><div class="search" data-pagefind-ignore><svg class="glass" viewBox="0 0 20 20" width="15" height="15" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.8" d="M8.5 14.5a6 6 0 1 1 0-12 6 6 0 0 1 0 12Zm4.5-1.5 4 4"></path></svg><input id="search" type="search" placeholder="Search the documentation" autocomplete="off" spellcheck="false" aria-label="Search the documentation" aria-expanded="false" aria-controls="results"><kbd>/</kbd><div id="results" role="listbox" hidden></div></div><script>(function(){const runtime = "/pyoq-sql/pagefind/pagefind.js";
+const baseUrl = "/pyoq-sql/";
+
+  const field = document.getElementById("search");
+  const panel = document.getElementById("results");
+  let engine = null;
+  let chosen = -1;
+
+  async function ready() {
+    if (engine) return engine;
+    try {
+      engine = await import(runtime);
+      await engine.options({ baseUrl, excerptLength: 24 });
+      await engine.init();
+    } catch {
+      engine = "unavailable";
+    }
+    return engine;
+  }
+
+  function close() {
+    panel.hidden = true;
+    field.setAttribute("aria-expanded", "false");
+    chosen = -1;
+  }
+
+  function draw(results) {
+    if (!results.length) {
+      panel.innerHTML = '<p class="none">Nothing matches that.</p>';
+    } else {
+      panel.innerHTML = results
+        .map((result) => {
+          const where = result.meta?.group ?? "Documentation";
+          const title = result.meta?.title ?? "Untitled";
+          return `<a role="option" href="${result.url}">
+            <span class="where">${where}</span>
+            <span class="what">${title}</span>
+            <span class="bit">${result.excerpt}</span>
+          </a>`;
+        })
+        .join("");
+    }
+    panel.hidden = false;
+    field.setAttribute("aria-expanded", "true");
+    chosen = -1;
+  }
+
+  let running = 0;
+  async function run() {
+    const wanted = field.value.trim();
+    if (!wanted) return close();
+    const engine = await ready();
+    if (engine === "unavailable") {
+      panel.innerHTML =
+        '<p class="none">Search is built with the site. Run <code>bun run build</code>.</p>';
+      panel.hidden = false;
+      return;
+    }
+    const token = ++running;
+    const found = await engine.search(wanted);
+    if (token !== running) return;
+    const top = await Promise.all(found.results.slice(0, 8).map((one) => one.data()));
+    if (token !== running) return;
+    draw(top);
+  }
+
+  function move(step) {
+    const links = panel.querySelectorAll("a");
+    if (!links.length) return;
+    chosen = (chosen + step + links.length) % links.length;
+    links.forEach((link, at) => link.classList.toggle("on", at === chosen));
+    links[chosen].scrollIntoView({ block: "nearest" });
+  }
+
+  let waiting;
+  field?.addEventListener("input", () => {
+    clearTimeout(waiting);
+    waiting = setTimeout(run, 120);
+  });
+  field?.addEventListener("focus", ready);
+
+  field?.addEventListener("keydown", (event) => {
+    if (event.key === "ArrowDown") {
+      event.preventDefault();
+      move(1);
+    } else if (event.key === "ArrowUp") {
+      event.preventDefault();
+      move(-1);
+    } else if (event.key === "Enter" && chosen >= 0) {
+      event.preventDefault();
+      panel.querySelectorAll("a")[chosen].click();
+    } else if (event.key === "Escape") {
+      field.blur();
+      close();
+    }
+  });
+
+  document.addEventListener("click", (event) => {
+    if (!panel.contains(event.target) && event.target !== field) close();
+  });
+
+  // "/" reaches the field from anywhere, which is where a reader goes first.
+  document.addEventListener("keydown", (event) => {
+    const typing = /^(INPUT|TEXTAREA)$/.test(document.activeElement?.tagName ?? "");
+    if (event.key === "/" && !typing) {
+      event.preventDefault();
+      field.focus();
+      field.select();
+    }
+  });
+})();</script><button id="appearance" type="button" aria-label="Switch appearance"><svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M10 2a8 8 0 1 0 0 16 8 8 0 0 0 0-16Zm0 1.6V16.4a6.4 6.4 0 0 1 0-12.8Z"></path></svg></button><script type="module">var e=document.documentElement;document.getElementById(`appearance`)?.addEventListener(`click`,()=>{let t=e.dataset.appearance===`dark`?`light`:`dark`;e.dataset.appearance=t;try{localStorage.setItem(`pyoq-appearance`,t)}catch{}});</script></header><div class="page"><nav class="side" aria-label="Documentation"><details class="side-toggle"><summary>Contents</summary></details><div class="side-body"><details class="side-group" data-group="Start here"><summary class="group" title="What this is, whether it suits you, and getting it running."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>Start here</summary><ul><li><a href="/pyoq-sql/overview/">What PyOQ is</a></li><li><a href="/pyoq-sql/when-to-use/">When to use what</a></li><li><a href="/pyoq-sql/installing/">Installing</a></li><li><a href="/pyoq-sql/generating/">Generating your types</a></li><li><a href="/pyoq-sql/first-query/">Your first query</a></li></ul></details><details class="side-group" data-group="For LLMs"><summary class="group" title="A compact project model and source map for coding agents."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>For LLMs</summary><ul><li><a href="/pyoq-sql/agents/">LLM agent guide</a></li></ul></details><details class="side-group" data-group="Reading"><summary class="group" title="Everything that ends in rows coming back."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>Reading</summary><ul><li><a href="/pyoq-sql/selecting/">Selecting rows</a></li><li><a href="/pyoq-sql/expressions/">Expressions and conditions</a></li><li><a href="/pyoq-sql/joins/">Joins and set operations</a></li><li><a href="/pyoq-sql/routines/">Stored routines</a></li><li><a href="/pyoq-sql/results/">Reading results</a></li></ul></details><details class="side-group" data-group="Writing"><summary class="group" title="Everything that changes what is in the database."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>Writing</summary><ul><li><a href="/pyoq-sql/inserting/">Inserting rows</a></li><li><a href="/pyoq-sql/updating/">Updating and deleting</a></li><li><a href="/pyoq-sql/conflicts/">Conflict resolution</a></li><li><a href="/pyoq-sql/bulk/">Bulk writes</a></li></ul></details><details class="side-group" data-group="Your data"><summary class="group" title="What the schema says, and how PyOQ reads it back."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>Your data</summary><ul><li><a href="/pyoq-sql/relations/">Relations</a></li><li><a href="/pyoq-sql/types/">Column types</a></li><li><a href="/pyoq-sql/snapshots/">Snapshots and drift</a></li><li><a href="/pyoq-sql/migrations/">Migration lifecycle</a></li></ul></details><details class="side-group" data-group="Running statements" open><summary class="group" title="What happens between a built statement and a row."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>Running statements</summary><ul><li><a href="/pyoq-sql/connections/" class="active" aria-current="page">Connections and pools</a></li><li><a href="/pyoq-sql/mysql-application/">MySQL without a framework</a></li><li><a href="/pyoq-sql/async/">Asynchronous execution</a></li><li><a href="/pyoq-sql/transactions/">Transactions and streaming</a></li><li><a href="/pyoq-sql/dialects/">Dialects</a></li><li><a href="/pyoq-sql/diagnostics/">Diagnostics</a></li><li><a href="/pyoq-sql/policies/">Policies</a></li><li><a href="/pyoq-sql/security/">Security</a></li><li><a href="/pyoq-sql/performance/">Performance</a></li></ul></details><details class="side-group" data-group="Frameworks"><summary class="group" title="Running inside something that already owns the connection."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>Frameworks</summary><ul><li><a href="/pyoq-sql/alembic/">Alembic</a></li><li><a href="/pyoq-sql/django/">Django</a></li><li><a href="/pyoq-sql/fastapi/">FastAPI</a></li><li><a href="/pyoq-sql/sanic/">Sanic</a></li><li><a href="/pyoq-sql/serving/">Standalone services</a></li></ul></details><details class="side-group" data-group="Reference"><summary class="group" title="The details, once you know what you are looking for."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>Reference</summary><ul><li><a href="/pyoq-sql/cli/">Command line</a></li><li><a href="/pyoq-sql/configuration/">Configuration</a></li><li><a href="/pyoq-sql/errors/">Errors</a></li><li><a href="/pyoq-sql/troubleshooting/">Troubleshooting</a></li><li><a href="/pyoq-sql/testing/">Testing applications</a></li><li><a href="/pyoq-sql/releasing/">Releasing</a></li><li><a href="/pyoq-sql/licence/">Licence</a></li></ul></details><details class="side-group" data-group="APIs"><summary class="group" title="Every package, every name it exports, and what each one does."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>APIs</summary><ul><li><a href="/pyoq-sql/api/references/">All references</a></li><li><a href="/pyoq-sql/api/internals/">Internals</a></li><li><a href="/pyoq-sql/api/pyoq/">pyoq</a></li><li><a href="/pyoq-sql/api/commands/">pyoq commands</a></li><li><a href="/pyoq-sql/api/native/">pyoq._native</a></li><li><a href="/pyoq-sql/api/cli/">pyoq.cli</a></li><li><a href="/pyoq-sql/api/config/">pyoq.config</a></li><li><a href="/pyoq-sql/api/descriptors/">pyoq.descriptors</a></li><li><a href="/pyoq-sql/api/diagnostics/">pyoq.diagnostics</a></li><li><a href="/pyoq-sql/api/django/">pyoq.django</a></li><li><a href="/pyoq-sql/api/dsl/">pyoq.dsl</a></li><li><a href="/pyoq-sql/api/errors/">pyoq.errors</a></li><li><a href="/pyoq-sql/api/fastapi/">pyoq.fastapi</a></li><li><a href="/pyoq-sql/api/fetching/">pyoq.fetching</a></li><li><a href="/pyoq-sql/api/generation/">pyoq.generation</a></li><li><a href="/pyoq-sql/api/hydration/">pyoq.hydration</a></li><li><a href="/pyoq-sql/api/migrations/">pyoq.migrations</a></li><li><a href="/pyoq-sql/api/naming/">pyoq.naming</a></li><li><a href="/pyoq-sql/api/policies/">pyoq.policies</a></li><li><a href="/pyoq-sql/api/query/">pyoq.query</a></li><li><a href="/pyoq-sql/api/query-expressions/">pyoq.query expressions</a></li><li><a href="/pyoq-sql/api/query-functions/">pyoq.query functions</a></li><li><a href="/pyoq-sql/api/query-execution/">pyoq.query.execution</a></li><li><a href="/pyoq-sql/api/query-mysql/">pyoq.query.mysql</a></li><li><a href="/pyoq-sql/api/query-postgres/">pyoq.query.postgres</a></li><li><a href="/pyoq-sql/api/query-sqlite/">pyoq.query.sqlite</a></li><li><a href="/pyoq-sql/api/relations/">pyoq.relations</a></li><li><a href="/pyoq-sql/api/runtime/">pyoq.runtime</a></li><li><a href="/pyoq-sql/api/sanic/">pyoq.sanic</a></li><li><a href="/pyoq-sql/api/schema/">pyoq.schema</a></li><li><a href="/pyoq-sql/api/schema-dialects/">pyoq.schema dialects</a></li><li><a href="/pyoq-sql/api/serving/">pyoq.serving</a></li><li><a href="/pyoq-sql/api/snapshots/">pyoq.snapshots</a></li><li><a href="/pyoq-sql/api/tracing/">pyoq.tracing</a></li></ul></details></div></nav><script type="module">var e=`pyoq-sidebar`;function t(){try{return JSON.parse(sessionStorage.getItem(e)??`{}`)}catch{return{}}}function n(t){try{sessionStorage.setItem(e,JSON.stringify(t))}catch{}}var r=document.querySelector(`.side`),i=[...document.querySelectorAll(`.side-group`)],a=t();for(let e of i){let t=e.dataset.group;t&&(t in a&&(e.open=a[t]),e.addEventListener(`toggle`,()=>{a[t]=e.open,n(a)}))}function o(){if(!r||r.scrollHeight<=r.clientHeight)return;let e=r.querySelector(`a.active`);if(!e)return;let t=r.getBoundingClientRect(),n=e.getBoundingClientRect();n.top>=t.top&&n.bottom<=t.bottom||(r.scrollTop+=n.top-t.top-r.clientHeight/2+n.height/2)}requestAnimationFrame(o);</script><main id="content" data-pagefind-body><p class="crumb" data-pagefind-meta="group:Running statements">Running statements</p><article><h1>Connections and pools</h1><p class="lede" data-pagefind-ignore>Opening, sizing, observing, and closing database connection pools.</p><p>A pool owns database connections. A <code>Database</code> borrows one connection for each
+operation and returns it when the operation ends. Create it once for an
+application process, then leave its context during application shutdown.</p>
+<h2 id="connect-from-a-profile">Connect from a profile</h2>
+<p>With a profile in the current project’s <code>pyproject.toml</code>, connection and pool
+ownership are one context:</p>
+<div class="code-shell" data-lang="toml"><div class="code-head"><span class="code-lang">Configuration</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Configuration code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="toml"><code><span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">[tool.pyoq.profiles.default]</span></span>
+<span class="line"><span style="color:#001080;--shiki-dark:#9CDCFE">dialect</span><span style="color:#000000;--shiki-dark:#D4D4D4"> = </span><span style="color:#A31515;--shiki-dark:#CE9178">"mysql"</span></span>
+<span class="line"><span style="color:#001080;--shiki-dark:#9CDCFE">host</span><span style="color:#000000;--shiki-dark:#D4D4D4"> = </span><span style="color:#A31515;--shiki-dark:#CE9178">"localhost"</span></span>
+<span class="line"><span style="color:#001080;--shiki-dark:#9CDCFE">port</span><span style="color:#000000;--shiki-dark:#D4D4D4"> = </span><span style="color:#098658;--shiki-dark:#B5CEA8">3306</span></span>
+<span class="line"><span style="color:#001080;--shiki-dark:#9CDCFE">database</span><span style="color:#000000;--shiki-dark:#D4D4D4"> = </span><span style="color:#A31515;--shiki-dark:#CE9178">"${MYSQL_DATABASE}"</span></span>
+<span class="line"><span style="color:#001080;--shiki-dark:#9CDCFE">username</span><span style="color:#000000;--shiki-dark:#D4D4D4"> = </span><span style="color:#A31515;--shiki-dark:#CE9178">"${MYSQL_USERNAME}"</span></span>
+<span class="line"><span style="color:#001080;--shiki-dark:#9CDCFE">password</span><span style="color:#000000;--shiki-dark:#D4D4D4"> = </span><span style="color:#A31515;--shiki-dark:#CE9178">"${MYSQL_PASSWORD}"</span></span>
+<span class="line"><span style="color:#001080;--shiki-dark:#9CDCFE">minimum-pool-size</span><span style="color:#000000;--shiki-dark:#D4D4D4"> = </span><span style="color:#098658;--shiki-dark:#B5CEA8">1</span></span>
+<span class="line"><span style="color:#001080;--shiki-dark:#9CDCFE">maximum-pool-size</span><span style="color:#000000;--shiki-dark:#D4D4D4"> = </span><span style="color:#098658;--shiki-dark:#B5CEA8">8</span></span>
+<span class="line"><span style="color:#001080;--shiki-dark:#9CDCFE">pool-checkout-timeout</span><span style="color:#000000;--shiki-dark:#D4D4D4"> = </span><span style="color:#098658;--shiki-dark:#B5CEA8">2.0</span></span></code></pre>
+<div class="monaco-host"></div></div>
+<div class="code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#AF00DB;--shiki-dark:#C586C0">from</span><span style="color:#000000;--shiki-dark:#D4D4D4"> pyoq </span><span style="color:#AF00DB;--shiki-dark:#C586C0">import</span><span style="color:#000000;--shiki-dark:#D4D4D4"> connect</span></span>
+<span class="line"><span style="color:#AF00DB;--shiki-dark:#C586C0">with</span><span style="color:#000000;--shiki-dark:#D4D4D4"> connect(</span><span style="color:#001080;--shiki-dark:#9CDCFE">profile</span><span style="color:#000000;--shiki-dark:#D4D4D4">=</span><span style="color:#A31515;--shiki-dark:#CE9178">"default"</span><span style="color:#000000;--shiki-dark:#D4D4D4">) </span><span style="color:#AF00DB;--shiki-dark:#C586C0">as</span><span style="color:#000000;--shiki-dark:#D4D4D4"> database:</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">    rows = database.select_from(TITLES).fetch_all()</span></span></code></pre>
+<div class="monaco-host"></div></div>
+<p>Omit <code>profile</code> to use <code>selected-profile</code>. Configuration is read from
+<code>pyproject.toml</code> in the current directory. Use <code>project_root=Path(...)</code> when
+the application starts elsewhere, or <code>config=Path("config/database.toml")</code>
+for another file inside that root.</p>
+<p>The same profile drives generation and runtime, so its dialect, connection,
+and pool policy are not repeated in application code. Pass an explicit
+<code>pool_policy=PoolPolicy(...)</code> only when one process needs to replace the entire
+profile policy.</p>
+<h2 id="connect-directly">Connect directly</h2>
+<p>Programs that do not have a project configuration can supply both values:</p>
+<div class="code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#AF00DB;--shiki-dark:#C586C0">from</span><span style="color:#000000;--shiki-dark:#D4D4D4"> pyoq </span><span style="color:#AF00DB;--shiki-dark:#C586C0">import</span><span style="color:#000000;--shiki-dark:#D4D4D4"> Dialect, connect</span></span>
+<span class="line"><span style="color:#AF00DB;--shiki-dark:#C586C0">from</span><span style="color:#000000;--shiki-dark:#D4D4D4"> pyoq.config </span><span style="color:#AF00DB;--shiki-dark:#C586C0">import</span><span style="color:#000000;--shiki-dark:#D4D4D4"> DataSourceName</span></span>
+<span class="line"><span style="color:#AF00DB;--shiki-dark:#C586C0">from</span><span style="color:#000000;--shiki-dark:#D4D4D4"> pyoq.query.execution </span><span style="color:#AF00DB;--shiki-dark:#C586C0">import</span><span style="color:#000000;--shiki-dark:#D4D4D4"> PoolPolicy</span></span>
+<span class="line"></span>
+<span class="line"></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">policy = PoolPolicy(</span><span style="color:#001080;--shiki-dark:#9CDCFE">maximum_size</span><span style="color:#000000;--shiki-dark:#D4D4D4">=</span><span style="color:#098658;--shiki-dark:#B5CEA8">8</span><span style="color:#000000;--shiki-dark:#D4D4D4">)</span></span>
+<span class="line"><span style="color:#AF00DB;--shiki-dark:#C586C0">with</span><span style="color:#000000;--shiki-dark:#D4D4D4"> connect(</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">    DataSourceName(</span><span style="color:#A31515;--shiki-dark:#CE9178">"$</span><span style="color:#0000FF;--shiki-dark:#569CD6">{DATABASE_URL}</span><span style="color:#A31515;--shiki-dark:#CE9178">"</span><span style="color:#000000;--shiki-dark:#D4D4D4">),</span></span>
+<span class="line"><span style="color:#001080;--shiki-dark:#9CDCFE">    dialect</span><span style="color:#000000;--shiki-dark:#D4D4D4">=Dialect.POSTGRES,</span></span>
+<span class="line"><span style="color:#001080;--shiki-dark:#9CDCFE">    pool_policy</span><span style="color:#000000;--shiki-dark:#D4D4D4">=policy,</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">) </span><span style="color:#AF00DB;--shiki-dark:#C586C0">as</span><span style="color:#000000;--shiki-dark:#D4D4D4"> database:</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">    rows = database.select_from(TITLES).fetch_all()</span></span></code></pre>
+<div class="monaco-host"></div></div>
+<p>The data source may be a string, <code>SecretValue</code>, or <code>DataSourceName</code>.
+<code>DataSourceName("${DATABASE_URL}")</code> resolves the environment variable while a
+literal <code>DataSourceName</code> stays literal. A direct data source requires
+<code>dialect</code> and cannot be mixed with profile arguments.</p>
+<h2 id="construct-the-low-level-components">Construct the low-level components</h2>
+<p>Use the dialect-specific factories when an integration needs direct control of
+the pool or compiler:</p>
+<div class="code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#AF00DB;--shiki-dark:#C586C0">from</span><span style="color:#000000;--shiki-dark:#D4D4D4"> pathlib </span><span style="color:#AF00DB;--shiki-dark:#C586C0">import</span><span style="color:#000000;--shiki-dark:#D4D4D4"> Path</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#AF00DB;--shiki-dark:#C586C0">from</span><span style="color:#000000;--shiki-dark:#D4D4D4"> pyoq.query.execution </span><span style="color:#AF00DB;--shiki-dark:#C586C0">import</span><span style="color:#000000;--shiki-dark:#D4D4D4"> PoolPolicy</span></span>
+<span class="line"><span style="color:#AF00DB;--shiki-dark:#C586C0">from</span><span style="color:#000000;--shiki-dark:#D4D4D4"> pyoq.query.sqlite </span><span style="color:#AF00DB;--shiki-dark:#C586C0">import</span><span style="color:#000000;--shiki-dark:#D4D4D4"> SQLiteConnectionFactory, SQLiteExecutor, SQLitePool</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">policy = PoolPolicy(</span></span>
+<span class="line"><span style="color:#001080;--shiki-dark:#9CDCFE">    minimum_size</span><span style="color:#000000;--shiki-dark:#D4D4D4">=</span><span style="color:#098658;--shiki-dark:#B5CEA8">1</span><span style="color:#000000;--shiki-dark:#D4D4D4">,</span></span>
+<span class="line"><span style="color:#001080;--shiki-dark:#9CDCFE">    maximum_size</span><span style="color:#000000;--shiki-dark:#D4D4D4">=</span><span style="color:#098658;--shiki-dark:#B5CEA8">8</span><span style="color:#000000;--shiki-dark:#D4D4D4">,</span></span>
+<span class="line"><span style="color:#001080;--shiki-dark:#9CDCFE">    checkout_timeout</span><span style="color:#000000;--shiki-dark:#D4D4D4">=</span><span style="color:#098658;--shiki-dark:#B5CEA8">2.0</span><span style="color:#000000;--shiki-dark:#D4D4D4">,</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">)</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">pool = SQLitePool(SQLiteConnectionFactory(Path(</span><span style="color:#A31515;--shiki-dark:#CE9178">"application.sqlite"</span><span style="color:#000000;--shiki-dark:#D4D4D4">)), policy)</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">database = SQLiteExecutor(pool)</span></span></code></pre>
+<div class="monaco-host"></div></div>
+<p><code>minimum_size</code> connections are opened when a synchronous pool is constructed.
+More are opened on demand, up to <code>maximum_size</code>. When all connections are in
+use, checkout waits for at most <code>checkout_timeout</code> seconds. Set the timeout to
+<code>None</code> only when an unbounded wait is an explicit operational decision.</p>
+<p>PostgreSQL and MySQL use the same policy:</p>
+<div class="code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#AF00DB;--shiki-dark:#C586C0">from</span><span style="color:#000000;--shiki-dark:#D4D4D4"> pyoq.query.postgres </span><span style="color:#AF00DB;--shiki-dark:#C586C0">import</span><span style="color:#000000;--shiki-dark:#D4D4D4"> (</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">    PostgresConnectionFactory,</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">    PostgresExecutor,</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">    PostgresPool,</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">pool = PostgresPool(PostgresConnectionFactory(database_url), policy)</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">database = PostgresExecutor(pool)</span></span></code></pre>
+<div class="monaco-host"></div></div>
+<p>Use <code>MySQLConnectionFactory</code>, <code>MySQLPool</code>, and <code>MySQLExecutor</code> for MySQL.
+The complete <a href="../mysql-application/">framework-free MySQL application</a> shows
+where the lifecycle lives in a multi-module project, how repositories share
+operations, and where transactions and shutdown belong.</p>
+<h2 id="ownership-and-shutdown">Ownership and shutdown</h2>
+<p><code>connect()</code> creates and closes its pool. Keep its context around the complete
+application run:</p>
+<div class="code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#AF00DB;--shiki-dark:#C586C0">with</span><span style="color:#000000;--shiki-dark:#D4D4D4"> connect(</span><span style="color:#001080;--shiki-dark:#9CDCFE">profile</span><span style="color:#000000;--shiki-dark:#D4D4D4">=</span><span style="color:#A31515;--shiki-dark:#CE9178">"default"</span><span style="color:#000000;--shiki-dark:#D4D4D4">) </span><span style="color:#AF00DB;--shiki-dark:#C586C0">as</span><span style="color:#000000;--shiki-dark:#D4D4D4"> database:</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">    rows = database.select_from(TITLES).fetch_all()</span></span></code></pre>
+<div class="monaco-host"></div></div>
+<p>Long-running services should connect shutdown to their process or framework
+lifecycle. <a href="../serving/">Standalone services</a>, <a href="../fastapi/">FastAPI</a>, and
+<a href="../sanic/">Sanic</a> show the appropriate owner for each environment. Django is
+different: <a href="../django/">the Django adapter</a> borrows Django’s connection and
+does not create another pool.</p>
+<p>Closing is idempotent. Idle connections close immediately. A checked-out
+connection closes when its lease returns. A new checkout after closure raises
+<code>ConnectionPoolClosedError</code>.</p>
+<h2 id="pool-exhaustion">Pool exhaustion</h2>
+<p>If no connection becomes available before the checkout timeout, the operation
+raises <code>ConnectionPoolTimeoutError</code>. Treat that as capacity pressure, a leaked
+stream, or a transaction that remains open too long. Retrying immediately on
+the same saturated pool usually increases the pressure.</p>
+<p>A stream and a transaction both keep one connection until their context exits:</p>
+<div class="code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#AF00DB;--shiki-dark:#C586C0">from</span><span style="color:#000000;--shiki-dark:#D4D4D4"> pyoq.query.execution </span><span style="color:#AF00DB;--shiki-dark:#C586C0">import</span><span style="color:#000000;--shiki-dark:#D4D4D4"> StreamPolicy</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#AF00DB;--shiki-dark:#C586C0">with</span><span style="color:#000000;--shiki-dark:#D4D4D4"> database.stream(statement, </span><span style="color:#001080;--shiki-dark:#9CDCFE">policy</span><span style="color:#000000;--shiki-dark:#D4D4D4">=StreamPolicy(</span><span style="color:#001080;--shiki-dark:#9CDCFE">batch_size</span><span style="color:#000000;--shiki-dark:#D4D4D4">=</span><span style="color:#098658;--shiki-dark:#B5CEA8">500</span><span style="color:#000000;--shiki-dark:#D4D4D4">)) </span><span style="color:#AF00DB;--shiki-dark:#C586C0">as</span><span style="color:#000000;--shiki-dark:#D4D4D4"> rows:</span></span>
+<span class="line"><span style="color:#AF00DB;--shiki-dark:#C586C0">    for</span><span style="color:#000000;--shiki-dark:#D4D4D4"> row </span><span style="color:#AF00DB;--shiki-dark:#C586C0">in</span><span style="color:#000000;--shiki-dark:#D4D4D4"> rows:</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">        consume(row)</span></span></code></pre>
+<div class="monaco-host"></div></div>
+<p>Always leave those contexts promptly. Do not hold them open while making an
+unrelated network request or waiting for user input.</p>
+<h2 id="pool-statistics">Pool statistics</h2>
+<div class="code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">statistics = database.pool_stats</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">statistics.open_connections</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">statistics.idle_connections</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">statistics.checked_out_connections</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">statistics.closed</span></span></code></pre>
+<div class="monaco-host"></div></div>
+<p>These values are a point-in-time view. Export them as gauges if pool pressure
+matters operationally. A pool that stays at its maximum with no idle
+connections is saturated even when no checkout has timed out yet.</p>
+<h2 id="choosing-a-size">Choosing a size</h2>
+<p>Start from the database connection budget, divide it across application
+processes, and leave room for migrations and administration. A service with
+several worker processes has one pool per process, so its possible connection
+count is <code>workers * maximum_size</code>.</p>
+<p>A larger pool does not make the database faster. Increase it only when
+measurements show requests waiting for connections while the database still
+has capacity. See <a href="../performance/">Performance</a> and
+<a href="../diagnostics/">Diagnostics</a> for the measurements around the pool.</p>
+<h2 id="connection-cleanup">Connection cleanup</h2>
+<p>Returning a connection rolls back unfinished work before it becomes idle.
+PostgreSQL and MySQL also clear the statement timeout applied by a previous
+operation. A connection that cannot be reset is discarded rather than handed
+to another caller in an unknown state.</p>
+<p>Connection strings can contain credentials. Resolve them from configuration
+or an environment variable and never log them. See <a href="../configuration/">Configuration</a>
+and <a href="../security/">Security</a>.</p></article><nav class="pager" aria-label="Neighbouring pages"><a class="previous" href="/pyoq-sql/migrations/"><span>Previous</span>Migration lifecycle</a><a class="next" href="/pyoq-sql/mysql-application/"><span>Next</span>MySQL without a framework</a></nav><footer class="page-footer"><p>PyOQ is released under the <a href="/pyoq-sql/licence/" rel="license">MPL-2.0</a> licence.</p></footer></main><nav class="contents" aria-label="On this page"><p>On this page</p><ul><li><a href="#connect-from-a-profile">Connect from a profile</a></li><li><a href="#connect-directly">Connect directly</a></li><li><a href="#construct-the-low-level-components">Construct the low-level components</a></li><li><a href="#ownership-and-shutdown">Ownership and shutdown</a></li><li><a href="#pool-exhaustion">Pool exhaustion</a></li><li><a href="#pool-statistics">Pool statistics</a></li><li><a href="#choosing-a-size">Choosing a size</a></li><li><a href="#connection-cleanup">Connection cleanup</a></li></ul></nav></div><script type="module">document.addEventListener(`click`,e=>{let t=e.target?.closest(`[data-copy]`);if(!t)return;let n=(t.closest(`.code-shell`)?.querySelector(`pre`)?.textContent??``).replace(/\n$/,``);if(!n)return;let r=e=>{let n=t.querySelector(`[data-copy-label]`);n&&(n.textContent=e)};navigator.clipboard.writeText(n).then(()=>{t.dataset.copied=``,r(`Copied`),setTimeout(()=>{delete t.dataset.copied,r(`Copy`)},1600)},()=>r(`Press ⌘C`))});</script><script type="module" src="/pyoq-sql/_astro/CodeEditors.astro_astro_type_script_index_0_lang.C8S0YAI5.js"></script><script type="module" src="/pyoq-sql/_astro/Diagrams.astro_astro_type_script_index_0_lang.BNJty66e.js"></script></body></html>

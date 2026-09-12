@@ -1,0 +1,202 @@
+<!DOCTYPE html><html lang="en" data-appearance="light"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>All references · PyOQ</title><meta name="description" content="Every name the packages export, and which package exports it."><link rel="canonical" href="https://teqpod.com/pyoq-sql/api/references/"><meta name="robots" content="index, follow, max-image-preview:large"><meta name="theme-color" content="#1b6ef3"><link rel="sitemap" type="application/xml" href="/pyoq-sql/sitemap.xml"><meta property="og:type" content="article"><meta property="og:site_name" content="PyOQ"><meta property="og:locale" content="en"><meta property="og:title" content="All references · PyOQ"><meta property="og:description" content="Every name the packages export, and which package exports it."><meta property="og:url" content="https://teqpod.com/pyoq-sql/api/references/"><meta property="og:image" content="https://teqpod.com/pyoq-sql/brand/pyoq-banner.png"><meta property="og:image:type" content="image/png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="PyOQ, fully typed database-first SQL for Python"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="All references · PyOQ"><meta name="twitter:description" content="Every name the packages export, and which package exports it."><meta name="twitter:image" content="https://teqpod.com/pyoq-sql/brand/pyoq-banner.png"><link rel="icon" type="image/svg+xml" href="/pyoq-sql/brand/pyoq-mark.svg"><link rel="icon" type="image/png" sizes="32x32" href="/pyoq-sql/brand/pyoq-favicon-32.png"><link rel="apple-touch-icon" href="/pyoq-sql/brand/pyoq-mark-180.png"><script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://teqpod.com/pyoq-sql/#site","name":"PyOQ","url":"https://teqpod.com/pyoq-sql/","description":"A database-first SQL toolkit with generated types, explicit execution, and native acceleration for Python applications."},{"@type":"SoftwareApplication","@id":"https://teqpod.com/pyoq-sql/#project","name":"PyOQ","description":"A database-first SQL toolkit with generated types, explicit execution, and native acceleration for Python applications.","url":"https://teqpod.com/pyoq-sql/","sameAs":["https://pypi.org/project/pyoq-sql/"],"applicationCategory":"DeveloperApplication","operatingSystem":"Linux, macOS, Windows","programmingLanguage":"Python","license":"https://teqpod.com/pyoq-sql/licence/","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}},{"@type":"TechArticle","headline":"All references · PyOQ","description":"Every name the packages export, and which package exports it.","url":"https://teqpod.com/pyoq-sql/api/references/","image":"https://teqpod.com/pyoq-sql/brand/pyoq-banner.png","isPartOf":{"@id":"https://teqpod.com/pyoq-sql/#site"},"about":{"@id":"https://teqpod.com/pyoq-sql/#project"},"inLanguage":"en","articleSection":"APIs"}]}</script><script>
+  (() => {
+    let chosen = null;
+    try {
+      chosen = localStorage.getItem("pyoq-appearance");
+    } catch {}
+    const dark = matchMedia("(prefers-color-scheme: dark)").matches;
+    document.documentElement.dataset.appearance = chosen ?? (dark ? "dark" : "light");
+  })();
+</script><link rel="stylesheet" href="/pyoq-sql/_astro/app.CXhD3KCe.css"></head><body><a class="skip" href="#content">Skip to content</a><header class="bar"><a class="wordmark" href="/pyoq-sql/" aria-label="PyOQ documentation home"><img class="brand-image" src="/pyoq-sql/brand/pyoq-mark.svg" width="30" height="30" alt=""><span class="brand-name">PyOQ</span><span class="brand-context">docs</span></a><div class="search" data-pagefind-ignore><svg class="glass" viewBox="0 0 20 20" width="15" height="15" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.8" d="M8.5 14.5a6 6 0 1 1 0-12 6 6 0 0 1 0 12Zm4.5-1.5 4 4"></path></svg><input id="search" type="search" placeholder="Search the documentation" autocomplete="off" spellcheck="false" aria-label="Search the documentation" aria-expanded="false" aria-controls="results"><kbd>/</kbd><div id="results" role="listbox" hidden></div></div><script>(function(){const runtime = "/pyoq-sql/pagefind/pagefind.js";
+const baseUrl = "/pyoq-sql/";
+
+  const field = document.getElementById("search");
+  const panel = document.getElementById("results");
+  let engine = null;
+  let chosen = -1;
+
+  async function ready() {
+    if (engine) return engine;
+    try {
+      engine = await import(runtime);
+      await engine.options({ baseUrl, excerptLength: 24 });
+      await engine.init();
+    } catch {
+      engine = "unavailable";
+    }
+    return engine;
+  }
+
+  function close() {
+    panel.hidden = true;
+    field.setAttribute("aria-expanded", "false");
+    chosen = -1;
+  }
+
+  function draw(results) {
+    if (!results.length) {
+      panel.innerHTML = '<p class="none">Nothing matches that.</p>';
+    } else {
+      panel.innerHTML = results
+        .map((result) => {
+          const where = result.meta?.group ?? "Documentation";
+          const title = result.meta?.title ?? "Untitled";
+          return `<a role="option" href="${result.url}">
+            <span class="where">${where}</span>
+            <span class="what">${title}</span>
+            <span class="bit">${result.excerpt}</span>
+          </a>`;
+        })
+        .join("");
+    }
+    panel.hidden = false;
+    field.setAttribute("aria-expanded", "true");
+    chosen = -1;
+  }
+
+  let running = 0;
+  async function run() {
+    const wanted = field.value.trim();
+    if (!wanted) return close();
+    const engine = await ready();
+    if (engine === "unavailable") {
+      panel.innerHTML =
+        '<p class="none">Search is built with the site. Run <code>bun run build</code>.</p>';
+      panel.hidden = false;
+      return;
+    }
+    const token = ++running;
+    const found = await engine.search(wanted);
+    if (token !== running) return;
+    const top = await Promise.all(found.results.slice(0, 8).map((one) => one.data()));
+    if (token !== running) return;
+    draw(top);
+  }
+
+  function move(step) {
+    const links = panel.querySelectorAll("a");
+    if (!links.length) return;
+    chosen = (chosen + step + links.length) % links.length;
+    links.forEach((link, at) => link.classList.toggle("on", at === chosen));
+    links[chosen].scrollIntoView({ block: "nearest" });
+  }
+
+  let waiting;
+  field?.addEventListener("input", () => {
+    clearTimeout(waiting);
+    waiting = setTimeout(run, 120);
+  });
+  field?.addEventListener("focus", ready);
+
+  field?.addEventListener("keydown", (event) => {
+    if (event.key === "ArrowDown") {
+      event.preventDefault();
+      move(1);
+    } else if (event.key === "ArrowUp") {
+      event.preventDefault();
+      move(-1);
+    } else if (event.key === "Enter" && chosen >= 0) {
+      event.preventDefault();
+      panel.querySelectorAll("a")[chosen].click();
+    } else if (event.key === "Escape") {
+      field.blur();
+      close();
+    }
+  });
+
+  document.addEventListener("click", (event) => {
+    if (!panel.contains(event.target) && event.target !== field) close();
+  });
+
+  // "/" reaches the field from anywhere, which is where a reader goes first.
+  document.addEventListener("keydown", (event) => {
+    const typing = /^(INPUT|TEXTAREA)$/.test(document.activeElement?.tagName ?? "");
+    if (event.key === "/" && !typing) {
+      event.preventDefault();
+      field.focus();
+      field.select();
+    }
+  });
+})();</script><button id="appearance" type="button" aria-label="Switch appearance"><svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M10 2a8 8 0 1 0 0 16 8 8 0 0 0 0-16Zm0 1.6V16.4a6.4 6.4 0 0 1 0-12.8Z"></path></svg></button><script type="module">var e=document.documentElement;document.getElementById(`appearance`)?.addEventListener(`click`,()=>{let t=e.dataset.appearance===`dark`?`light`:`dark`;e.dataset.appearance=t;try{localStorage.setItem(`pyoq-appearance`,t)}catch{}});</script></header><div class="page"><nav class="side" aria-label="Documentation"><details class="side-toggle"><summary>Contents</summary></details><div class="side-body"><details class="side-group" data-group="Start here"><summary class="group" title="What this is, whether it suits you, and getting it running."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>Start here</summary><ul><li><a href="/pyoq-sql/overview/">What PyOQ is</a></li><li><a href="/pyoq-sql/when-to-use/">When to use what</a></li><li><a href="/pyoq-sql/installing/">Installing</a></li><li><a href="/pyoq-sql/generating/">Generating your types</a></li><li><a href="/pyoq-sql/first-query/">Your first query</a></li></ul></details><details class="side-group" data-group="For LLMs"><summary class="group" title="A compact project model and source map for coding agents."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>For LLMs</summary><ul><li><a href="/pyoq-sql/agents/">LLM agent guide</a></li></ul></details><details class="side-group" data-group="Reading"><summary class="group" title="Everything that ends in rows coming back."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>Reading</summary><ul><li><a href="/pyoq-sql/selecting/">Selecting rows</a></li><li><a href="/pyoq-sql/expressions/">Expressions and conditions</a></li><li><a href="/pyoq-sql/joins/">Joins and set operations</a></li><li><a href="/pyoq-sql/routines/">Stored routines</a></li><li><a href="/pyoq-sql/results/">Reading results</a></li></ul></details><details class="side-group" data-group="Writing"><summary class="group" title="Everything that changes what is in the database."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>Writing</summary><ul><li><a href="/pyoq-sql/inserting/">Inserting rows</a></li><li><a href="/pyoq-sql/updating/">Updating and deleting</a></li><li><a href="/pyoq-sql/conflicts/">Conflict resolution</a></li><li><a href="/pyoq-sql/bulk/">Bulk writes</a></li></ul></details><details class="side-group" data-group="Your data"><summary class="group" title="What the schema says, and how PyOQ reads it back."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>Your data</summary><ul><li><a href="/pyoq-sql/relations/">Relations</a></li><li><a href="/pyoq-sql/types/">Column types</a></li><li><a href="/pyoq-sql/snapshots/">Snapshots and drift</a></li><li><a href="/pyoq-sql/migrations/">Migration lifecycle</a></li></ul></details><details class="side-group" data-group="Running statements"><summary class="group" title="What happens between a built statement and a row."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>Running statements</summary><ul><li><a href="/pyoq-sql/connections/">Connections and pools</a></li><li><a href="/pyoq-sql/mysql-application/">MySQL without a framework</a></li><li><a href="/pyoq-sql/async/">Asynchronous execution</a></li><li><a href="/pyoq-sql/transactions/">Transactions and streaming</a></li><li><a href="/pyoq-sql/dialects/">Dialects</a></li><li><a href="/pyoq-sql/diagnostics/">Diagnostics</a></li><li><a href="/pyoq-sql/policies/">Policies</a></li><li><a href="/pyoq-sql/security/">Security</a></li><li><a href="/pyoq-sql/performance/">Performance</a></li></ul></details><details class="side-group" data-group="Frameworks"><summary class="group" title="Running inside something that already owns the connection."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>Frameworks</summary><ul><li><a href="/pyoq-sql/alembic/">Alembic</a></li><li><a href="/pyoq-sql/django/">Django</a></li><li><a href="/pyoq-sql/fastapi/">FastAPI</a></li><li><a href="/pyoq-sql/sanic/">Sanic</a></li><li><a href="/pyoq-sql/serving/">Standalone services</a></li></ul></details><details class="side-group" data-group="Reference"><summary class="group" title="The details, once you know what you are looking for."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>Reference</summary><ul><li><a href="/pyoq-sql/cli/">Command line</a></li><li><a href="/pyoq-sql/configuration/">Configuration</a></li><li><a href="/pyoq-sql/errors/">Errors</a></li><li><a href="/pyoq-sql/troubleshooting/">Troubleshooting</a></li><li><a href="/pyoq-sql/testing/">Testing applications</a></li><li><a href="/pyoq-sql/releasing/">Releasing</a></li><li><a href="/pyoq-sql/licence/">Licence</a></li></ul></details><details class="side-group" data-group="APIs" open><summary class="group" title="Every package, every name it exports, and what each one does."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>APIs</summary><ul><li><a href="/pyoq-sql/api/references/" class="active" aria-current="page">All references</a></li><li><a href="/pyoq-sql/api/internals/">Internals</a></li><li><a href="/pyoq-sql/api/pyoq/">pyoq</a></li><li><a href="/pyoq-sql/api/commands/">pyoq commands</a></li><li><a href="/pyoq-sql/api/native/">pyoq._native</a></li><li><a href="/pyoq-sql/api/cli/">pyoq.cli</a></li><li><a href="/pyoq-sql/api/config/">pyoq.config</a></li><li><a href="/pyoq-sql/api/descriptors/">pyoq.descriptors</a></li><li><a href="/pyoq-sql/api/diagnostics/">pyoq.diagnostics</a></li><li><a href="/pyoq-sql/api/django/">pyoq.django</a></li><li><a href="/pyoq-sql/api/dsl/">pyoq.dsl</a></li><li><a href="/pyoq-sql/api/errors/">pyoq.errors</a></li><li><a href="/pyoq-sql/api/fastapi/">pyoq.fastapi</a></li><li><a href="/pyoq-sql/api/fetching/">pyoq.fetching</a></li><li><a href="/pyoq-sql/api/generation/">pyoq.generation</a></li><li><a href="/pyoq-sql/api/hydration/">pyoq.hydration</a></li><li><a href="/pyoq-sql/api/migrations/">pyoq.migrations</a></li><li><a href="/pyoq-sql/api/naming/">pyoq.naming</a></li><li><a href="/pyoq-sql/api/policies/">pyoq.policies</a></li><li><a href="/pyoq-sql/api/query/">pyoq.query</a></li><li><a href="/pyoq-sql/api/query-expressions/">pyoq.query expressions</a></li><li><a href="/pyoq-sql/api/query-functions/">pyoq.query functions</a></li><li><a href="/pyoq-sql/api/query-execution/">pyoq.query.execution</a></li><li><a href="/pyoq-sql/api/query-mysql/">pyoq.query.mysql</a></li><li><a href="/pyoq-sql/api/query-postgres/">pyoq.query.postgres</a></li><li><a href="/pyoq-sql/api/query-sqlite/">pyoq.query.sqlite</a></li><li><a href="/pyoq-sql/api/relations/">pyoq.relations</a></li><li><a href="/pyoq-sql/api/runtime/">pyoq.runtime</a></li><li><a href="/pyoq-sql/api/sanic/">pyoq.sanic</a></li><li><a href="/pyoq-sql/api/schema/">pyoq.schema</a></li><li><a href="/pyoq-sql/api/schema-dialects/">pyoq.schema dialects</a></li><li><a href="/pyoq-sql/api/serving/">pyoq.serving</a></li><li><a href="/pyoq-sql/api/snapshots/">pyoq.snapshots</a></li><li><a href="/pyoq-sql/api/tracing/">pyoq.tracing</a></li></ul></details></div></nav><script type="module">var e=`pyoq-sidebar`;function t(){try{return JSON.parse(sessionStorage.getItem(e)??`{}`)}catch{return{}}}function n(t){try{sessionStorage.setItem(e,JSON.stringify(t))}catch{}}var r=document.querySelector(`.side`),i=[...document.querySelectorAll(`.side-group`)],a=t();for(let e of i){let t=e.dataset.group;t&&(t in a&&(e.open=a[t]),e.addEventListener(`toggle`,()=>{a[t]=e.open,n(a)}))}function o(){if(!r||r.scrollHeight<=r.clientHeight)return;let e=r.querySelector(`a.active`);if(!e)return;let t=r.getBoundingClientRect(),n=e.getBoundingClientRect();n.top>=t.top&&n.bottom<=t.bottom||(r.scrollTop+=n.top-t.top-r.clientHeight/2+n.height/2)}requestAnimationFrame(o);</script><main id="content" data-pagefind-body><p class="crumb" data-pagefind-meta="group:APIs">APIs</p><article><h1>All references</h1><p class="lede" data-pagefind-ignore>Every name the packages export, and which package exports it.</p><p>This is the index, not the explanation. Each name below is exported from the
+package it sits under, so <code>from pyoq.query import select</code> is a supported
+import and anything not listed here is how a package is built rather than
+what it offers.</p>
+<p>The list is rendered from what the packages actually export and the page is
+held to it by a test, so a name added to a public package fails the build
+until it appears here.</p>
+<p>Public means a package you import from, or a module sitting directly under
+<code>pyoq</code>. Deeper modules are implementation and are deliberately absent.</p>
+<!-- api reference -->
+<h3 id="pyoq"><code>pyoq</code></h3>
+<p><code>Database</code>, <code>Dialect</code>, <code>__version__</code>, <code>connect</code></p>
+<h3 id="pyoqcli"><code>pyoq.cli</code></h3>
+<p><code>ExitCode</code>, <code>main</code>, <code>run</code></p>
+<h3 id="pyoqconfig"><code>pyoq.config</code></h3>
+<p><code>CodegenLayout</code>, <code>Configuration</code>, <code>ConnectionConfiguration</code>, <code>DataSourceName</code>, <code>DatabaseDialect</code>, <code>DatabaseProfile</code>, <code>Dialect</code>, <code>EnvironmentReference</code>, <code>PoolConfiguration</code>, <code>ResolvedPoolConfiguration</code>, <code>SecretValue</code>, <code>SettingValue</code>, <code>load_configuration</code></p>
+<h3 id="pyoqdescriptors"><code>pyoq.descriptors</code></h3>
+<p><code>ColumnDescriptor</code>, <code>JsonScalar</code>, <code>JsonValue</code>, <code>KeyDescriptor</code>, <code>Missing</code>, <code>Present</code>, <code>RelationCardinality</code>, <code>RelationDirection</code>, <code>RelationshipDescriptor</code>, <code>TableDescriptor</code>, <code>UNSET</code>, <code>UnsetType</code></p>
+<h3 id="pyoqdiagnostics"><code>pyoq.diagnostics</code></h3>
+<p><code>AsyncInstrumentedOperations</code>, <code>AsyncScopedOperations</code>, <code>CacheMetrics</code>, <code>CallSite</code>, <code>CollectingSink</code>, <code>DEFAULT_REPEAT_THRESHOLD</code>, <code>DEFAULT_SHAPE_LIMIT</code>, <code>DEFAULT_SITE_LIMIT</code>, <code>DatabaseMetrics</code>, <code>EventPolicy</code>, <code>EventSink</code>, <code>InstrumentedOperations</code>, <code>QueryBudget</code>, <code>QueryObserver</code>, <code>QueryScope</code>, <code>QueryShape</code>, <code>RepeatedQuery</code>, <code>ScopedOperations</code>, <code>StatementEvent</code>, <code>StatementFailed</code>, <code>StatementFinished</code>, <code>StatementStarted</code>, <code>calling_site</code>, <code>forget_shapes</code>, <code>metrics_of</code>, <code>normalize_sql</code>, <code>query_shape</code>, <code>reportable_values</code>, <code>shape_cache_metrics</code></p>
+<h3 id="pyoqdjango"><code>pyoq.django</code></h3>
+<p><code>Dialect</code>, <code>DjangoOperations</code>, <code>GenerationRequest</code>, <code>MigrationStateSchemaSource</code>, <code>alias_for</code>, <code>dialect_for</code>, <code>generate</code></p>
+<h3 id="pyoqdsl"><code>pyoq.dsl</code></h3>
+<p><code>AsyncBoundConflictUpdate</code>, <code>AsyncBoundDelete</code>, <code>AsyncBoundInsert</code>, <code>AsyncBoundJoinStep</code>, <code>AsyncBoundMutation</code>, <code>AsyncBoundQuery</code>, <code>AsyncBoundReturning</code>, <code>AsyncBoundSelect</code>, <code>AsyncBoundSemiJoinStep</code>, <code>AsyncBoundUpdate</code>, <code>AsyncDslContext</code>, <code>BoundConflictUpdate</code>, <code>BoundDelete</code>, <code>BoundInsert</code>, <code>BoundJoinStep</code>, <code>BoundMutation</code>, <code>BoundQuery</code>, <code>BoundReturning</code>, <code>BoundSelect</code>, <code>BoundSemiJoinStep</code>, <code>BoundUpdate</code>, <code>DslContext</code>, <code>Result</code>, <code>Row</code>, <code>using</code></p>
+<h3 id="pyoqdslaio"><code>pyoq.dsl.aio</code></h3>
+<p><code>AsyncBoundConflictUpdate</code>, <code>AsyncBoundDelete</code>, <code>AsyncBoundInsert</code>, <code>AsyncBoundJoinStep</code>, <code>AsyncBoundMutation</code>, <code>AsyncBoundQuery</code>, <code>AsyncBoundReturning</code>, <code>AsyncBoundSelect</code>, <code>AsyncBoundSemiJoinStep</code>, <code>AsyncBoundUpdate</code>, <code>AsyncDslContext</code></p>
+<h3 id="pyoqerrors"><code>pyoq.errors</code></h3>
+<p><code>CollectionDecodeError</code>, <code>CommandError</code>, <code>CompilationError</code>, <code>ConfigurationError</code>, <code>ConfigurationFileError</code>, <code>ConfigurationValidationError</code>, <code>ConnectionPoolClosedError</code>, <code>ConnectionPoolError</code>, <code>ConnectionPoolTimeoutError</code>, <code>ExecutionError</code>, <code>ExpressionError</code>, <code>ExpressionTypeError</code>, <code>FetchPlanError</code>, <code>GenerationDriftError</code>, <code>GenerationError</code>, <code>GenerationLockError</code>, <code>GenerationManifestError</code>, <code>GenerationOwnershipError</code>, <code>GenerationValidationError</code>, <code>GenerationWriteError</code>, <code>HydrationError</code>, <code>MultipleResultsError</code>, <code>NamingCollisionError</code>, <code>NamingError</code>, <code>NamingValidationError</code>, <code>NativeRuntimeUnavailableError</code>, <code>NoResultError</code>, <code>OperationUnavailableError</code>, <code>ParameterBindingError</code>, <code>ParameterLimitError</code>, <code>PathContainmentError</code>, <code>PolicyViolationError</code>, <code>PyOQError</code>, <code>QueryBudgetExceededError</code>, <code>QueryCancelledError</code>, <code>QueryError</code>, <code>QueryExecutionError</code>, <code>QueryStateError</code>, <code>QueryTimeoutError</code>, <code>QueryValidationError</code>, <code>RawExpressionError</code>, <code>RelationError</code>, <code>RelationNotLoadedError</code>, <code>RelationResolutionError</code>, <code>ResultCardinalityError</code>, <code>RowIdentityError</code>, <code>RuntimeSelectionError</code>, <code>SchemaDriftError</code>, <code>SchemaError</code>, <code>SchemaInspectionError</code>, <code>SchemaSerializationError</code>, <code>SchemaValidationError</code>, <code>SecretResolutionError</code>, <code>StreamError</code>, <code>StreamStateError</code>, <code>TransactionError</code>, <code>TransactionStateError</code>, <code>UnknownConfigurationSettingError</code>, <code>UnsupportedQueryError</code></p>
+<h3 id="pyoqfastapi"><code>pyoq.fastapi</code></h3>
+<p><code>AsyncDatabase</code>, <code>DEFAULT</code>, <code>Databases</code>, <code>SyncDatabase</code>, <code>async_database</code>, <code>async_scoped</code>, <code>async_transaction</code>, <code>database</code>, <code>database_lifespan</code>, <code>databases_of</code>, <code>scoped</code>, <code>transaction</code></p>
+<h3 id="pyoqfetching"><code>pyoq.fetching</code></h3>
+<p><code>AsyncFetchExecutor</code>, <code>DeferredRelation</code>, <code>FetchAssembly</code>, <code>FetchColumn</code>, <code>FetchExecutor</code>, <code>FetchStatement</code>, <code>FetchedRow</code>, <code>JoinedRelation</code>, <code>KeyColumn</code>, <code>NestedJoin</code>, <code>NestedRelation</code>, <code>RelationBlock</code>, <code>batch_conditions</code>, <code>batch_statement</code>, <code>collection_for</code>, <code>columns_of</code>, <code>decode_collection</code>, <code>hydrate_collection</code>, <code>join_condition</code>, <code>key_condition</code>, <code>projection_layout</code>, <code>root_statement</code>, <code>select_in_conditions</code></p>
+<h3 id="pyoqgeneration"><code>pyoq.generation</code></h3>
+<p><code>AtomicGenerationWriter</code>, <code>ConcernRenderer</code>, <code>DirectoryProjectLock</code>, <code>DriftChecker</code>, <code>DriftReport</code>, <code>FileDriftChecker</code>, <code>GeneratedTypesRenderer</code>, <code>GenerationMode</code>, <code>GenerationPipeline</code>, <code>GenerationPlan</code>, <code>GenerationPlanner</code>, <code>JsonManifestStore</code>, <code>MANIFEST_FORMAT_VERSION</code>, <code>MANIFEST_NAME</code>, <code>ManifestOwnedCleanup</code>, <code>ManifestStore</code>, <code>OwnedFile</code>, <code>OwnershipManifest</code>, <code>PlanValidator</code>, <code>PlanWriter</code>, <code>ProfileGenerationWrite</code>, <code>ProjectLock</code>, <code>PythonSyntaxValidator</code>, <code>RenderedFile</code>, <code>SchemaSource</code></p>
+<h3 id="pyoqgenerationrendering"><code>pyoq.generation.rendering</code></h3>
+<p><code>GeneratedTypesRenderer</code></p>
+<h3 id="pyoqhydration"><code>pyoq.hydration</code></h3>
+<p><code>HydrationNode</code>, <code>IdentityMap</code>, <code>RelationValues</code>, <code>RowConstructor</code>, <code>RowIdentity</code>, <code>RowKey</code>, <code>TableProjection</code>, <code>hydrate</code>, <code>row_key_for</code>, <code>validate_hydration_node</code></p>
+<h3 id="pyoqmigrations"><code>pyoq.migrations</code></h3>
+<p><code>MigrationOutcome</code>, <code>after_migration</code>, <code>after_migration_at</code></p>
+<h3 id="pyoqnaming"><code>pyoq.naming</code></h3>
+<p><code>NameCollision</code>, <code>NameRequest</code>, <code>NamingPolicy</code>, <code>NamingResult</code>, <code>NamingScope</code>, <code>PythonNameStyle</code>, <code>ResolvedName</code></p>
+<h3 id="pyoqpolicies"><code>pyoq.policies</code></h3>
+<p><code>AllowedTables</code>, <code>AsyncGovernedOperations</code>, <code>AuditSink</code>, <code>Bypass</code>, <code>CollectingAudit</code>, <code>GovernedCompiler</code>, <code>GovernedOperations</code>, <code>Policies</code>, <code>Policy</code>, <code>RowConstraint</code>, <code>SoftDelete</code>, <code>TableReference</code>, <code>TenantScope</code>, <code>administrative_bypass</code>, <code>async_administrative_bypass</code>, <code>async_governed</code>, <code>govern</code>, <code>governed</code></p>
+<h3 id="pyoqquery"><code>pyoq.query</code></h3>
+<p><code>AggregateExpression</code>, <code>AggregateName</code>, <code>AggregateNode</code>, <code>AssignmentNode</code>, <code>BinaryNode</code>, <code>BinaryOperator</code>, <code>BoundValue</code>, <code>BoundValueNode</code>, <code>Call</code>, <code>CaseBranches</code>, <code>CaseBuilder</code>, <code>CaseNode</code>, <code>CastNode</code>, <code>ColumnBinding</code>, <code>ColumnReference</code>, <code>CommonTable</code>, <code>CommonTableNode</code>, <code>CommonTableSourceNode</code>, <code>ComputedExpression</code>, <code>Condition</code>, <code>ConflictAction</code>, <code>ConflictNode</code>, <code>ConflictUpdate</code>, <code>DatePart</code>, <code>DeleteNode</code>, <code>DeleteStatement</code>, <code>ELEMENT_COLUMN</code>, <code>Expression</code>, <code>ExpressionNode</code>, <code>ExtractNode</code>, <code>Field</code>, <code>FieldNode</code>, <code>FrameEdge</code>, <code>FrameExclusion</code>, <code>FunctionName</code>, <code>FunctionNode</code>, <code>InsertNode</code>, <code>InsertStatement</code>, <code>JoinKind</code>, <code>JoinNode</code>, <code>JoinStep</code>, <code>JsonScalar</code>, <code>JsonValue</code>, <code>MutationStatement</code>, <code>NodeProvider</code>, <code>NullOrder</code>, <code>OrderDirection</code>, <code>OrderNode</code>, <code>OrderTerm</code>, <code>Projection</code>, <code>ProjectionNode</code>, <code>Query</code>, <code>RawNode</code>, <code>RecursiveColumn</code>, <code>RecursiveTable</code>, <code>ReturningStatement</code>, <code>RowValue</code>, <code>RowValueNode</code>, <code>ScalarFamily</code>, <code>ScopedStatement</code>, <code>SelectNode</code>, <code>SelectQuery</code>, <code>SemiJoinStep</code>, <code>SetNode</code>, <code>SetOperator</code>, <code>SetQuery</code>, <code>Source</code>, <code>Subquery</code>, <code>SubquerySourceNode</code>, <code>TableSourceNode</code>, <code>UnaryNode</code>, <code>UnaryOperator</code>, <code>UpdateNode</code>, <code>UpdateStatement</code>, <code>VariadicNode</code>, <code>VariadicOperator</code>, <code>VendorFunction</code>, <code>VendorFunctionNode</code>, <code>VendorPredicate</code>, <code>Window</code>, <code>WindowFunction</code>, <code>WindowFunctionNode</code>, <code>WindowName</code>, <code>WindowNode</code>, <code>WindowSpecification</code>, <code>WriteColumn</code>, <code>WriteNode</code>, <code>WriteStatement</code>, <code>WriteTargetNode</code>, <code>alias</code>, <code>array_of</code>, <code>ascending</code>, <code>average</code>, <code>bind</code>, <code>call</code>, <code>case</code>, <code>cast</code>, <code>coalesce</code>, <code>column</code>, <code>common_table</code>, <code>count</code>, <code>cume_dist</code>, <code>current_row</code>, <code>delete_from</code>, <code>dense_rank</code>, <code>descending</code>, <code>excluded</code>, <code>exists</code>, <code>field</code>, <code>first_value</code>, <code>following</code>, <code>greatest</code>, <code>insert_into</code>, <code>json_agg</code>, <code>json_array</code>, <code>json_elements</code>, <code>json_object</code>, <code>json_object_agg</code>, <code>lag</code>, <code>last_value</code>, <code>lead</code>, <code>least</code>, <code>maximum</code>, <code>minimum</code>, <code>named_window</code>, <code>not_exists</code>, <code>nth_value</code>, <code>ntile</code>, <code>nullif</code>, <code>percent_rank</code>, <code>preceding</code>, <code>rank</code>, <code>raw</code>, <code>raw_condition</code>, <code>recursive_table</code>, <code>routine_output</code>, <code>row</code>, <code>row_number</code>, <code>select</code>, <code>select_from</code>, <code>sum_</code>, <code>table_source</code>, <code>unbounded_following</code>, <code>unbounded_preceding</code>, <code>update</code>, <code>vendor_function</code>, <code>vendor_predicate</code></p>
+<h3 id="pyoqqueryexecution"><code>pyoq.query.execution</code></h3>
+<p><code>BulkChunk</code>, <code>BulkPlan</code>, <code>BulkPlanner</code>, <code>BulkResult</code>, <code>CancellationToken</code>, <code>CompilationContext</code>, <code>CompiledQuery</code>, <code>ConnectionFactory</code>, <code>ConnectionLease</code>, <code>ConnectionPool</code>, <code>CursorSession</code>, <code>DatabaseCursor</code>, <code>ExecuteResult</code>, <code>ExecutionControl</code>, <code>OperationBudget</code>, <code>ParameterStyle</code>, <code>PoolPolicy</code>, <code>PoolStats</code>, <code>QueryOperations</code>, <code>RowStream</code>, <code>StatementKind</code>, <code>StreamPolicy</code>, <code>StreamResource</code>, <code>TransactionState</code>, <code>WriteProvider</code>, <code>fetch_all</code></p>
+<h3 id="pyoqqueryexecutionaio"><code>pyoq.query.execution.aio</code></h3>
+<p><code>AsyncConnectionFactory</code>, <code>AsyncConnectionLease</code>, <code>AsyncConnectionPool</code>, <code>AsyncCursorSession</code>, <code>AsyncDatabaseCursor</code>, <code>AsyncQueryOperations</code>, <code>AsyncRowStream</code>, <code>AsyncStreamResource</code>, <code>AsyncTransactionState</code>, <code>fetch_all</code></p>
+<h3 id="pyoqquerymysql"><code>pyoq.query.mysql</code></h3>
+<p><code>ExecutionEnvironment</code>, <code>FailureHandler</code>, <code>MySQLBulkPlanner</code>, <code>MySQLCapabilities</code>, <code>MySQLCompilationContext</code>, <code>MySQLCompiler</code>, <code>MySQLConnectionFactory</code>, <code>MySQLConnectionFactoryProtocol</code>, <code>MySQLConnectionLease</code>, <code>MySQLCursorSession</code>, <code>MySQLExecutor</code>, <code>MySQLExpressionCompiler</code>, <code>MySQLParameter</code>, <code>MySQLPool</code>, <code>MySQLPoolPolicy</code>, <code>MySQLPoolStats</code>, <code>MySQLQueryOperations</code>, <code>MySQLTransaction</code>, <code>MySQLTransactionState</code>, <code>MySQLWriteCompilation</code>, <code>TransactionMode</code>, <code>adapt_parameter</code>, <code>adapt_parameters</code></p>
+<h3 id="pyoqquerymysqlaio"><code>pyoq.query.mysql.aio</code></h3>
+<p><code>AsyncExecutionEnvironment</code>, <code>AsyncFailureHandler</code>, <code>AsyncMySQLConnection</code>, <code>AsyncMySQLCursor</code>, <code>MySQLAsyncConnectionFactory</code>, <code>MySQLAsyncConnectionLease</code>, <code>MySQLAsyncCursorSession</code>, <code>MySQLAsyncExecutor</code>, <code>MySQLAsyncPool</code>, <code>MySQLAsyncQueryOperations</code>, <code>MySQLAsyncTransaction</code>, <code>MySQLAsyncTransactionState</code>, <code>TransactionMode</code>, <code>preferred_tls_context</code></p>
+<h3 id="pyoqquerypostgres"><code>pyoq.query.postgres</code></h3>
+<p><code>PostgresBulkPlanner</code>, <code>PostgresCapabilities</code>, <code>PostgresCompilationContext</code>, <code>PostgresCompiler</code>, <code>PostgresConnectionFactory</code>, <code>PostgresConnectionFactoryProtocol</code>, <code>PostgresConnectionLease</code>, <code>PostgresCursorSession</code>, <code>PostgresExecutor</code>, <code>PostgresExpressionCompiler</code>, <code>PostgresParameter</code>, <code>PostgresPool</code>, <code>PostgresPoolPolicy</code>, <code>PostgresPoolStats</code>, <code>PostgresQueryOperations</code>, <code>PostgresTransaction</code>, <code>PostgresWriteCompilation</code>, <code>TransactionMode</code>, <code>adapt_parameter</code>, <code>adapt_parameters</code></p>
+<h3 id="pyoqquerypostgresaio"><code>pyoq.query.postgres.aio</code></h3>
+<p><code>PostgresAsyncConnectionFactory</code>, <code>PostgresAsyncConnectionLease</code>, <code>PostgresAsyncCursorSession</code>, <code>PostgresAsyncExecutionMonitor</code>, <code>PostgresAsyncExecutor</code>, <code>PostgresAsyncPool</code>, <code>PostgresAsyncQueryOperations</code>, <code>PostgresAsyncTransaction</code></p>
+<h3 id="pyoqquerysqlite"><code>pyoq.query.sqlite</code></h3>
+<p><code>CompiledQuery</code>, <code>QueryProvider</code>, <code>SQLiteBulkPlanner</code>, <code>SQLiteCapabilities</code>, <code>SQLiteCompiler</code>, <code>SQLiteConnectionFactory</code>, <code>SQLiteConnectionFactoryProtocol</code>, <code>SQLiteConnectionLease</code>, <code>SQLiteExecutor</code>, <code>SQLiteParameter</code>, <code>SQLitePool</code>, <code>SQLitePoolPolicy</code>, <code>SQLitePoolStats</code>, <code>SQLiteRowStream</code>, <code>SQLiteStreamPolicy</code>, <code>SQLiteTransaction</code>, <code>TransactionMode</code>, <code>adapt_parameter</code>, <code>adapt_parameters</code></p>
+<h3 id="pyoqrelations"><code>pyoq.relations</code></h3>
+<p><code>DEFAULT_KEY_LIMIT</code>, <code>FetchCapabilities</code>, <code>FetchJoin</code>, <code>FetchOrder</code>, <code>FetchPlan</code>, <code>FetchRequest</code>, <code>FetchStrategy</code>, <code>KeyBatch</code>, <code>MAXIMUM_FETCH_DEPTH</code>, <code>RelationBatch</code>, <code>RelationBatchLoader</code>, <code>RelationCardinality</code>, <code>RelationDirection</code>, <code>RelationEndpoint</code>, <code>RelationGraph</code>, <code>RelationState</code>, <code>RelationValue</code>, <code>ResolvedFetch</code>, <code>ResolvedFetchPlan</code>, <code>TypedRelation</code>, <code>build_relation_graph</code>, <code>by_column</code>, <code>by_expression</code>, <code>derive_relations</code>, <code>plan_key_batches</code>, <code>resolve_fetch_plan</code>, <code>table_relations</code>, <code>validate_fetch_plan</code></p>
+<h3 id="pyoqruntime"><code>pyoq.runtime</code></h3>
+<p><code>RuntimeEngine</code>, <code>engine</code></p>
+<h3 id="pyoqsanic"><code>pyoq.sanic</code></h3>
+<p><code>AsyncDatabase</code>, <code>DEFAULT</code>, <code>Databases</code>, <code>SyncDatabase</code>, <code>WorkerDatabases</code>, <code>attach_databases</code>, <code>attach_request_budget</code>, <code>attach_synchronous_request_budget</code>, <code>budgeted_of</code>, <code>database_of</code>, <code>databases_of</code>, <code>synchronous_budgeted_of</code>, <code>synchronous_database_of</code>, <code>synchronous_transaction</code>, <code>transaction</code></p>
+<h3 id="pyoqschema"><code>pyoq.schema</code></h3>
+<p><code>Capability</code>, <code>CapabilitySet</code>, <code>Catalog</code>, <code>CheckConstraint</code>, <code>Column</code>, <code>DialectRoutingSchemaSource</code>, <code>Domain</code>, <code>EnumType</code>, <code>GeneratedKind</code>, <code>GeneratedValue</code>, <code>Identifier</code>, <code>Index</code>, <code>IndexTerm</code>, <code>JsonScalar</code>, <code>JsonValue</code>, <code>Key</code>, <code>KeyKind</code>, <code>MetadataEntry</code>, <code>MySQLConnectionProvider</code>, <code>MySQLConnectionSettings</code>, <code>MySQLSchemaInspector</code>, <code>MySQLSchemaSource</code>, <code>ObjectReference</code>, <code>ParameterMode</code>, <code>PostgresConnectionProvider</code>, <code>PostgresSchemaInspector</code>, <code>PostgresSchemaSource</code>, <code>ReferentialAction</code>, <code>Relation</code>, <code>Routine</code>, <code>RoutineKind</code>, <code>RoutineParameter</code>, <code>SCHEMA_FORMAT_VERSION</code>, <code>SQLiteSchemaInspector</code>, <code>SQLiteSchemaSource</code>, <code>Schema</code>, <code>SchemaSnapshot</code>, <code>SchemaSource</code>, <code>SchemaSourceFactory</code>, <code>SqlExpression</code>, <code>SqlType</code>, <code>Table</code>, <code>TypeKind</code>, <code>View</code>, <code>mysql_type</code>, <code>postgres_type</code>, <code>schema_source_for</code>, <code>supported_dialects</code></p>
+<h3 id="pyoqschemamysql"><code>pyoq.schema.mysql</code></h3>
+<p><code>MySQLConnectionProvider</code>, <code>MySQLConnectionSettings</code>, <code>MySQLSchemaInspector</code>, <code>MySQLSchemaSource</code>, <code>mysql_type</code>, <code>parse_data_source_name</code></p>
+<h3 id="pyoqschemapostgres"><code>pyoq.schema.postgres</code></h3>
+<p><code>PostgresConnectionProvider</code>, <code>PostgresSchemaInspector</code>, <code>PostgresSchemaSource</code>, <code>postgres_type</code></p>
+<h3 id="pyoqschemasqlite"><code>pyoq.schema.sqlite</code></h3>
+<p><code>SQLiteSchemaInspector</code>, <code>SQLiteSchemaSource</code></p>
+<h3 id="pyoqserving"><code>pyoq.serving</code></h3>
+<p><code>AsyncDatabase</code>, <code>DEFAULT</code>, <code>DataSource</code>, <code>Database</code>, <code>Databases</code>, <code>SupportsAsyncTransaction</code>, <code>SupportsTransaction</code>, <code>SyncDatabase</code>, <code>connect</code></p>
+<h3 id="pyoqsnapshots"><code>pyoq.snapshots</code></h3>
+<p><code>SchemaChange</code>, <code>SchemaDifference</code>, <code>SchemaDriftReport</code>, <code>SnapshotSchemaSource</code>, <code>compare_snapshots</code>, <code>read_snapshot</code>, <code>write_snapshot</code></p>
+<h3 id="pyoqtracing"><code>pyoq.tracing</code></h3>
+<p><code>INSTRUMENTATION_NAME</code>, <code>TracingSink</code></p>
+<h3 id="pyoqunset"><code>pyoq.unset</code></h3>
+<p><code>UNSET</code>, <code>UnsetType</code></p>
+<!-- api reference --></article><nav class="pager" aria-label="Neighbouring pages"><a class="previous" href="/pyoq-sql/licence/"><span>Previous</span>Licence</a><a class="next" href="/pyoq-sql/api/internals/"><span>Next</span>Internals</a></nav><footer class="page-footer"><p>PyOQ is released under the <a href="/pyoq-sql/licence/" rel="license">MPL-2.0</a> licence.</p></footer></main></div><script type="module">document.addEventListener(`click`,e=>{let t=e.target?.closest(`[data-copy]`);if(!t)return;let n=(t.closest(`.code-shell`)?.querySelector(`pre`)?.textContent??``).replace(/\n$/,``);if(!n)return;let r=e=>{let n=t.querySelector(`[data-copy-label]`);n&&(n.textContent=e)};navigator.clipboard.writeText(n).then(()=>{t.dataset.copied=``,r(`Copied`),setTimeout(()=>{delete t.dataset.copied,r(`Copy`)},1600)},()=>r(`Press ⌘C`))});</script><script type="module" src="/pyoq-sql/_astro/CodeEditors.astro_astro_type_script_index_0_lang.C8S0YAI5.js"></script><script type="module" src="/pyoq-sql/_astro/Diagrams.astro_astro_type_script_index_0_lang.BNJty66e.js"></script></body></html>

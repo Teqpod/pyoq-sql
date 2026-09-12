@@ -1,0 +1,776 @@
+<!DOCTYPE html><html lang="en" data-appearance="light"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Expressions and conditions · PyOQ</title><meta name="description" content="Comparisons, arithmetic, functions, and how they stay typed."><link rel="canonical" href="https://teqpod.com/pyoq-sql/expressions/"><meta name="robots" content="index, follow, max-image-preview:large"><meta name="theme-color" content="#1b6ef3"><link rel="sitemap" type="application/xml" href="/pyoq-sql/sitemap.xml"><meta property="og:type" content="article"><meta property="og:site_name" content="PyOQ"><meta property="og:locale" content="en"><meta property="og:title" content="Expressions and conditions · PyOQ"><meta property="og:description" content="Comparisons, arithmetic, functions, and how they stay typed."><meta property="og:url" content="https://teqpod.com/pyoq-sql/expressions/"><meta property="og:image" content="https://teqpod.com/pyoq-sql/brand/pyoq-banner.png"><meta property="og:image:type" content="image/png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="PyOQ, fully typed database-first SQL for Python"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Expressions and conditions · PyOQ"><meta name="twitter:description" content="Comparisons, arithmetic, functions, and how they stay typed."><meta name="twitter:image" content="https://teqpod.com/pyoq-sql/brand/pyoq-banner.png"><link rel="icon" type="image/svg+xml" href="/pyoq-sql/brand/pyoq-mark.svg"><link rel="icon" type="image/png" sizes="32x32" href="/pyoq-sql/brand/pyoq-favicon-32.png"><link rel="apple-touch-icon" href="/pyoq-sql/brand/pyoq-mark-180.png"><script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://teqpod.com/pyoq-sql/#site","name":"PyOQ","url":"https://teqpod.com/pyoq-sql/","description":"A database-first SQL toolkit with generated types, explicit execution, and native acceleration for Python applications."},{"@type":"SoftwareApplication","@id":"https://teqpod.com/pyoq-sql/#project","name":"PyOQ","description":"A database-first SQL toolkit with generated types, explicit execution, and native acceleration for Python applications.","url":"https://teqpod.com/pyoq-sql/","sameAs":["https://pypi.org/project/pyoq-sql/"],"applicationCategory":"DeveloperApplication","operatingSystem":"Linux, macOS, Windows","programmingLanguage":"Python","license":"https://teqpod.com/pyoq-sql/licence/","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}},{"@type":"TechArticle","headline":"Expressions and conditions · PyOQ","description":"Comparisons, arithmetic, functions, and how they stay typed.","url":"https://teqpod.com/pyoq-sql/expressions/","image":"https://teqpod.com/pyoq-sql/brand/pyoq-banner.png","isPartOf":{"@id":"https://teqpod.com/pyoq-sql/#site"},"about":{"@id":"https://teqpod.com/pyoq-sql/#project"},"inLanguage":"en","articleSection":"Reading"}]}</script><script>
+  (() => {
+    let chosen = null;
+    try {
+      chosen = localStorage.getItem("pyoq-appearance");
+    } catch {}
+    const dark = matchMedia("(prefers-color-scheme: dark)").matches;
+    document.documentElement.dataset.appearance = chosen ?? (dark ? "dark" : "light");
+  })();
+</script><link rel="stylesheet" href="/pyoq-sql/_astro/app.CXhD3KCe.css"></head><body><a class="skip" href="#content">Skip to content</a><header class="bar"><a class="wordmark" href="/pyoq-sql/" aria-label="PyOQ documentation home"><img class="brand-image" src="/pyoq-sql/brand/pyoq-mark.svg" width="30" height="30" alt=""><span class="brand-name">PyOQ</span><span class="brand-context">docs</span></a><div class="search" data-pagefind-ignore><svg class="glass" viewBox="0 0 20 20" width="15" height="15" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.8" d="M8.5 14.5a6 6 0 1 1 0-12 6 6 0 0 1 0 12Zm4.5-1.5 4 4"></path></svg><input id="search" type="search" placeholder="Search the documentation" autocomplete="off" spellcheck="false" aria-label="Search the documentation" aria-expanded="false" aria-controls="results"><kbd>/</kbd><div id="results" role="listbox" hidden></div></div><script>(function(){const runtime = "/pyoq-sql/pagefind/pagefind.js";
+const baseUrl = "/pyoq-sql/";
+
+  const field = document.getElementById("search");
+  const panel = document.getElementById("results");
+  let engine = null;
+  let chosen = -1;
+
+  async function ready() {
+    if (engine) return engine;
+    try {
+      engine = await import(runtime);
+      await engine.options({ baseUrl, excerptLength: 24 });
+      await engine.init();
+    } catch {
+      engine = "unavailable";
+    }
+    return engine;
+  }
+
+  function close() {
+    panel.hidden = true;
+    field.setAttribute("aria-expanded", "false");
+    chosen = -1;
+  }
+
+  function draw(results) {
+    if (!results.length) {
+      panel.innerHTML = '<p class="none">Nothing matches that.</p>';
+    } else {
+      panel.innerHTML = results
+        .map((result) => {
+          const where = result.meta?.group ?? "Documentation";
+          const title = result.meta?.title ?? "Untitled";
+          return `<a role="option" href="${result.url}">
+            <span class="where">${where}</span>
+            <span class="what">${title}</span>
+            <span class="bit">${result.excerpt}</span>
+          </a>`;
+        })
+        .join("");
+    }
+    panel.hidden = false;
+    field.setAttribute("aria-expanded", "true");
+    chosen = -1;
+  }
+
+  let running = 0;
+  async function run() {
+    const wanted = field.value.trim();
+    if (!wanted) return close();
+    const engine = await ready();
+    if (engine === "unavailable") {
+      panel.innerHTML =
+        '<p class="none">Search is built with the site. Run <code>bun run build</code>.</p>';
+      panel.hidden = false;
+      return;
+    }
+    const token = ++running;
+    const found = await engine.search(wanted);
+    if (token !== running) return;
+    const top = await Promise.all(found.results.slice(0, 8).map((one) => one.data()));
+    if (token !== running) return;
+    draw(top);
+  }
+
+  function move(step) {
+    const links = panel.querySelectorAll("a");
+    if (!links.length) return;
+    chosen = (chosen + step + links.length) % links.length;
+    links.forEach((link, at) => link.classList.toggle("on", at === chosen));
+    links[chosen].scrollIntoView({ block: "nearest" });
+  }
+
+  let waiting;
+  field?.addEventListener("input", () => {
+    clearTimeout(waiting);
+    waiting = setTimeout(run, 120);
+  });
+  field?.addEventListener("focus", ready);
+
+  field?.addEventListener("keydown", (event) => {
+    if (event.key === "ArrowDown") {
+      event.preventDefault();
+      move(1);
+    } else if (event.key === "ArrowUp") {
+      event.preventDefault();
+      move(-1);
+    } else if (event.key === "Enter" && chosen >= 0) {
+      event.preventDefault();
+      panel.querySelectorAll("a")[chosen].click();
+    } else if (event.key === "Escape") {
+      field.blur();
+      close();
+    }
+  });
+
+  document.addEventListener("click", (event) => {
+    if (!panel.contains(event.target) && event.target !== field) close();
+  });
+
+  // "/" reaches the field from anywhere, which is where a reader goes first.
+  document.addEventListener("keydown", (event) => {
+    const typing = /^(INPUT|TEXTAREA)$/.test(document.activeElement?.tagName ?? "");
+    if (event.key === "/" && !typing) {
+      event.preventDefault();
+      field.focus();
+      field.select();
+    }
+  });
+})();</script><button id="appearance" type="button" aria-label="Switch appearance"><svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M10 2a8 8 0 1 0 0 16 8 8 0 0 0 0-16Zm0 1.6V16.4a6.4 6.4 0 0 1 0-12.8Z"></path></svg></button><script type="module">var e=document.documentElement;document.getElementById(`appearance`)?.addEventListener(`click`,()=>{let t=e.dataset.appearance===`dark`?`light`:`dark`;e.dataset.appearance=t;try{localStorage.setItem(`pyoq-appearance`,t)}catch{}});</script></header><div class="page"><nav class="side" aria-label="Documentation"><details class="side-toggle"><summary>Contents</summary></details><div class="side-body"><details class="side-group" data-group="Start here"><summary class="group" title="What this is, whether it suits you, and getting it running."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>Start here</summary><ul><li><a href="/pyoq-sql/overview/">What PyOQ is</a></li><li><a href="/pyoq-sql/when-to-use/">When to use what</a></li><li><a href="/pyoq-sql/installing/">Installing</a></li><li><a href="/pyoq-sql/generating/">Generating your types</a></li><li><a href="/pyoq-sql/first-query/">Your first query</a></li></ul></details><details class="side-group" data-group="For LLMs"><summary class="group" title="A compact project model and source map for coding agents."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>For LLMs</summary><ul><li><a href="/pyoq-sql/agents/">LLM agent guide</a></li></ul></details><details class="side-group" data-group="Reading" open><summary class="group" title="Everything that ends in rows coming back."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>Reading</summary><ul><li><a href="/pyoq-sql/selecting/">Selecting rows</a></li><li><a href="/pyoq-sql/expressions/" class="active" aria-current="page">Expressions and conditions</a></li><li><a href="/pyoq-sql/joins/">Joins and set operations</a></li><li><a href="/pyoq-sql/routines/">Stored routines</a></li><li><a href="/pyoq-sql/results/">Reading results</a></li></ul></details><details class="side-group" data-group="Writing"><summary class="group" title="Everything that changes what is in the database."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>Writing</summary><ul><li><a href="/pyoq-sql/inserting/">Inserting rows</a></li><li><a href="/pyoq-sql/updating/">Updating and deleting</a></li><li><a href="/pyoq-sql/conflicts/">Conflict resolution</a></li><li><a href="/pyoq-sql/bulk/">Bulk writes</a></li></ul></details><details class="side-group" data-group="Your data"><summary class="group" title="What the schema says, and how PyOQ reads it back."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>Your data</summary><ul><li><a href="/pyoq-sql/relations/">Relations</a></li><li><a href="/pyoq-sql/types/">Column types</a></li><li><a href="/pyoq-sql/snapshots/">Snapshots and drift</a></li><li><a href="/pyoq-sql/migrations/">Migration lifecycle</a></li></ul></details><details class="side-group" data-group="Running statements"><summary class="group" title="What happens between a built statement and a row."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>Running statements</summary><ul><li><a href="/pyoq-sql/connections/">Connections and pools</a></li><li><a href="/pyoq-sql/mysql-application/">MySQL without a framework</a></li><li><a href="/pyoq-sql/async/">Asynchronous execution</a></li><li><a href="/pyoq-sql/transactions/">Transactions and streaming</a></li><li><a href="/pyoq-sql/dialects/">Dialects</a></li><li><a href="/pyoq-sql/diagnostics/">Diagnostics</a></li><li><a href="/pyoq-sql/policies/">Policies</a></li><li><a href="/pyoq-sql/security/">Security</a></li><li><a href="/pyoq-sql/performance/">Performance</a></li></ul></details><details class="side-group" data-group="Frameworks"><summary class="group" title="Running inside something that already owns the connection."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>Frameworks</summary><ul><li><a href="/pyoq-sql/alembic/">Alembic</a></li><li><a href="/pyoq-sql/django/">Django</a></li><li><a href="/pyoq-sql/fastapi/">FastAPI</a></li><li><a href="/pyoq-sql/sanic/">Sanic</a></li><li><a href="/pyoq-sql/serving/">Standalone services</a></li></ul></details><details class="side-group" data-group="Reference"><summary class="group" title="The details, once you know what you are looking for."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>Reference</summary><ul><li><a href="/pyoq-sql/cli/">Command line</a></li><li><a href="/pyoq-sql/configuration/">Configuration</a></li><li><a href="/pyoq-sql/errors/">Errors</a></li><li><a href="/pyoq-sql/troubleshooting/">Troubleshooting</a></li><li><a href="/pyoq-sql/testing/">Testing applications</a></li><li><a href="/pyoq-sql/releasing/">Releasing</a></li><li><a href="/pyoq-sql/licence/">Licence</a></li></ul></details><details class="side-group" data-group="APIs"><summary class="group" title="Every package, every name it exports, and what each one does."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>APIs</summary><ul><li><a href="/pyoq-sql/api/references/">All references</a></li><li><a href="/pyoq-sql/api/internals/">Internals</a></li><li><a href="/pyoq-sql/api/pyoq/">pyoq</a></li><li><a href="/pyoq-sql/api/commands/">pyoq commands</a></li><li><a href="/pyoq-sql/api/native/">pyoq._native</a></li><li><a href="/pyoq-sql/api/cli/">pyoq.cli</a></li><li><a href="/pyoq-sql/api/config/">pyoq.config</a></li><li><a href="/pyoq-sql/api/descriptors/">pyoq.descriptors</a></li><li><a href="/pyoq-sql/api/diagnostics/">pyoq.diagnostics</a></li><li><a href="/pyoq-sql/api/django/">pyoq.django</a></li><li><a href="/pyoq-sql/api/dsl/">pyoq.dsl</a></li><li><a href="/pyoq-sql/api/errors/">pyoq.errors</a></li><li><a href="/pyoq-sql/api/fastapi/">pyoq.fastapi</a></li><li><a href="/pyoq-sql/api/fetching/">pyoq.fetching</a></li><li><a href="/pyoq-sql/api/generation/">pyoq.generation</a></li><li><a href="/pyoq-sql/api/hydration/">pyoq.hydration</a></li><li><a href="/pyoq-sql/api/migrations/">pyoq.migrations</a></li><li><a href="/pyoq-sql/api/naming/">pyoq.naming</a></li><li><a href="/pyoq-sql/api/policies/">pyoq.policies</a></li><li><a href="/pyoq-sql/api/query/">pyoq.query</a></li><li><a href="/pyoq-sql/api/query-expressions/">pyoq.query expressions</a></li><li><a href="/pyoq-sql/api/query-functions/">pyoq.query functions</a></li><li><a href="/pyoq-sql/api/query-execution/">pyoq.query.execution</a></li><li><a href="/pyoq-sql/api/query-mysql/">pyoq.query.mysql</a></li><li><a href="/pyoq-sql/api/query-postgres/">pyoq.query.postgres</a></li><li><a href="/pyoq-sql/api/query-sqlite/">pyoq.query.sqlite</a></li><li><a href="/pyoq-sql/api/relations/">pyoq.relations</a></li><li><a href="/pyoq-sql/api/runtime/">pyoq.runtime</a></li><li><a href="/pyoq-sql/api/sanic/">pyoq.sanic</a></li><li><a href="/pyoq-sql/api/schema/">pyoq.schema</a></li><li><a href="/pyoq-sql/api/schema-dialects/">pyoq.schema dialects</a></li><li><a href="/pyoq-sql/api/serving/">pyoq.serving</a></li><li><a href="/pyoq-sql/api/snapshots/">pyoq.snapshots</a></li><li><a href="/pyoq-sql/api/tracing/">pyoq.tracing</a></li></ul></details></div></nav><script type="module">var e=`pyoq-sidebar`;function t(){try{return JSON.parse(sessionStorage.getItem(e)??`{}`)}catch{return{}}}function n(t){try{sessionStorage.setItem(e,JSON.stringify(t))}catch{}}var r=document.querySelector(`.side`),i=[...document.querySelectorAll(`.side-group`)],a=t();for(let e of i){let t=e.dataset.group;t&&(t in a&&(e.open=a[t]),e.addEventListener(`toggle`,()=>{a[t]=e.open,n(a)}))}function o(){if(!r||r.scrollHeight<=r.clientHeight)return;let e=r.querySelector(`a.active`);if(!e)return;let t=r.getBoundingClientRect(),n=e.getBoundingClientRect();n.top>=t.top&&n.bottom<=t.bottom||(r.scrollTop+=n.top-t.top-r.clientHeight/2+n.height/2)}requestAnimationFrame(o);</script><main id="content" data-pagefind-body><p class="crumb" data-pagefind-meta="group:Reading">Reading</p><article><h1>Expressions and conditions</h1><p class="lede" data-pagefind-ignore>Comparisons, arithmetic, functions, and how they stay typed.</p><aside class="assumed"><p>These examples take three things as given:</p><ul><li><code>database</code> is an open database, from a pool you opened or from the framework you are inside</li><li><code>dsl</code> is <code>using(database)</code></li><li><code>TITLES</code> and its columns come from your generated package</li></ul><p><a href="/pyoq-sql/first-query/">Your first query</a> builds all three from nothing.</p></aside><p>Every column descriptor is a typed expression. What you can do with it, and
+what you can compare it to, follows from the type the database gave it.</p>
+<h2 id="comparisons">Comparisons</h2>
+<div class="code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">TITLES.ID.eq(</span><span style="color:#098658;--shiki-dark:#B5CEA8">1</span><span style="color:#000000;--shiki-dark:#D4D4D4">)</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">TITLES.ID.ne(</span><span style="color:#098658;--shiki-dark:#B5CEA8">1</span><span style="color:#000000;--shiki-dark:#D4D4D4">)</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">TITLES.PRICE.gt(Decimal(</span><span style="color:#A31515;--shiki-dark:#CE9178">"10.00"</span><span style="color:#000000;--shiki-dark:#D4D4D4">))</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">TITLES.PRICE.ge(Decimal(</span><span style="color:#A31515;--shiki-dark:#CE9178">"10.00"</span><span style="color:#000000;--shiki-dark:#D4D4D4">))</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">TITLES.PRICE.lt(Decimal(</span><span style="color:#A31515;--shiki-dark:#CE9178">"10.00"</span><span style="color:#000000;--shiki-dark:#D4D4D4">))</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">TITLES.PRICE.le(Decimal(</span><span style="color:#A31515;--shiki-dark:#CE9178">"10.00"</span><span style="color:#000000;--shiki-dark:#D4D4D4">))</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">TITLES.PRICE.between(Decimal(</span><span style="color:#A31515;--shiki-dark:#CE9178">"5.00"</span><span style="color:#000000;--shiki-dark:#D4D4D4">), Decimal(</span><span style="color:#A31515;--shiki-dark:#CE9178">"15.00"</span><span style="color:#000000;--shiki-dark:#D4D4D4">))</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">TITLES.PRICE.not_between(Decimal(</span><span style="color:#A31515;--shiki-dark:#CE9178">"5.00"</span><span style="color:#000000;--shiki-dark:#D4D4D4">), Decimal(</span><span style="color:#A31515;--shiki-dark:#CE9178">"15.00"</span><span style="color:#000000;--shiki-dark:#D4D4D4">))</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">TITLES.ID.in_(</span><span style="color:#098658;--shiki-dark:#B5CEA8">1</span><span style="color:#000000;--shiki-dark:#D4D4D4">, </span><span style="color:#098658;--shiki-dark:#B5CEA8">2</span><span style="color:#000000;--shiki-dark:#D4D4D4">, </span><span style="color:#098658;--shiki-dark:#B5CEA8">3</span><span style="color:#000000;--shiki-dark:#D4D4D4">)</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">TITLES.ID.not_in(</span><span style="color:#098658;--shiki-dark:#B5CEA8">1</span><span style="color:#000000;--shiki-dark:#D4D4D4">, </span><span style="color:#098658;--shiki-dark:#B5CEA8">2</span><span style="color:#000000;--shiki-dark:#D4D4D4">, </span><span style="color:#098658;--shiki-dark:#B5CEA8">3</span><span style="color:#000000;--shiki-dark:#D4D4D4">)</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">TITLES.COUNTRY.is_null()</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">TITLES.COUNTRY.is_not_null()</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">TITLES.COUNTRY.is_distinct_from(</span><span style="color:#A31515;--shiki-dark:#CE9178">"US"</span><span style="color:#000000;--shiki-dark:#D4D4D4">)</span></span></code></pre>
+<div class="monaco-host"></div></div>
+<p>Compare a <code>Decimal</code> column to a string and the type checker stops you. The
+scalar families also have to line up: comparing text to a number raises
+<code>ExpressionTypeError</code> while you are building, not when the database
+complains.</p>
+<h2 id="booleans">Booleans</h2>
+<div class="code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">TITLES.WITHDRAWN.is_true()</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">TITLES.WITHDRAWN.is_false()</span></span></code></pre>
+<div class="monaco-host"></div></div>
+<h2 id="combining-conditions">Combining conditions</h2>
+<p>A condition is itself an expression, so it combines with methods or with
+operators. Both produce the same tree.</p>
+<div class="code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">TITLES.PRICE.gt(</span><span style="color:#098658;--shiki-dark:#B5CEA8">10</span><span style="color:#000000;--shiki-dark:#D4D4D4">).and_(TITLES.WITHDRAWN.is_false())</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">TITLES.ID.eq(</span><span style="color:#098658;--shiki-dark:#B5CEA8">1</span><span style="color:#000000;--shiki-dark:#D4D4D4">).or_(TITLES.ID.eq(</span><span style="color:#098658;--shiki-dark:#B5CEA8">2</span><span style="color:#000000;--shiki-dark:#D4D4D4">))</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">TITLES.WITHDRAWN.is_true().not_()</span></span></code></pre>
+<div class="monaco-host"></div></div>
+<div class="pair">
+<div class="pane code-shell" data-lang="sql"><div class="code-head"><span class="code-lang">SQL</span><button class="code-copy" type="button" data-copy="" aria-label="Copy SQL code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="sql"><code><span class="line"><span style="color:#0000FF;--shiki-dark:#569CD6">SELECT</span><span style="color:#A31515;--shiki-dark:#CE9178"> "titles"</span><span style="color:#000000;--shiki-dark:#D4D4D4">.</span><span style="color:#A31515;--shiki-dark:#CE9178">"id"</span><span style="color:#0000FF;--shiki-dark:#569CD6"> FROM</span><span style="color:#A31515;--shiki-dark:#CE9178"> "titles"</span></span>
+<span class="line"><span style="color:#0000FF;--shiki-dark:#569CD6">WHERE</span><span style="color:#000000;--shiki-dark:#D4D4D4"> ((</span><span style="color:#A31515;--shiki-dark:#CE9178">"titles"</span><span style="color:#000000;--shiki-dark:#D4D4D4">.</span><span style="color:#A31515;--shiki-dark:#CE9178">"price"</span><span style="color:#000000;--shiki-dark:#D4D4D4"> > ?)</span></span>
+<span class="line"><span style="color:#0000FF;--shiki-dark:#569CD6">   AND</span><span style="color:#000000;--shiki-dark:#D4D4D4"> (SUBSTR(</span><span style="color:#A31515;--shiki-dark:#CE9178">"titles"</span><span style="color:#000000;--shiki-dark:#D4D4D4">.</span><span style="color:#A31515;--shiki-dark:#CE9178">"name"</span><span style="color:#000000;--shiki-dark:#D4D4D4">, </span><span style="color:#098658;--shiki-dark:#B5CEA8">1</span><span style="color:#000000;--shiki-dark:#D4D4D4">, </span><span style="color:#0000FF;--shiki-dark:#569CD6">LENGTH</span><span style="color:#000000;--shiki-dark:#D4D4D4">(?)) = ?))</span></span></code></pre>
+<div class="monaco-host"></div></div>
+<div class="pane code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">(</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">    dsl.select(TITLES.ID).from_(TITLES).where(</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">        TITLES.PRICE.gt(Decimal(</span><span style="color:#A31515;--shiki-dark:#CE9178">"10"</span><span style="color:#000000;--shiki-dark:#D4D4D4">))</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">    .and_(TITLES.NAME.starts_with(</span><span style="color:#A31515;--shiki-dark:#CE9178">"A"</span><span style="color:#000000;--shiki-dark:#D4D4D4">))</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">    )</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">)</span></span></code></pre>
+<div class="monaco-host"></div></div></div>
+<p>The operators <code>&#x26;</code>, <code>|</code>, and <code>~</code> do the same thing:</p>
+<div class="code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">predicate = TITLES.ID.gt(</span><span style="color:#098658;--shiki-dark:#B5CEA8">0</span><span style="color:#000000;--shiki-dark:#D4D4D4">) &#x26; TITLES.NAME.starts_with(</span><span style="color:#A31515;--shiki-dark:#CE9178">"A"</span><span style="color:#000000;--shiki-dark:#D4D4D4">)</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">either = TITLES.ID.eq(</span><span style="color:#098658;--shiki-dark:#B5CEA8">1</span><span style="color:#000000;--shiki-dark:#D4D4D4">) | TITLES.ID.eq(</span><span style="color:#098658;--shiki-dark:#B5CEA8">2</span><span style="color:#000000;--shiki-dark:#D4D4D4">)</span></span></code></pre>
+<div class="monaco-host"></div></div>
+<p><code>where()</code> accepts one condition. Combine the conditions before passing them so
+the grouping remains explicit.</p>
+<h2 id="text">Text</h2>
+<div class="code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">TITLES.NAME.like(</span><span style="color:#A31515;--shiki-dark:#CE9178">"A%"</span><span style="color:#000000;--shiki-dark:#D4D4D4">)</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">TITLES.NAME.not_like(</span><span style="color:#A31515;--shiki-dark:#CE9178">"A%"</span><span style="color:#000000;--shiki-dark:#D4D4D4">)</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">TITLES.NAME.starts_with(</span><span style="color:#A31515;--shiki-dark:#CE9178">"A"</span><span style="color:#000000;--shiki-dark:#D4D4D4">)</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">TITLES.NAME.ends_with(</span><span style="color:#A31515;--shiki-dark:#CE9178">"Guide"</span><span style="color:#000000;--shiki-dark:#D4D4D4">)</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">TITLES.NAME.contains(</span><span style="color:#A31515;--shiki-dark:#CE9178">"Guide"</span><span style="color:#000000;--shiki-dark:#D4D4D4">)</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">TITLES.NAME.lower()</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">TITLES.NAME.upper()</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">TITLES.NAME.length()</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">TITLES.NAME.concat(</span><span style="color:#A31515;--shiki-dark:#CE9178">" (revised)"</span><span style="color:#000000;--shiki-dark:#D4D4D4">)</span></span></code></pre>
+<div class="monaco-host"></div></div>
+<h2 id="arithmetic">Arithmetic</h2>
+<div class="code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">TITLES.PRICE.add(</span><span style="color:#098658;--shiki-dark:#B5CEA8">1</span><span style="color:#000000;--shiki-dark:#D4D4D4">)</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">TITLES.PRICE.subtract(</span><span style="color:#098658;--shiki-dark:#B5CEA8">1</span><span style="color:#000000;--shiki-dark:#D4D4D4">)</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">TITLES.PRICE.multiply(</span><span style="color:#098658;--shiki-dark:#B5CEA8">2</span><span style="color:#000000;--shiki-dark:#D4D4D4">)</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">TITLES.PRICE.divide(</span><span style="color:#098658;--shiki-dark:#B5CEA8">2</span><span style="color:#000000;--shiki-dark:#D4D4D4">)</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">TITLES.PRICE.modulo(</span><span style="color:#098658;--shiki-dark:#B5CEA8">2</span><span style="color:#000000;--shiki-dark:#D4D4D4">)</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">TITLES.PRICE.negate()</span></span></code></pre>
+<div class="monaco-host"></div></div>
+<p>The operators <code>+</code>, <code>-</code>, <code>*</code>, <code>/</code> do the same thing.</p>
+<h2 id="dates-times-and-durations">Dates, times, and durations</h2>
+<div class="code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#AF00DB;--shiki-dark:#C586C0">from</span><span style="color:#000000;--shiki-dark:#D4D4D4"> pyoq.query </span><span style="color:#AF00DB;--shiki-dark:#C586C0">import</span><span style="color:#000000;--shiki-dark:#D4D4D4"> DatePart</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">TITLES.RELEASED.extract(DatePart.YEAR)</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">TITLES.RELEASED.add_duration(timedelta(</span><span style="color:#001080;--shiki-dark:#9CDCFE">days</span><span style="color:#000000;--shiki-dark:#D4D4D4">=</span><span style="color:#098658;--shiki-dark:#B5CEA8">7</span><span style="color:#000000;--shiki-dark:#D4D4D4">))</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">TITLES.RELEASED.subtract_duration(timedelta(</span><span style="color:#001080;--shiki-dark:#9CDCFE">days</span><span style="color:#000000;--shiki-dark:#D4D4D4">=</span><span style="color:#098658;--shiki-dark:#B5CEA8">7</span><span style="color:#000000;--shiki-dark:#D4D4D4">))</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">TITLES.RELEASED.difference(TITLES.WITHDRAWN_ON)</span></span></code></pre>
+<div class="monaco-host"></div></div>
+<h2 id="aggregates">Aggregates</h2>
+<div class="code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#AF00DB;--shiki-dark:#C586C0">from</span><span style="color:#000000;--shiki-dark:#D4D4D4"> pyoq.query </span><span style="color:#AF00DB;--shiki-dark:#C586C0">import</span><span style="color:#000000;--shiki-dark:#D4D4D4"> average, count, maximum, minimum, sum_</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">count()                    </span><span style="color:#008000;--shiki-dark:#6A9955"># int</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">count(TITLES.PAGES)        </span><span style="color:#008000;--shiki-dark:#6A9955"># int, counting the non-null</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">sum_(TITLES.PRICE)         </span><span style="color:#008000;--shiki-dark:#6A9955"># Decimal | None</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">average(TITLES.PRICE)      </span><span style="color:#008000;--shiki-dark:#6A9955"># Decimal | None</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">minimum(TITLES.RELEASED)   </span><span style="color:#008000;--shiki-dark:#6A9955"># date | None</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">maximum(TITLES.RELEASED)   </span><span style="color:#008000;--shiki-dark:#6A9955"># date | None</span></span></code></pre>
+<div class="monaco-host"></div></div>
+<p>The optional is not caution. An aggregate over no rows genuinely has no
+value, and a type that hid that would be lying to you.</p>
+<h2 id="choosing-a-value">Choosing a value</h2>
+<p><code>case()</code> reads its branches in order and stops at the first that holds.</p>
+<div class="pair">
+<div class="pane code-shell" data-lang="sql"><div class="code-head"><span class="code-lang">SQL</span><button class="code-copy" type="button" data-copy="" aria-label="Copy SQL code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="sql"><code><span class="line"><span style="color:#0000FF;--shiki-dark:#569CD6">SELECT</span><span style="color:#A31515;--shiki-dark:#CE9178"> "titles"</span><span style="color:#000000;--shiki-dark:#D4D4D4">.</span><span style="color:#A31515;--shiki-dark:#CE9178">"name"</span><span style="color:#000000;--shiki-dark:#D4D4D4">,</span></span>
+<span class="line"><span style="color:#0000FF;--shiki-dark:#569CD6">       CASE</span><span style="color:#0000FF;--shiki-dark:#569CD6"> WHEN</span><span style="color:#000000;--shiki-dark:#D4D4D4"> (</span><span style="color:#A31515;--shiki-dark:#CE9178">"titles"</span><span style="color:#000000;--shiki-dark:#D4D4D4">.</span><span style="color:#A31515;--shiki-dark:#CE9178">"price"</span><span style="color:#000000;--shiki-dark:#D4D4D4"> > ?) </span><span style="color:#0000FF;--shiki-dark:#569CD6">THEN</span><span style="color:#000000;--shiki-dark:#D4D4D4"> ?</span></span>
+<span class="line"><span style="color:#0000FF;--shiki-dark:#569CD6">            WHEN</span><span style="color:#000000;--shiki-dark:#D4D4D4"> (</span><span style="color:#A31515;--shiki-dark:#CE9178">"titles"</span><span style="color:#000000;--shiki-dark:#D4D4D4">.</span><span style="color:#A31515;--shiki-dark:#CE9178">"price"</span><span style="color:#000000;--shiki-dark:#D4D4D4"> > ?) </span><span style="color:#0000FF;--shiki-dark:#569CD6">THEN</span><span style="color:#000000;--shiki-dark:#D4D4D4"> ?</span></span>
+<span class="line"><span style="color:#0000FF;--shiki-dark:#569CD6">            ELSE</span><span style="color:#000000;--shiki-dark:#D4D4D4"> ? </span><span style="color:#0000FF;--shiki-dark:#569CD6">END</span></span>
+<span class="line"><span style="color:#0000FF;--shiki-dark:#569CD6">  FROM</span><span style="color:#A31515;--shiki-dark:#CE9178"> "titles"</span></span></code></pre>
+<div class="monaco-host"></div></div>
+<div class="pane code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#AF00DB;--shiki-dark:#C586C0">from</span><span style="color:#000000;--shiki-dark:#D4D4D4"> pyoq.query </span><span style="color:#AF00DB;--shiki-dark:#C586C0">import</span><span style="color:#000000;--shiki-dark:#D4D4D4"> case</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">dsl.select(</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">    TITLES.NAME,</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">    case()</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">    .when(TITLES.PRICE.gt(Decimal(</span><span style="color:#A31515;--shiki-dark:#CE9178">"50"</span><span style="color:#000000;--shiki-dark:#D4D4D4">)), </span><span style="color:#A31515;--shiki-dark:#CE9178">"premium"</span><span style="color:#000000;--shiki-dark:#D4D4D4">)</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">    .when(TITLES.PRICE.gt(Decimal(</span><span style="color:#A31515;--shiki-dark:#CE9178">"10"</span><span style="color:#000000;--shiki-dark:#D4D4D4">)), </span><span style="color:#A31515;--shiki-dark:#CE9178">"standard"</span><span style="color:#000000;--shiki-dark:#D4D4D4">)</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">    .otherwise(</span><span style="color:#A31515;--shiki-dark:#CE9178">"budget"</span><span style="color:#000000;--shiki-dark:#D4D4D4">),</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">).from_(TITLES)</span></span></code></pre>
+<div class="monaco-host"></div></div></div>
+<p>The whole expression takes its type from the <strong>first</strong> result, so a later
+branch that disagrees is refused where you write it, not when the query runs.</p>
+<p><code>otherwise()</code> closes the case with a value for every remaining row, and the
+result is not nullable. <code>end()</code> closes it without one, and the result is
+<code>T | None</code>, because SQL answers null for a row that matched nothing.</p>
+<div class="pair">
+<div class="pane code-shell" data-lang="sql"><div class="code-head"><span class="code-lang">SQL</span><button class="code-copy" type="button" data-copy="" aria-label="Copy SQL code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="sql"><code><span class="line"><span style="color:#0000FF;--shiki-dark:#569CD6">SELECT</span><span style="color:#0000FF;--shiki-dark:#569CD6"> CASE</span><span style="color:#0000FF;--shiki-dark:#569CD6"> WHEN</span><span style="color:#000000;--shiki-dark:#D4D4D4"> (</span><span style="color:#A31515;--shiki-dark:#CE9178">"titles"</span><span style="color:#000000;--shiki-dark:#D4D4D4">.</span><span style="color:#A31515;--shiki-dark:#CE9178">"price"</span><span style="color:#000000;--shiki-dark:#D4D4D4"> > ?) </span><span style="color:#0000FF;--shiki-dark:#569CD6">THEN</span><span style="color:#000000;--shiki-dark:#D4D4D4"> ? </span><span style="color:#0000FF;--shiki-dark:#569CD6">END</span><span style="color:#0000FF;--shiki-dark:#569CD6"> FROM</span><span style="color:#A31515;--shiki-dark:#CE9178"> "titles"</span></span></code></pre>
+<div class="monaco-host"></div></div>
+<div class="pane code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">dsl.select(case().when(TITLES.PRICE.gt(Decimal(</span><span style="color:#A31515;--shiki-dark:#CE9178">"50"</span><span style="color:#000000;--shiki-dark:#D4D4D4">)), </span><span style="color:#A31515;--shiki-dark:#CE9178">"premium"</span><span style="color:#000000;--shiki-dark:#D4D4D4">).end()).from_(</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">    TITLES</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">)</span></span></code></pre>
+<div class="monaco-host"></div></div></div>
+<h2 id="the-first-value-that-is-not-null">The first value that is not null</h2>
+<div class="pair">
+<div class="pane code-shell" data-lang="sql"><div class="code-head"><span class="code-lang">SQL</span><button class="code-copy" type="button" data-copy="" aria-label="Copy SQL code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="sql"><code><span class="line"><span style="color:#0000FF;--shiki-dark:#569CD6">SELECT</span><span style="color:#795E26;--shiki-dark:#DCDCAA"> COALESCE</span><span style="color:#000000;--shiki-dark:#D4D4D4">(</span><span style="color:#A31515;--shiki-dark:#CE9178">"titles"</span><span style="color:#000000;--shiki-dark:#D4D4D4">.</span><span style="color:#A31515;--shiki-dark:#CE9178">"name"</span><span style="color:#000000;--shiki-dark:#D4D4D4">, ?) </span><span style="color:#0000FF;--shiki-dark:#569CD6">FROM</span><span style="color:#A31515;--shiki-dark:#CE9178"> "titles"</span></span></code></pre>
+<div class="monaco-host"></div></div>
+<div class="pane code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#AF00DB;--shiki-dark:#C586C0">from</span><span style="color:#000000;--shiki-dark:#D4D4D4"> pyoq.query </span><span style="color:#AF00DB;--shiki-dark:#C586C0">import</span><span style="color:#000000;--shiki-dark:#D4D4D4"> coalesce</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">dsl.select(coalesce(TITLES.NAME, </span><span style="color:#A31515;--shiki-dark:#CE9178">"untitled"</span><span style="color:#000000;--shiki-dark:#D4D4D4">)).from_(TITLES)</span></span></code></pre>
+<div class="monaco-host"></div></div></div>
+<p>When the column is nullable and the fallback is not, <code>coalesce()</code> drops the
+<code>None</code> from the type: a nullable <code>Expression[str | None]</code> becomes
+<code>ComputedExpression[str]</code>, and the row you read back needs no null check.</p>
+<p><code>nullif()</code> is the mirror image, answering null when its two arguments agree.
+It turns a placeholder value into a real absence:</p>
+<div class="pair">
+<div class="pane code-shell" data-lang="sql"><div class="code-head"><span class="code-lang">SQL</span><button class="code-copy" type="button" data-copy="" aria-label="Copy SQL code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="sql"><code><span class="line"><span style="color:#0000FF;--shiki-dark:#569CD6">SELECT</span><span style="color:#795E26;--shiki-dark:#DCDCAA"> NULLIF</span><span style="color:#000000;--shiki-dark:#D4D4D4">(</span><span style="color:#A31515;--shiki-dark:#CE9178">"titles"</span><span style="color:#000000;--shiki-dark:#D4D4D4">.</span><span style="color:#A31515;--shiki-dark:#CE9178">"name"</span><span style="color:#000000;--shiki-dark:#D4D4D4">, ?) </span><span style="color:#0000FF;--shiki-dark:#569CD6">FROM</span><span style="color:#A31515;--shiki-dark:#CE9178"> "titles"</span></span></code></pre>
+<div class="monaco-host"></div></div>
+<div class="pane code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#AF00DB;--shiki-dark:#C586C0">from</span><span style="color:#000000;--shiki-dark:#D4D4D4"> pyoq.query </span><span style="color:#AF00DB;--shiki-dark:#C586C0">import</span><span style="color:#000000;--shiki-dark:#D4D4D4"> nullif</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">dsl.select(nullif(TITLES.NAME, </span><span style="color:#A31515;--shiki-dark:#CE9178">""</span><span style="color:#000000;--shiki-dark:#D4D4D4">)).from_(TITLES)</span></span></code></pre>
+<div class="monaco-host"></div></div></div>
+<h2 id="the-widest-and-the-narrowest">The widest and the narrowest</h2>
+<div class="pair">
+<div class="pane code-shell" data-lang="sql"><div class="code-head"><span class="code-lang">SQL</span><button class="code-copy" type="button" data-copy="" aria-label="Copy SQL code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="sql"><code><span class="line"><span style="color:#0000FF;--shiki-dark:#569CD6">SELECT</span><span style="color:#795E26;--shiki-dark:#DCDCAA"> MAX</span><span style="color:#000000;--shiki-dark:#D4D4D4">(</span><span style="color:#A31515;--shiki-dark:#CE9178">"titles"</span><span style="color:#000000;--shiki-dark:#D4D4D4">.</span><span style="color:#A31515;--shiki-dark:#CE9178">"price"</span><span style="color:#000000;--shiki-dark:#D4D4D4">, ?) </span><span style="color:#0000FF;--shiki-dark:#569CD6">FROM</span><span style="color:#A31515;--shiki-dark:#CE9178"> "titles"</span></span></code></pre>
+<div class="monaco-host"></div></div>
+<div class="pane code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#AF00DB;--shiki-dark:#C586C0">from</span><span style="color:#000000;--shiki-dark:#D4D4D4"> pyoq.query </span><span style="color:#AF00DB;--shiki-dark:#C586C0">import</span><span style="color:#000000;--shiki-dark:#D4D4D4"> greatest</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">dsl.select(greatest(TITLES.PRICE, Decimal(</span><span style="color:#A31515;--shiki-dark:#CE9178">"0"</span><span style="color:#000000;--shiki-dark:#D4D4D4">))).from_(TITLES)</span></span></code></pre>
+<div class="monaco-host"></div></div></div>
+<div class="pair">
+<div class="pane code-shell" data-lang="sql"><div class="code-head"><span class="code-lang">SQL</span><button class="code-copy" type="button" data-copy="" aria-label="Copy SQL code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="sql"><code><span class="line"><span style="color:#0000FF;--shiki-dark:#569CD6">SELECT</span><span style="color:#795E26;--shiki-dark:#DCDCAA"> MIN</span><span style="color:#000000;--shiki-dark:#D4D4D4">(</span><span style="color:#A31515;--shiki-dark:#CE9178">"titles"</span><span style="color:#000000;--shiki-dark:#D4D4D4">.</span><span style="color:#A31515;--shiki-dark:#CE9178">"price"</span><span style="color:#000000;--shiki-dark:#D4D4D4">, ?) </span><span style="color:#0000FF;--shiki-dark:#569CD6">FROM</span><span style="color:#A31515;--shiki-dark:#CE9178"> "titles"</span></span></code></pre>
+<div class="monaco-host"></div></div>
+<div class="pane code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#AF00DB;--shiki-dark:#C586C0">from</span><span style="color:#000000;--shiki-dark:#D4D4D4"> pyoq.query </span><span style="color:#AF00DB;--shiki-dark:#C586C0">import</span><span style="color:#000000;--shiki-dark:#D4D4D4"> least</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">dsl.select(least(TITLES.PRICE, Decimal(</span><span style="color:#A31515;--shiki-dark:#CE9178">"100"</span><span style="color:#000000;--shiki-dark:#D4D4D4">))).from_(TITLES)</span></span></code></pre>
+<div class="monaco-host"></div></div></div>
+<p>These compare across arguments in one row, which is not what <code>MIN</code> and <code>MAX</code>
+do as aggregates across rows. SQLite has no <code>GREATEST</code> or <code>LEAST</code> and spells
+the row-wise form <code>MAX</code> and <code>MIN</code> over several arguments, which is what you see
+above. On PostgreSQL and MySQL the same two lines emit <code>GREATEST</code> and <code>LEAST</code>.</p>
+<p>Everything on this page is an expression like any other, so it can be selected,
+compared, ordered by, grouped by, or nested inside another one. Values reach
+them bound, never as SQL text.</p>
+<h2 id="asking-for-another-type">Asking for another type</h2>
+<div class="pair">
+<div class="pane code-shell" data-lang="sql"><div class="code-head"><span class="code-lang">SQL</span><button class="code-copy" type="button" data-copy="" aria-label="Copy SQL code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="sql"><code><span class="line"><span style="color:#0000FF;--shiki-dark:#569CD6">SELECT</span><span style="color:#795E26;--shiki-dark:#DCDCAA"> CAST</span><span style="color:#000000;--shiki-dark:#D4D4D4">(</span><span style="color:#A31515;--shiki-dark:#CE9178">"titles"</span><span style="color:#000000;--shiki-dark:#D4D4D4">.</span><span style="color:#A31515;--shiki-dark:#CE9178">"price"</span><span style="color:#0000FF;--shiki-dark:#569CD6"> AS</span><span style="color:#0000FF;--shiki-dark:#569CD6"> NUMERIC</span><span style="color:#000000;--shiki-dark:#D4D4D4">) </span><span style="color:#0000FF;--shiki-dark:#569CD6">FROM</span><span style="color:#A31515;--shiki-dark:#CE9178"> "titles"</span></span></code></pre>
+<div class="monaco-host"></div></div>
+<div class="pane code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#AF00DB;--shiki-dark:#C586C0">from</span><span style="color:#000000;--shiki-dark:#D4D4D4"> pyoq.query </span><span style="color:#AF00DB;--shiki-dark:#C586C0">import</span><span style="color:#000000;--shiki-dark:#D4D4D4"> cast</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">dsl.select(cast(TITLES.PRICE, Decimal)).from_(TITLES)</span></span></code></pre>
+<div class="monaco-host"></div></div></div>
+<p>You name a Python type; the dialect names its own. A cast is the only computed
+expression that declares what it answers with, so it is the only one whose
+promise survives the driver: <code>cast(x, Decimal)</code> gives you a <code>Decimal</code> on every
+dialect, even where the driver would have handed back a float.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Target</th><th>SQLite</th><th>PostgreSQL</th><th>MySQL</th></tr></thead><tbody><tr><td><code>bool</code></td><td><code>INTEGER</code></td><td><code>BOOLEAN</code></td><td>refused</td></tr><tr><td><code>int</code></td><td><code>INTEGER</code></td><td><code>INTEGER</code></td><td><code>SIGNED</code></td></tr><tr><td><code>float</code></td><td><code>REAL</code></td><td><code>DOUBLE PRECISION</code></td><td><code>DOUBLE</code></td></tr><tr><td><code>Decimal</code></td><td><code>NUMERIC</code></td><td><code>NUMERIC</code></td><td><code>DECIMAL(65, 30)</code></td></tr><tr><td><code>str</code></td><td><code>TEXT</code></td><td><code>TEXT</code></td><td><code>CHAR</code></td></tr><tr><td><code>bytes</code></td><td><code>BLOB</code></td><td><code>BYTEA</code></td><td><code>BINARY</code></td></tr><tr><td><code>date</code></td><td>refused</td><td><code>DATE</code></td><td><code>DATE</code></td></tr><tr><td><code>time</code></td><td>refused</td><td><code>TIME</code></td><td><code>TIME</code></td></tr><tr><td><code>datetime</code></td><td>refused</td><td><code>TIMESTAMP</code></td><td><code>DATETIME</code></td></tr><tr><td><code>timedelta</code></td><td>refused</td><td><code>INTERVAL</code></td><td>refused</td></tr><tr><td><code>UUID</code></td><td>refused</td><td><code>UUID</code></td><td>refused</td></tr><tr><td><code>dict</code>, <code>list</code></td><td>refused</td><td><code>JSONB</code></td><td><code>JSON</code></td></tr></tbody></table>
+<p><strong>Refused</strong> means exactly that: the query does not compile. SQLite would
+happily accept <code>CAST(x AS DATE)</code> and answer with an integer, because an
+unfamiliar type name falls back to storage affinity there. Emitting it would
+promise a date and hand back something else, so PyOQ will not.</p>
+<p>MySQL is asked for <code>DECIMAL(65, 30)</code> rather than <code>DECIMAL</code>, because a bare one
+means <code>DECIMAL(10, 0)</code> there and would answer <code>123</code> for <code>123.45</code>. These names
+were taken from running servers, not from a specification.</p>
+<p>A type no database type answers to is refused where you write it:</p>
+<div class="code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">cast(TITLES.NAME, </span><span style="color:#267F99;--shiki-dark:#4EC9B0">set</span><span style="color:#000000;--shiki-dark:#D4D4D4">)  </span><span style="color:#008000;--shiki-dark:#6A9955"># TypeError: set is not a cast target</span></span></code></pre>
+<div class="monaco-host"></div></div>
+<h2 id="measuring-a-row-against-its-neighbours">Measuring a row against its neighbours</h2>
+<p>An aggregate collapses a group into one row. A window leaves the rows alone
+and gives each one an answer computed from the rows around it.</p>
+<div class="pair">
+<div class="pane code-shell" data-lang="sql"><div class="code-head"><span class="code-lang">SQL</span><button class="code-copy" type="button" data-copy="" aria-label="Copy SQL code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="sql"><code><span class="line"><span style="color:#0000FF;--shiki-dark:#569CD6">SELECT</span><span style="color:#A31515;--shiki-dark:#CE9178"> "titles"</span><span style="color:#000000;--shiki-dark:#D4D4D4">.</span><span style="color:#A31515;--shiki-dark:#CE9178">"name"</span><span style="color:#000000;--shiki-dark:#D4D4D4">,</span></span>
+<span class="line"><span style="color:#795E26;--shiki-dark:#DCDCAA">       ROW_NUMBER</span><span style="color:#000000;--shiki-dark:#D4D4D4">() </span><span style="color:#0000FF;--shiki-dark:#569CD6">OVER</span><span style="color:#000000;--shiki-dark:#D4D4D4"> (</span><span style="color:#0000FF;--shiki-dark:#569CD6">PARTITION</span><span style="color:#0000FF;--shiki-dark:#569CD6"> BY</span><span style="color:#A31515;--shiki-dark:#CE9178"> "titles"</span><span style="color:#000000;--shiki-dark:#D4D4D4">.</span><span style="color:#A31515;--shiki-dark:#CE9178">"publisher_id"</span></span>
+<span class="line"><span style="color:#0000FF;--shiki-dark:#569CD6">                          ORDER BY</span><span style="color:#A31515;--shiki-dark:#CE9178"> "titles"</span><span style="color:#000000;--shiki-dark:#D4D4D4">.</span><span style="color:#A31515;--shiki-dark:#CE9178">"price"</span><span style="color:#0000FF;--shiki-dark:#569CD6"> DESC</span><span style="color:#000000;--shiki-dark:#D4D4D4">)</span></span>
+<span class="line"><span style="color:#0000FF;--shiki-dark:#569CD6">  FROM</span><span style="color:#A31515;--shiki-dark:#CE9178"> "titles"</span></span></code></pre>
+<div class="monaco-host"></div></div>
+<div class="pane code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#AF00DB;--shiki-dark:#C586C0">from</span><span style="color:#000000;--shiki-dark:#D4D4D4"> pyoq.query </span><span style="color:#AF00DB;--shiki-dark:#C586C0">import</span><span style="color:#000000;--shiki-dark:#D4D4D4"> row_number</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">dsl.select(</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">    TITLES.NAME,</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">    row_number().over().partition_by(TITLES.PUBLISHER_ID).order_by(</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">        TITLES.PRICE.desc()</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">    ),</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">).from_(TITLES)</span></span></code></pre>
+<div class="monaco-host"></div></div></div>
+<p>The clauses read in the order SQL writes them: the function, then the window
+it looks through, then how that window is divided and ordered. A window with
+no <code>partition_by()</code> covers every row.</p>
+<div class="pair">
+<div class="pane code-shell" data-lang="sql"><div class="code-head"><span class="code-lang">SQL</span><button class="code-copy" type="button" data-copy="" aria-label="Copy SQL code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="sql"><code><span class="line"><span style="color:#0000FF;--shiki-dark:#569CD6">SELECT</span><span style="color:#A31515;--shiki-dark:#CE9178"> "titles"</span><span style="color:#000000;--shiki-dark:#D4D4D4">.</span><span style="color:#A31515;--shiki-dark:#CE9178">"name"</span><span style="color:#000000;--shiki-dark:#D4D4D4">, </span><span style="color:#795E26;--shiki-dark:#DCDCAA">RANK</span><span style="color:#000000;--shiki-dark:#D4D4D4">() </span><span style="color:#0000FF;--shiki-dark:#569CD6">OVER</span><span style="color:#000000;--shiki-dark:#D4D4D4"> (</span><span style="color:#0000FF;--shiki-dark:#569CD6">ORDER BY</span><span style="color:#A31515;--shiki-dark:#CE9178"> "titles"</span><span style="color:#000000;--shiki-dark:#D4D4D4">.</span><span style="color:#A31515;--shiki-dark:#CE9178">"price"</span><span style="color:#0000FF;--shiki-dark:#569CD6"> DESC</span><span style="color:#000000;--shiki-dark:#D4D4D4">)</span></span>
+<span class="line"><span style="color:#0000FF;--shiki-dark:#569CD6">  FROM</span><span style="color:#A31515;--shiki-dark:#CE9178"> "titles"</span></span></code></pre>
+<div class="monaco-host"></div></div>
+<div class="pane code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#AF00DB;--shiki-dark:#C586C0">from</span><span style="color:#000000;--shiki-dark:#D4D4D4"> pyoq.query </span><span style="color:#AF00DB;--shiki-dark:#C586C0">import</span><span style="color:#000000;--shiki-dark:#D4D4D4"> rank</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">dsl.select(TITLES.NAME, rank().over().order_by(TITLES.PRICE.desc())).from_(</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">    TITLES</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">)</span></span></code></pre>
+<div class="monaco-host"></div></div></div>
+<p><code>row_number()</code> counts from one and breaks ties arbitrarily. <code>rank()</code> gives
+tied rows the same position and leaves a gap after them, <code>dense_rank()</code> gives
+them the same position and no gap, and <code>ntile(n)</code> says which of <code>n</code> equal
+buckets a row falls in.</p>
+<h2 id="a-running-total-and-the-row-before">A running total, and the row before</h2>
+<p>Any aggregate can be taken over a window instead of over a group, through the
+same <code>over()</code>. The rows stay as they are and each one gets the aggregate of
+the window around it:</p>
+<div class="pair">
+<div class="pane code-shell" data-lang="sql"><div class="code-head"><span class="code-lang">SQL</span><button class="code-copy" type="button" data-copy="" aria-label="Copy SQL code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="sql"><code><span class="line"><span style="color:#0000FF;--shiki-dark:#569CD6">SELECT</span><span style="color:#A31515;--shiki-dark:#CE9178"> "titles"</span><span style="color:#000000;--shiki-dark:#D4D4D4">.</span><span style="color:#A31515;--shiki-dark:#CE9178">"name"</span><span style="color:#000000;--shiki-dark:#D4D4D4">, </span><span style="color:#795E26;--shiki-dark:#DCDCAA">SUM</span><span style="color:#000000;--shiki-dark:#D4D4D4">(</span><span style="color:#A31515;--shiki-dark:#CE9178">"titles"</span><span style="color:#000000;--shiki-dark:#D4D4D4">.</span><span style="color:#A31515;--shiki-dark:#CE9178">"price"</span><span style="color:#000000;--shiki-dark:#D4D4D4">) </span><span style="color:#0000FF;--shiki-dark:#569CD6">OVER</span><span style="color:#000000;--shiki-dark:#D4D4D4"> (</span><span style="color:#0000FF;--shiki-dark:#569CD6">ORDER BY</span><span style="color:#A31515;--shiki-dark:#CE9178"> "titles"</span><span style="color:#000000;--shiki-dark:#D4D4D4">.</span><span style="color:#A31515;--shiki-dark:#CE9178">"id"</span><span style="color:#0000FF;--shiki-dark:#569CD6"> ASC</span><span style="color:#000000;--shiki-dark:#D4D4D4">)</span></span>
+<span class="line"><span style="color:#0000FF;--shiki-dark:#569CD6">  FROM</span><span style="color:#A31515;--shiki-dark:#CE9178"> "titles"</span></span></code></pre>
+<div class="monaco-host"></div></div>
+<div class="pane code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">dsl.select(TITLES.NAME, sum_(TITLES.PRICE).over().order_by(TITLES.ID)).from_(</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">    TITLES</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">)</span></span></code></pre>
+<div class="monaco-host"></div></div></div>
+<p><code>lag()</code> and <code>lead()</code> read the value that many rows back or ahead. Past the
+edge of the window there is no such row, so both are typed <code>T | None</code>:</p>
+<div class="pair">
+<div class="pane code-shell" data-lang="sql"><div class="code-head"><span class="code-lang">SQL</span><button class="code-copy" type="button" data-copy="" aria-label="Copy SQL code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="sql"><code><span class="line"><span style="color:#0000FF;--shiki-dark:#569CD6">SELECT</span><span style="color:#A31515;--shiki-dark:#CE9178"> "titles"</span><span style="color:#000000;--shiki-dark:#D4D4D4">.</span><span style="color:#A31515;--shiki-dark:#CE9178">"name"</span><span style="color:#000000;--shiki-dark:#D4D4D4">, </span><span style="color:#795E26;--shiki-dark:#DCDCAA">LAG</span><span style="color:#000000;--shiki-dark:#D4D4D4">(</span><span style="color:#A31515;--shiki-dark:#CE9178">"titles"</span><span style="color:#000000;--shiki-dark:#D4D4D4">.</span><span style="color:#A31515;--shiki-dark:#CE9178">"price"</span><span style="color:#000000;--shiki-dark:#D4D4D4">, ?) </span><span style="color:#0000FF;--shiki-dark:#569CD6">OVER</span><span style="color:#000000;--shiki-dark:#D4D4D4"> (</span><span style="color:#0000FF;--shiki-dark:#569CD6">ORDER BY</span><span style="color:#A31515;--shiki-dark:#CE9178"> "titles"</span><span style="color:#000000;--shiki-dark:#D4D4D4">.</span><span style="color:#A31515;--shiki-dark:#CE9178">"id"</span><span style="color:#0000FF;--shiki-dark:#569CD6"> ASC</span><span style="color:#000000;--shiki-dark:#D4D4D4">)</span></span>
+<span class="line"><span style="color:#0000FF;--shiki-dark:#569CD6">  FROM</span><span style="color:#A31515;--shiki-dark:#CE9178"> "titles"</span></span></code></pre>
+<div class="monaco-host"></div></div>
+<div class="pane code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#AF00DB;--shiki-dark:#C586C0">from</span><span style="color:#000000;--shiki-dark:#D4D4D4"> pyoq.query </span><span style="color:#AF00DB;--shiki-dark:#C586C0">import</span><span style="color:#000000;--shiki-dark:#D4D4D4"> lag</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">dsl.select(TITLES.NAME, lag(TITLES.PRICE).over().order_by(TITLES.ID)).from_(</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">    TITLES</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">)</span></span></code></pre>
+<div class="monaco-host"></div></div></div>
+<p>A window orders rows the way a query does, using the same terms and the same
+rules, so asking for nulls last inside a window works on every dialect just as
+it does outside one. Window functions need SQLite 3.25 or later, and a build
+without them refuses the query rather than emitting SQL it cannot run.</p>
+<h3 id="reading-a-value-out-of-the-window">Reading a value out of the window</h3>
+<p><code>first_value</code>, <code>last_value</code> and <code>nth_value</code> answer with a value one of the
+rows already held, so each is typed by the column it reads and may answer with
+nothing:</p>
+<div class="code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#AF00DB;--shiki-dark:#C586C0">from</span><span style="color:#000000;--shiki-dark:#D4D4D4"> pyoq.query </span><span style="color:#AF00DB;--shiki-dark:#C586C0">import</span><span style="color:#000000;--shiki-dark:#D4D4D4"> cume_dist, first_value, last_value, nth_value, percent_rank</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">first_value(TITLES.PRICE).over().order_by(TITLES.ID)</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">nth_value(TITLES.PRICE, </span><span style="color:#098658;--shiki-dark:#B5CEA8">2</span><span style="color:#000000;--shiki-dark:#D4D4D4">).over().order_by(TITLES.ID)</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">percent_rank().over().order_by(TITLES.PRICE)</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">cume_dist().over().order_by(TITLES.PRICE)</span></span></code></pre>
+<div class="monaco-host"></div></div>
+<p><code>last_value</code> reads the last row the frame reaches, and without a frame a
+window ends at the current row, so it answers with the current row’s value
+until the frame is widened.</p>
+<h3 id="narrowing-the-window">Narrowing the window</h3>
+<div class="code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#AF00DB;--shiki-dark:#C586C0">from</span><span style="color:#000000;--shiki-dark:#D4D4D4"> pyoq.query </span><span style="color:#AF00DB;--shiki-dark:#C586C0">import</span><span style="color:#000000;--shiki-dark:#D4D4D4"> current_row, following, preceding, unbounded_preceding</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">sum_(TITLES.PRICE).over().order_by(TITLES.ID).rows(</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">    unbounded_preceding(), current_row()</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">)</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">sum_(TITLES.PRICE).over().order_by(TITLES.PRICE).range_(preceding(</span><span style="color:#098658;--shiki-dark:#B5CEA8">1</span><span style="color:#000000;--shiki-dark:#D4D4D4">), following(</span><span style="color:#098658;--shiki-dark:#B5CEA8">1</span><span style="color:#000000;--shiki-dark:#D4D4D4">))</span></span></code></pre>
+<div class="monaco-host"></div></div>
+<p><code>rows</code> counts rows, <code>range_</code> counts by value so equal rows come together, and
+<code>groups</code> counts peer groups. <code>exclude</code> leaves rows out that the frame would
+otherwise reach. MySQL has neither <code>groups</code> nor <code>exclude</code> and refuses both.</p>
+<h3 id="naming-a-window">Naming a window</h3>
+<p>Repeating a partition and an order beside every function is how they come to
+disagree. Declare it once and say which window each function reads through:</p>
+<div class="code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#AF00DB;--shiki-dark:#C586C0">from</span><span style="color:#000000;--shiki-dark:#D4D4D4"> pyoq.query </span><span style="color:#AF00DB;--shiki-dark:#C586C0">import</span><span style="color:#000000;--shiki-dark:#D4D4D4"> named_window, rank, row_number</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">ranked = named_window(</span><span style="color:#A31515;--shiki-dark:#CE9178">"ranked"</span><span style="color:#000000;--shiki-dark:#D4D4D4">).partition_by(TITLES.PUBLISHER_ID).order_by(</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">    TITLES.PRICE</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">)</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">dsl.select(row_number().over(ranked), rank().over(ranked)).from_(TITLES).window(</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">    ranked</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">)</span></span></code></pre>
+<div class="monaco-host"></div></div>
+<p>A window read through but never declared is refused while the query is
+compiled, and a window declared by a query is refined where it is declared
+rather than at one of its readers.</p>
+<p>Null treatment is in none of the three. <code>IGNORE NULLS</code> is refused by
+PostgreSQL, MySQL and SQLite alike, so PyOQ offers no way to ask for it rather
+than one that could only ever raise.</p>
+<h2 id="comparing-several-values-as-one">Comparing several values as one</h2>
+<p>A composite key is one key. <code>row()</code> compares columns side by side against
+tuples, instead of an OR of ANDs you have to reassemble while reading:</p>
+<div class="pair">
+<div class="pane code-shell" data-lang="sql"><div class="code-head"><span class="code-lang">SQL</span><button class="code-copy" type="button" data-copy="" aria-label="Copy SQL code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="sql"><code><span class="line"><span style="color:#0000FF;--shiki-dark:#569CD6">SELECT</span><span style="color:#A31515;--shiki-dark:#CE9178"> "titles"</span><span style="color:#000000;--shiki-dark:#D4D4D4">.</span><span style="color:#A31515;--shiki-dark:#CE9178">"name"</span><span style="color:#0000FF;--shiki-dark:#569CD6"> FROM</span><span style="color:#A31515;--shiki-dark:#CE9178"> "titles"</span></span>
+<span class="line"><span style="color:#0000FF;--shiki-dark:#569CD6"> WHERE</span><span style="color:#000000;--shiki-dark:#D4D4D4"> ((</span><span style="color:#A31515;--shiki-dark:#CE9178">"titles"</span><span style="color:#000000;--shiki-dark:#D4D4D4">.</span><span style="color:#A31515;--shiki-dark:#CE9178">"publisher_id"</span><span style="color:#000000;--shiki-dark:#D4D4D4">, </span><span style="color:#A31515;--shiki-dark:#CE9178">"titles"</span><span style="color:#000000;--shiki-dark:#D4D4D4">.</span><span style="color:#A31515;--shiki-dark:#CE9178">"name"</span><span style="color:#000000;--shiki-dark:#D4D4D4">) </span><span style="color:#0000FF;--shiki-dark:#569CD6">IN</span><span style="color:#000000;--shiki-dark:#D4D4D4"> ((?, ?), (?, ?)))</span></span></code></pre>
+<div class="monaco-host"></div></div>
+<div class="pane code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#AF00DB;--shiki-dark:#C586C0">from</span><span style="color:#000000;--shiki-dark:#D4D4D4"> pyoq.query </span><span style="color:#AF00DB;--shiki-dark:#C586C0">import</span><span style="color:#000000;--shiki-dark:#D4D4D4"> row</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">dsl.select(TITLES.NAME).from_(TITLES).where(</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">    row(TITLES.PUBLISHER_ID, TITLES.NAME).in_((</span><span style="color:#098658;--shiki-dark:#B5CEA8">1</span><span style="color:#000000;--shiki-dark:#D4D4D4">, </span><span style="color:#A31515;--shiki-dark:#CE9178">"A Guide"</span><span style="color:#000000;--shiki-dark:#D4D4D4">), (</span><span style="color:#098658;--shiki-dark:#B5CEA8">2</span><span style="color:#000000;--shiki-dark:#D4D4D4">, </span><span style="color:#A31515;--shiki-dark:#CE9178">"A Sequel"</span><span style="color:#000000;--shiki-dark:#D4D4D4">))</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">)</span></span></code></pre>
+<div class="monaco-host"></div></div></div>
+<p>The tuples are checked against the columns <strong>by position</strong>, so this is caught
+where you write it, not when the query runs:</p>
+<div class="code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">row(TITLES.PUBLISHER_ID, TITLES.NAME).in_((</span><span style="color:#098658;--shiki-dark:#B5CEA8">1</span><span style="color:#000000;--shiki-dark:#D4D4D4">, </span><span style="color:#098658;--shiki-dark:#B5CEA8">2</span><span style="color:#000000;--shiki-dark:#D4D4D4">))     </span><span style="color:#008000;--shiki-dark:#6A9955"># 2 is not a name</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">row(TITLES.PUBLISHER_ID, TITLES.NAME).eq((</span><span style="color:#A31515;--shiki-dark:#CE9178">"a"</span><span style="color:#000000;--shiki-dark:#D4D4D4">, </span><span style="color:#098658;--shiki-dark:#B5CEA8">1</span><span style="color:#000000;--shiki-dark:#D4D4D4">))    </span><span style="color:#008000;--shiki-dark:#6A9955"># wrong way round</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">row(TITLES.PUBLISHER_ID, TITLES.NAME).in_((</span><span style="color:#098658;--shiki-dark:#B5CEA8">1</span><span style="color:#000000;--shiki-dark:#D4D4D4">, </span><span style="color:#A31515;--shiki-dark:#CE9178">"a"</span><span style="color:#000000;--shiki-dark:#D4D4D4">, </span><span style="color:#098658;--shiki-dark:#B5CEA8">2</span><span style="color:#000000;--shiki-dark:#D4D4D4">))  </span><span style="color:#008000;--shiki-dark:#6A9955"># too wide</span></span></code></pre>
+<div class="monaco-host"></div></div>
+<p><code>in_()</code>, <code>not_in()</code>, <code>eq()</code>, <code>ne()</code>, <code>gt()</code>, <code>ge()</code>, <code>lt()</code>, and <code>le()</code> are
+all available. The ordering comparisons compare left to right the way SQL
+orders a row value, so <code>(tenant, id) > (1, 100)</code> means every row of a later
+tenant, plus the rows of tenant one after id 100. That is what makes keyset
+pagination over a composite key a single predicate.</p>
+<p>A row value is two columns or more, because SQL reads a single bracketed
+value as that value. Every value travels bound, as in any other predicate.</p>
+<p>Looking for membership in the rows of another query is a
+<a href="/pyoq-sql/joins/">semi join</a>, not a row value.</p>
+<h2 id="reading-inside-a-json-value">Reading inside a JSON value</h2>
+<p>A path is <strong>steps</strong>, not text:</p>
+<div class="code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">TITLES.METADATA.json_text(</span><span style="color:#A31515;--shiki-dark:#CE9178">"author"</span><span style="color:#000000;--shiki-dark:#D4D4D4">, </span><span style="color:#A31515;--shiki-dark:#CE9178">"country"</span><span style="color:#000000;--shiki-dark:#D4D4D4">)</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">TITLES.METADATA.json_text(</span><span style="color:#A31515;--shiki-dark:#CE9178">"tags"</span><span style="color:#000000;--shiki-dark:#D4D4D4">, </span><span style="color:#098658;--shiki-dark:#B5CEA8">0</span><span style="color:#000000;--shiki-dark:#D4D4D4">)</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">TITLES.METADATA.json_length(</span><span style="color:#A31515;--shiki-dark:#CE9178">"tags"</span><span style="color:#000000;--shiki-dark:#D4D4D4">)</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">TITLES.METADATA.json_has(</span><span style="color:#A31515;--shiki-dark:#CE9178">"author"</span><span style="color:#000000;--shiki-dark:#D4D4D4">, </span><span style="color:#A31515;--shiki-dark:#CE9178">"verified"</span><span style="color:#000000;--shiki-dark:#D4D4D4">)</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">TITLES.METADATA.json_contains({</span><span style="color:#A31515;--shiki-dark:#CE9178">"author"</span><span style="color:#000000;--shiki-dark:#D4D4D4">: {</span><span style="color:#A31515;--shiki-dark:#CE9178">"city"</span><span style="color:#000000;--shiki-dark:#D4D4D4">: </span><span style="color:#A31515;--shiki-dark:#CE9178">"London"</span><span style="color:#000000;--shiki-dark:#D4D4D4">}})</span></span></code></pre>
+<div class="monaco-host"></div></div>
+<p>A string step is a member and an integer step is an element. Steps rather
+than text because the dialects genuinely disagree, and one of them disagrees
+silently: give PostgreSQL the <code>$.a.b</code> that SQLite and MySQL want and it looks
+for a member actually called <code>$.a.b</code>, finds nothing, and answers null without
+complaining. PyOQ writes each dialect’s own form.</p>
+<p><code>json_get()</code> answers with JSON; <code>json_text()</code> answers with what that JSON
+says and is typed <code>str | None</code>, so you get text on every dialect even where
+the driver would hand back the number it looked like.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Asked</th><th>SQLite</th><th>PostgreSQL</th><th>MySQL</th></tr></thead><tbody><tr><td><code>json_get</code></td><td><code>-> '$.a.b'</code></td><td><code>#> '{a,b}'</code></td><td><code>JSON_EXTRACT</code></td></tr><tr><td><code>json_text</code></td><td><code>JSON_EXTRACT</code></td><td><code>#>> '{a,b}'</code></td><td><code>CASE</code> over <code>JSON_UNQUOTE</code></td></tr><tr><td><code>json_length</code></td><td><code>JSON_ARRAY_LENGTH</code></td><td><code>JSONB_ARRAY_LENGTH</code></td><td><code>JSON_LENGTH</code></td></tr><tr><td><code>json_has</code></td><td><code>JSON_TYPE(...) IS NOT NULL</code></td><td><code>#> ... IS NOT NULL</code></td><td><code>JSON_CONTAINS_PATH</code></td></tr><tr><td><code>json_contains</code></td><td><strong>refused</strong></td><td><code>@></code></td><td><code>JSON_CONTAINS</code></td></tr><tr><td><code>json_keys</code></td><td><code>JSON_EACH</code> gathered</td><td><code>JSONB_PATH_QUERY_ARRAY</code></td><td><code>JSON_KEYS</code></td></tr></tbody></table>
+<p>The path is a value, so it binds like any other and never enters the SQL.
+SQLite has no containment operator and refuses rather than emulating one.
+Asking any of this of a column that is not JSON is refused where you write it.</p>
+<p>MySQL unquotes a JSON null into the four letters of its name, where the other
+two answer with no text at all, so PyOQ writes a <code>CASE</code> there and <code>json_text</code>
+means one thing everywhere. To tell a member holding null from a member that
+is absent, ask <code>json_has</code>: a member holding null is there on all three.</p>
+<p><code>json_length</code> measures an array. Counting the members of an object is
+<code>json_keys().json_length()</code>, which is portable where asking an object its
+length is not.</p>
+<h2 id="changing-a-json-value">Changing a JSON value</h2>
+<p>Every one of these answers with a new document. Nothing is changed in place.</p>
+<div class="code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">TITLES.METADATA.json_set(</span><span style="color:#A31515;--shiki-dark:#CE9178">"author"</span><span style="color:#000000;--shiki-dark:#D4D4D4">, </span><span style="color:#A31515;--shiki-dark:#CE9178">"country"</span><span style="color:#000000;--shiki-dark:#D4D4D4">, </span><span style="color:#001080;--shiki-dark:#9CDCFE">to</span><span style="color:#000000;--shiki-dark:#D4D4D4">=</span><span style="color:#A31515;--shiki-dark:#CE9178">"Ireland"</span><span style="color:#000000;--shiki-dark:#D4D4D4">)</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">TITLES.METADATA.json_insert(</span><span style="color:#A31515;--shiki-dark:#CE9178">"author"</span><span style="color:#000000;--shiki-dark:#D4D4D4">, </span><span style="color:#A31515;--shiki-dark:#CE9178">"verified"</span><span style="color:#000000;--shiki-dark:#D4D4D4">, </span><span style="color:#001080;--shiki-dark:#9CDCFE">to</span><span style="color:#000000;--shiki-dark:#D4D4D4">=</span><span style="color:#0000FF;--shiki-dark:#569CD6">True</span><span style="color:#000000;--shiki-dark:#D4D4D4">)</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">TITLES.METADATA.json_replace(</span><span style="color:#A31515;--shiki-dark:#CE9178">"tags"</span><span style="color:#000000;--shiki-dark:#D4D4D4">, </span><span style="color:#098658;--shiki-dark:#B5CEA8">0</span><span style="color:#000000;--shiki-dark:#D4D4D4">, </span><span style="color:#001080;--shiki-dark:#9CDCFE">to</span><span style="color:#000000;--shiki-dark:#D4D4D4">=</span><span style="color:#A31515;--shiki-dark:#CE9178">"python"</span><span style="color:#000000;--shiki-dark:#D4D4D4">)</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">TITLES.METADATA.json_remove(</span><span style="color:#A31515;--shiki-dark:#CE9178">"draft"</span><span style="color:#000000;--shiki-dark:#D4D4D4">)</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">TITLES.METADATA.json_merge({</span><span style="color:#A31515;--shiki-dark:#CE9178">"author"</span><span style="color:#000000;--shiki-dark:#D4D4D4">: {</span><span style="color:#A31515;--shiki-dark:#CE9178">"city"</span><span style="color:#000000;--shiki-dark:#D4D4D4">: </span><span style="color:#A31515;--shiki-dark:#CE9178">"Cork"</span><span style="color:#000000;--shiki-dark:#D4D4D4">}})</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">TITLES.METADATA.json_concat({</span><span style="color:#A31515;--shiki-dark:#CE9178">"author"</span><span style="color:#000000;--shiki-dark:#D4D4D4">: {</span><span style="color:#A31515;--shiki-dark:#CE9178">"city"</span><span style="color:#000000;--shiki-dark:#D4D4D4">: </span><span style="color:#A31515;--shiki-dark:#CE9178">"Cork"</span><span style="color:#000000;--shiki-dark:#D4D4D4">}})</span></span></code></pre>
+<div class="monaco-host"></div></div>
+<p><code>json_merge</code> and <code>json_concat</code> are two operations, not one, and the
+difference is what got them separated. Merging is merge-patch: a member given
+as null is removed, and an object inside an object is merged rather than
+replaced. Concatenating is one level: a member is replaced whole and a null is
+stored as a null.</p>
+<p>MySQL and SQLite merge all the way down and have no one-level concatenation.
+PostgreSQL concatenates one level and has no merge-patch at all. Each is
+refused where the dialect has not got it, rather than quietly doing the other.</p>
+<h2 id="building-a-json-value">Building a JSON value</h2>
+<div class="code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#AF00DB;--shiki-dark:#C586C0">from</span><span style="color:#000000;--shiki-dark:#D4D4D4"> pyoq.query </span><span style="color:#AF00DB;--shiki-dark:#C586C0">import</span><span style="color:#000000;--shiki-dark:#D4D4D4"> json_agg, json_array, json_object, json_object_agg</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">json_object({</span><span style="color:#A31515;--shiki-dark:#CE9178">"name"</span><span style="color:#000000;--shiki-dark:#D4D4D4">: TITLES.NAME, </span><span style="color:#A31515;--shiki-dark:#CE9178">"price"</span><span style="color:#000000;--shiki-dark:#D4D4D4">: TITLES.PRICE})</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">json_array(TITLES.NAME, TITLES.PRICE)</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">json_agg(TITLES.NAME)</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">json_object_agg(TITLES.NAME, TITLES.PRICE)</span></span></code></pre>
+<div class="monaco-host"></div></div>
+<p>The last two are aggregates, so they take a window through <code>over()</code> like any
+other. Reading a JSON array back as rows is a source rather than an
+expression:</p>
+<div class="code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#AF00DB;--shiki-dark:#C586C0">from</span><span style="color:#000000;--shiki-dark:#D4D4D4"> pyoq.query </span><span style="color:#AF00DB;--shiki-dark:#C586C0">import</span><span style="color:#000000;--shiki-dark:#D4D4D4"> ELEMENT_COLUMN, json_elements</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">rows = json_elements(TITLES.METADATA.json_get(</span><span style="color:#A31515;--shiki-dark:#CE9178">"tags"</span><span style="color:#000000;--shiki-dark:#D4D4D4">), </span><span style="color:#001080;--shiki-dark:#9CDCFE">alias</span><span style="color:#000000;--shiki-dark:#D4D4D4">=</span><span style="color:#A31515;--shiki-dark:#CE9178">"tag"</span><span style="color:#000000;--shiki-dark:#D4D4D4">)</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">dsl.select(rows.field(</span><span style="color:#267F99;--shiki-dark:#4EC9B0">str</span><span style="color:#000000;--shiki-dark:#D4D4D4">, ELEMENT_COLUMN)).from_(rows)</span></span></code></pre>
+<div class="monaco-host"></div></div>
+<h2 id="asking-about-an-array">Asking about an array</h2>
+<p>An array column is generated as <code>tuple[T, ...]</code>, and these are typed by that
+element type:</p>
+<div class="code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">TITLES.TAGS.has(</span><span style="color:#A31515;--shiki-dark:#CE9178">"python"</span><span style="color:#000000;--shiki-dark:#D4D4D4">)</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">TITLES.TAGS.lacks(</span><span style="color:#A31515;--shiki-dark:#CE9178">"draft"</span><span style="color:#000000;--shiki-dark:#D4D4D4">)</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">TITLES.TAGS.contains_all((</span><span style="color:#A31515;--shiki-dark:#CE9178">"python"</span><span style="color:#000000;--shiki-dark:#D4D4D4">, </span><span style="color:#A31515;--shiki-dark:#CE9178">"sql"</span><span style="color:#000000;--shiki-dark:#D4D4D4">))</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">TITLES.TAGS.overlaps((</span><span style="color:#A31515;--shiki-dark:#CE9178">"python"</span><span style="color:#000000;--shiki-dark:#D4D4D4">, </span><span style="color:#A31515;--shiki-dark:#CE9178">"rust"</span><span style="color:#000000;--shiki-dark:#D4D4D4">))</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">TITLES.TAGS.contained_by((</span><span style="color:#A31515;--shiki-dark:#CE9178">"python"</span><span style="color:#000000;--shiki-dark:#D4D4D4">, </span><span style="color:#A31515;--shiki-dark:#CE9178">"sql"</span><span style="color:#000000;--shiki-dark:#D4D4D4">, </span><span style="color:#A31515;--shiki-dark:#CE9178">"rust"</span><span style="color:#000000;--shiki-dark:#D4D4D4">))</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">TITLES.TAGS.element(</span><span style="color:#098658;--shiki-dark:#B5CEA8">0</span><span style="color:#000000;--shiki-dark:#D4D4D4">)</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">TITLES.TAGS.length()</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">TITLES.TAGS.append(</span><span style="color:#A31515;--shiki-dark:#CE9178">"rust"</span><span style="color:#000000;--shiki-dark:#D4D4D4">)</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">TITLES.TAGS.prepend(</span><span style="color:#A31515;--shiki-dark:#CE9178">"sql"</span><span style="color:#000000;--shiki-dark:#D4D4D4">)</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">TITLES.TAGS.without(</span><span style="color:#A31515;--shiki-dark:#CE9178">"draft"</span><span style="color:#000000;--shiki-dark:#D4D4D4">)</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">TITLES.TAGS.replacing(</span><span style="color:#A31515;--shiki-dark:#CE9178">"draft"</span><span style="color:#000000;--shiki-dark:#D4D4D4">, </span><span style="color:#A31515;--shiki-dark:#CE9178">"final"</span><span style="color:#000000;--shiki-dark:#D4D4D4">)</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">TITLES.TAGS.concat_array((</span><span style="color:#A31515;--shiki-dark:#CE9178">"rust"</span><span style="color:#000000;--shiki-dark:#D4D4D4">, </span><span style="color:#A31515;--shiki-dark:#CE9178">"go"</span><span style="color:#000000;--shiki-dark:#D4D4D4">))</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">TITLES.TAGS.length_along(</span><span style="color:#098658;--shiki-dark:#B5CEA8">1</span><span style="color:#000000;--shiki-dark:#D4D4D4">)</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">TITLES.TAGS.dimensions()</span></span></code></pre>
+<div class="monaco-host"></div></div>
+<p><strong>Elements count from zero.</strong> The column reads back as a tuple, and a tuple
+counts from zero, so <code>TAGS.element(0)</code> is the same element as <code>row.tags[0]</code>.
+SQL counts an array from one; PyOQ writes that difference out rather than
+leaving you to remember it. Past the end there is no element, so the answer is
+null and the type is <code>T | None</code>.</p>
+<p><code>length()</code> is the same method that measures text: how long a thing is is one
+question whichever kind of thing it is. It counts every element;
+<code>length_along(n)</code> counts one dimension, and <code>dimensions()</code> says how many
+dimensions there are.</p>
+<p>An array of arrays is read at one position per dimension, together, because
+PostgreSQL reads one subscript of a nested array as nothing at all:</p>
+<div class="code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">GRID.element(</span><span style="color:#098658;--shiki-dark:#B5CEA8">1</span><span style="color:#000000;--shiki-dark:#D4D4D4">, </span><span style="color:#098658;--shiki-dark:#B5CEA8">0</span><span style="color:#000000;--shiki-dark:#D4D4D4">)</span></span></code></pre>
+<div class="monaco-host"></div></div>
+<p>Building one starts from values rather than from a column:</p>
+<div class="code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#AF00DB;--shiki-dark:#C586C0">from</span><span style="color:#000000;--shiki-dark:#D4D4D4"> pyoq.query </span><span style="color:#AF00DB;--shiki-dark:#C586C0">import</span><span style="color:#000000;--shiki-dark:#D4D4D4"> array_of</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">array_of(</span><span style="color:#A31515;--shiki-dark:#CE9178">"python"</span><span style="color:#000000;--shiki-dark:#D4D4D4">, </span><span style="color:#A31515;--shiki-dark:#CE9178">"sql"</span><span style="color:#000000;--shiki-dark:#D4D4D4">)</span></span></code></pre>
+<div class="monaco-host"></div></div>
+<p>An array built from no values has no element type, and no database will store
+a value whose type it cannot name, so that is refused where you write it.</p>
+<p>Only PostgreSQL has an array type. SQLite and MySQL refuse these outright and
+point at JSON or a table of its own, rather than emulating an array they have
+not got.</p>
+<h2 id="calling-a-function-this-database-has">Calling a function this database has</h2>
+<p>Every database grows functions the others have not got. Declare one once, and
+call it like any other expression:</p>
+<div class="code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#AF00DB;--shiki-dark:#C586C0">from</span><span style="color:#000000;--shiki-dark:#D4D4D4"> pyoq.config </span><span style="color:#AF00DB;--shiki-dark:#C586C0">import</span><span style="color:#000000;--shiki-dark:#D4D4D4"> DatabaseDialect</span></span>
+<span class="line"><span style="color:#AF00DB;--shiki-dark:#C586C0">from</span><span style="color:#000000;--shiki-dark:#D4D4D4"> pyoq.query </span><span style="color:#AF00DB;--shiki-dark:#C586C0">import</span><span style="color:#000000;--shiki-dark:#D4D4D4"> vendor_function, vendor_predicate</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">similarity = vendor_function(</span></span>
+<span class="line"><span style="color:#267F99;--shiki-dark:#4EC9B0">    float</span><span style="color:#000000;--shiki-dark:#D4D4D4">, </span><span style="color:#A31515;--shiki-dark:#CE9178">"similarity"</span><span style="color:#000000;--shiki-dark:#D4D4D4">, </span><span style="color:#001080;--shiki-dark:#9CDCFE">dialects</span><span style="color:#000000;--shiki-dark:#D4D4D4">=(DatabaseDialect.POSTGRES,)</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">)</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">starts_with = vendor_predicate(</span></span>
+<span class="line"><span style="color:#A31515;--shiki-dark:#CE9178">    "starts_with"</span><span style="color:#000000;--shiki-dark:#D4D4D4">, </span><span style="color:#001080;--shiki-dark:#9CDCFE">dialects</span><span style="color:#000000;--shiki-dark:#D4D4D4">=(DatabaseDialect.POSTGRES,)</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">dsl.select_from(TITLES).where(similarity(TITLES.NAME, </span><span style="color:#A31515;--shiki-dark:#CE9178">"Ada"</span><span style="color:#000000;--shiki-dark:#D4D4D4">).gt(</span><span style="color:#098658;--shiki-dark:#B5CEA8">0.3</span><span style="color:#000000;--shiki-dark:#D4D4D4">))</span></span></code></pre>
+<div class="monaco-host"></div></div>
+<p><code>dialects</code> says where the function exists. A compiler for any other database
+<strong>refuses the query</strong> rather than sending SQL that cannot run, so a mistake
+surfaces while you are writing rather than in production. A declaration naming
+no dialect is written everywhere, because saying nothing means you did not say.</p>
+<p><code>vendor_function()</code> answers with the type you give it. <code>vendor_predicate()</code>
+answers with a condition, so it composes with <code>and_()</code>, <code>or_()</code>, and <code>where()</code>
+like any other.</p>
+<p>Arguments travel bound, exactly as everywhere else. The <strong>name</strong> is not a
+value, because no database takes a function name as a parameter, so it is
+written into the SQL and held to being a name: an identifier, optionally
+qualified by its schema. Anything else is refused where you declare it.</p>
+<p>Reach for <a href="#when-there-is-no-helper"><code>raw()</code></a> instead when what you need is not
+a call at all, but a fragment of SQL with a shape of its own.</p>
+<h2 id="ordering-terms">Ordering terms</h2>
+<div class="code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">TITLES.PRICE.desc()</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">TITLES.NAME.asc()</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">TITLES.PAGES.desc().nulls_last()</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">TITLES.PAGES.asc().nulls_first()</span></span></code></pre>
+<div class="monaco-host"></div></div>
+<p>Nulls go where you put them on every dialect. PostgreSQL and SQLite have a
+<code>NULLS</code> clause and use it. MySQL has none and sorts nulls first whichever way
+you sort, so PyOQ orders on whether the value is null before ordering on the
+value, which lands them in the same place. See <a href="/pyoq-sql/dialects/">Dialects</a>.</p>
+<h2 id="naming-a-column-in-the-output">Naming a column in the output</h2>
+<div class="code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#AF00DB;--shiki-dark:#C586C0">from</span><span style="color:#000000;--shiki-dark:#D4D4D4"> pyoq.query </span><span style="color:#AF00DB;--shiki-dark:#C586C0">import</span><span style="color:#000000;--shiki-dark:#D4D4D4"> alias</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">dsl.select(alias(count(), </span><span style="color:#A31515;--shiki-dark:#CE9178">"total"</span><span style="color:#000000;--shiki-dark:#D4D4D4">)).from_(TITLES)</span></span></code></pre>
+<div class="monaco-host"></div></div>
+<p>The name matters when you read rows back as dictionaries: every column needs
+one, and PyOQ refuses to invent it.</p>
+<h2 id="when-there-is-no-helper">When there is no helper</h2>
+<div class="code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#AF00DB;--shiki-dark:#C586C0">from</span><span style="color:#000000;--shiki-dark:#D4D4D4"> pyoq.query </span><span style="color:#AF00DB;--shiki-dark:#C586C0">import</span><span style="color:#000000;--shiki-dark:#D4D4D4"> raw, raw_condition</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">raw(</span><span style="color:#267F99;--shiki-dark:#4EC9B0">int</span><span style="color:#000000;--shiki-dark:#D4D4D4">, </span><span style="color:#A31515;--shiki-dark:#CE9178">"octet_length(</span><span style="color:#0000FF;--shiki-dark:#569CD6">{column}</span><span style="color:#A31515;--shiki-dark:#CE9178">)"</span><span style="color:#000000;--shiki-dark:#D4D4D4">, </span><span style="color:#001080;--shiki-dark:#9CDCFE">column</span><span style="color:#000000;--shiki-dark:#D4D4D4">=TITLES.NAME)</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">raw_condition(</span><span style="color:#A31515;--shiki-dark:#CE9178">"</span><span style="color:#0000FF;--shiki-dark:#569CD6">{column}</span><span style="color:#A31515;--shiki-dark:#CE9178"> @@ to_tsquery('guide')"</span><span style="color:#000000;--shiki-dark:#D4D4D4">, </span><span style="color:#001080;--shiki-dark:#9CDCFE">column</span><span style="color:#000000;--shiki-dark:#D4D4D4">=TITLES.NAME)</span></span></code></pre>
+<div class="monaco-host"></div></div>
+<p>You give the value type, because PyOQ cannot infer what your fragment
+returns. Anything interpolated through <code>{}</code> is a <strong>typed expression</strong>, never a
+value: values still bind as parameters, so a raw fragment is not a way around
+that. A dialect that does not accept raw fragments refuses them rather than
+passing them through.</p></article><nav class="pager" aria-label="Neighbouring pages"><a class="previous" href="/pyoq-sql/selecting/"><span>Previous</span>Selecting rows</a><a class="next" href="/pyoq-sql/joins/"><span>Next</span>Joins and set operations</a></nav><footer class="page-footer"><p>PyOQ is released under the <a href="/pyoq-sql/licence/" rel="license">MPL-2.0</a> licence.</p></footer></main><nav class="contents" aria-label="On this page"><p>On this page</p><ul><li><a href="#comparisons">Comparisons</a></li><li><a href="#booleans">Booleans</a></li><li><a href="#combining-conditions">Combining conditions</a></li><li><a href="#text">Text</a></li><li><a href="#arithmetic">Arithmetic</a></li><li><a href="#dates-times-and-durations">Dates, times, and durations</a></li><li><a href="#aggregates">Aggregates</a></li><li><a href="#choosing-a-value">Choosing a value</a></li><li><a href="#the-first-value-that-is-not-null">The first value that is not null</a></li><li><a href="#the-widest-and-the-narrowest">The widest and the narrowest</a></li><li><a href="#asking-for-another-type">Asking for another type</a></li><li><a href="#measuring-a-row-against-its-neighbours">Measuring a row against its neighbours</a></li><li><a href="#a-running-total-and-the-row-before">A running total, and the row before</a></li><li><a href="#comparing-several-values-as-one">Comparing several values as one</a></li><li><a href="#reading-inside-a-json-value">Reading inside a JSON value</a></li><li><a href="#changing-a-json-value">Changing a JSON value</a></li><li><a href="#building-a-json-value">Building a JSON value</a></li><li><a href="#asking-about-an-array">Asking about an array</a></li><li><a href="#calling-a-function-this-database-has">Calling a function this database has</a></li><li><a href="#ordering-terms">Ordering terms</a></li><li><a href="#naming-a-column-in-the-output">Naming a column in the output</a></li><li><a href="#when-there-is-no-helper">When there is no helper</a></li></ul></nav></div><script type="module">document.addEventListener(`click`,e=>{let t=e.target?.closest(`[data-copy]`);if(!t)return;let n=(t.closest(`.code-shell`)?.querySelector(`pre`)?.textContent??``).replace(/\n$/,``);if(!n)return;let r=e=>{let n=t.querySelector(`[data-copy-label]`);n&&(n.textContent=e)};navigator.clipboard.writeText(n).then(()=>{t.dataset.copied=``,r(`Copied`),setTimeout(()=>{delete t.dataset.copied,r(`Copy`)},1600)},()=>r(`Press ⌘C`))});</script><script type="module" src="/pyoq-sql/_astro/CodeEditors.astro_astro_type_script_index_0_lang.C8S0YAI5.js"></script><script type="module" src="/pyoq-sql/_astro/Diagrams.astro_astro_type_script_index_0_lang.BNJty66e.js"></script></body></html>

@@ -1,0 +1,992 @@
+<!DOCTYPE html><html lang="en" data-appearance="light"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>pyoq.query.mysql · PyOQ</title><meta name="description" content="Compiling, connecting and running against MySQL."><link rel="canonical" href="https://teqpod.com/pyoq-sql/api/query-mysql/"><meta name="robots" content="index, follow, max-image-preview:large"><meta name="theme-color" content="#1b6ef3"><link rel="sitemap" type="application/xml" href="/pyoq-sql/sitemap.xml"><meta property="og:type" content="article"><meta property="og:site_name" content="PyOQ"><meta property="og:locale" content="en"><meta property="og:title" content="pyoq.query.mysql · PyOQ"><meta property="og:description" content="Compiling, connecting and running against MySQL."><meta property="og:url" content="https://teqpod.com/pyoq-sql/api/query-mysql/"><meta property="og:image" content="https://teqpod.com/pyoq-sql/brand/pyoq-banner.png"><meta property="og:image:type" content="image/png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="PyOQ, fully typed database-first SQL for Python"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="pyoq.query.mysql · PyOQ"><meta name="twitter:description" content="Compiling, connecting and running against MySQL."><meta name="twitter:image" content="https://teqpod.com/pyoq-sql/brand/pyoq-banner.png"><link rel="icon" type="image/svg+xml" href="/pyoq-sql/brand/pyoq-mark.svg"><link rel="icon" type="image/png" sizes="32x32" href="/pyoq-sql/brand/pyoq-favicon-32.png"><link rel="apple-touch-icon" href="/pyoq-sql/brand/pyoq-mark-180.png"><script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://teqpod.com/pyoq-sql/#site","name":"PyOQ","url":"https://teqpod.com/pyoq-sql/","description":"A database-first SQL toolkit with generated types, explicit execution, and native acceleration for Python applications."},{"@type":"SoftwareApplication","@id":"https://teqpod.com/pyoq-sql/#project","name":"PyOQ","description":"A database-first SQL toolkit with generated types, explicit execution, and native acceleration for Python applications.","url":"https://teqpod.com/pyoq-sql/","sameAs":["https://pypi.org/project/pyoq-sql/"],"applicationCategory":"DeveloperApplication","operatingSystem":"Linux, macOS, Windows","programmingLanguage":"Python","license":"https://teqpod.com/pyoq-sql/licence/","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}},{"@type":"TechArticle","headline":"pyoq.query.mysql · PyOQ","description":"Compiling, connecting and running against MySQL.","url":"https://teqpod.com/pyoq-sql/api/query-mysql/","image":"https://teqpod.com/pyoq-sql/brand/pyoq-banner.png","isPartOf":{"@id":"https://teqpod.com/pyoq-sql/#site"},"about":{"@id":"https://teqpod.com/pyoq-sql/#project"},"inLanguage":"en","articleSection":"APIs"}]}</script><script>
+  (() => {
+    let chosen = null;
+    try {
+      chosen = localStorage.getItem("pyoq-appearance");
+    } catch {}
+    const dark = matchMedia("(prefers-color-scheme: dark)").matches;
+    document.documentElement.dataset.appearance = chosen ?? (dark ? "dark" : "light");
+  })();
+</script><link rel="stylesheet" href="/pyoq-sql/_astro/app.CXhD3KCe.css"></head><body><a class="skip" href="#content">Skip to content</a><header class="bar"><a class="wordmark" href="/pyoq-sql/" aria-label="PyOQ documentation home"><img class="brand-image" src="/pyoq-sql/brand/pyoq-mark.svg" width="30" height="30" alt=""><span class="brand-name">PyOQ</span><span class="brand-context">docs</span></a><div class="search" data-pagefind-ignore><svg class="glass" viewBox="0 0 20 20" width="15" height="15" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.8" d="M8.5 14.5a6 6 0 1 1 0-12 6 6 0 0 1 0 12Zm4.5-1.5 4 4"></path></svg><input id="search" type="search" placeholder="Search the documentation" autocomplete="off" spellcheck="false" aria-label="Search the documentation" aria-expanded="false" aria-controls="results"><kbd>/</kbd><div id="results" role="listbox" hidden></div></div><script>(function(){const runtime = "/pyoq-sql/pagefind/pagefind.js";
+const baseUrl = "/pyoq-sql/";
+
+  const field = document.getElementById("search");
+  const panel = document.getElementById("results");
+  let engine = null;
+  let chosen = -1;
+
+  async function ready() {
+    if (engine) return engine;
+    try {
+      engine = await import(runtime);
+      await engine.options({ baseUrl, excerptLength: 24 });
+      await engine.init();
+    } catch {
+      engine = "unavailable";
+    }
+    return engine;
+  }
+
+  function close() {
+    panel.hidden = true;
+    field.setAttribute("aria-expanded", "false");
+    chosen = -1;
+  }
+
+  function draw(results) {
+    if (!results.length) {
+      panel.innerHTML = '<p class="none">Nothing matches that.</p>';
+    } else {
+      panel.innerHTML = results
+        .map((result) => {
+          const where = result.meta?.group ?? "Documentation";
+          const title = result.meta?.title ?? "Untitled";
+          return `<a role="option" href="${result.url}">
+            <span class="where">${where}</span>
+            <span class="what">${title}</span>
+            <span class="bit">${result.excerpt}</span>
+          </a>`;
+        })
+        .join("");
+    }
+    panel.hidden = false;
+    field.setAttribute("aria-expanded", "true");
+    chosen = -1;
+  }
+
+  let running = 0;
+  async function run() {
+    const wanted = field.value.trim();
+    if (!wanted) return close();
+    const engine = await ready();
+    if (engine === "unavailable") {
+      panel.innerHTML =
+        '<p class="none">Search is built with the site. Run <code>bun run build</code>.</p>';
+      panel.hidden = false;
+      return;
+    }
+    const token = ++running;
+    const found = await engine.search(wanted);
+    if (token !== running) return;
+    const top = await Promise.all(found.results.slice(0, 8).map((one) => one.data()));
+    if (token !== running) return;
+    draw(top);
+  }
+
+  function move(step) {
+    const links = panel.querySelectorAll("a");
+    if (!links.length) return;
+    chosen = (chosen + step + links.length) % links.length;
+    links.forEach((link, at) => link.classList.toggle("on", at === chosen));
+    links[chosen].scrollIntoView({ block: "nearest" });
+  }
+
+  let waiting;
+  field?.addEventListener("input", () => {
+    clearTimeout(waiting);
+    waiting = setTimeout(run, 120);
+  });
+  field?.addEventListener("focus", ready);
+
+  field?.addEventListener("keydown", (event) => {
+    if (event.key === "ArrowDown") {
+      event.preventDefault();
+      move(1);
+    } else if (event.key === "ArrowUp") {
+      event.preventDefault();
+      move(-1);
+    } else if (event.key === "Enter" && chosen >= 0) {
+      event.preventDefault();
+      panel.querySelectorAll("a")[chosen].click();
+    } else if (event.key === "Escape") {
+      field.blur();
+      close();
+    }
+  });
+
+  document.addEventListener("click", (event) => {
+    if (!panel.contains(event.target) && event.target !== field) close();
+  });
+
+  // "/" reaches the field from anywhere, which is where a reader goes first.
+  document.addEventListener("keydown", (event) => {
+    const typing = /^(INPUT|TEXTAREA)$/.test(document.activeElement?.tagName ?? "");
+    if (event.key === "/" && !typing) {
+      event.preventDefault();
+      field.focus();
+      field.select();
+    }
+  });
+})();</script><button id="appearance" type="button" aria-label="Switch appearance"><svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M10 2a8 8 0 1 0 0 16 8 8 0 0 0 0-16Zm0 1.6V16.4a6.4 6.4 0 0 1 0-12.8Z"></path></svg></button><script type="module">var e=document.documentElement;document.getElementById(`appearance`)?.addEventListener(`click`,()=>{let t=e.dataset.appearance===`dark`?`light`:`dark`;e.dataset.appearance=t;try{localStorage.setItem(`pyoq-appearance`,t)}catch{}});</script></header><div class="page"><nav class="side" aria-label="Documentation"><details class="side-toggle"><summary>Contents</summary></details><div class="side-body"><details class="side-group" data-group="Start here"><summary class="group" title="What this is, whether it suits you, and getting it running."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>Start here</summary><ul><li><a href="/pyoq-sql/overview/">What PyOQ is</a></li><li><a href="/pyoq-sql/when-to-use/">When to use what</a></li><li><a href="/pyoq-sql/installing/">Installing</a></li><li><a href="/pyoq-sql/generating/">Generating your types</a></li><li><a href="/pyoq-sql/first-query/">Your first query</a></li></ul></details><details class="side-group" data-group="For LLMs"><summary class="group" title="A compact project model and source map for coding agents."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>For LLMs</summary><ul><li><a href="/pyoq-sql/agents/">LLM agent guide</a></li></ul></details><details class="side-group" data-group="Reading"><summary class="group" title="Everything that ends in rows coming back."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>Reading</summary><ul><li><a href="/pyoq-sql/selecting/">Selecting rows</a></li><li><a href="/pyoq-sql/expressions/">Expressions and conditions</a></li><li><a href="/pyoq-sql/joins/">Joins and set operations</a></li><li><a href="/pyoq-sql/routines/">Stored routines</a></li><li><a href="/pyoq-sql/results/">Reading results</a></li></ul></details><details class="side-group" data-group="Writing"><summary class="group" title="Everything that changes what is in the database."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>Writing</summary><ul><li><a href="/pyoq-sql/inserting/">Inserting rows</a></li><li><a href="/pyoq-sql/updating/">Updating and deleting</a></li><li><a href="/pyoq-sql/conflicts/">Conflict resolution</a></li><li><a href="/pyoq-sql/bulk/">Bulk writes</a></li></ul></details><details class="side-group" data-group="Your data"><summary class="group" title="What the schema says, and how PyOQ reads it back."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>Your data</summary><ul><li><a href="/pyoq-sql/relations/">Relations</a></li><li><a href="/pyoq-sql/types/">Column types</a></li><li><a href="/pyoq-sql/snapshots/">Snapshots and drift</a></li><li><a href="/pyoq-sql/migrations/">Migration lifecycle</a></li></ul></details><details class="side-group" data-group="Running statements"><summary class="group" title="What happens between a built statement and a row."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>Running statements</summary><ul><li><a href="/pyoq-sql/connections/">Connections and pools</a></li><li><a href="/pyoq-sql/mysql-application/">MySQL without a framework</a></li><li><a href="/pyoq-sql/async/">Asynchronous execution</a></li><li><a href="/pyoq-sql/transactions/">Transactions and streaming</a></li><li><a href="/pyoq-sql/dialects/">Dialects</a></li><li><a href="/pyoq-sql/diagnostics/">Diagnostics</a></li><li><a href="/pyoq-sql/policies/">Policies</a></li><li><a href="/pyoq-sql/security/">Security</a></li><li><a href="/pyoq-sql/performance/">Performance</a></li></ul></details><details class="side-group" data-group="Frameworks"><summary class="group" title="Running inside something that already owns the connection."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>Frameworks</summary><ul><li><a href="/pyoq-sql/alembic/">Alembic</a></li><li><a href="/pyoq-sql/django/">Django</a></li><li><a href="/pyoq-sql/fastapi/">FastAPI</a></li><li><a href="/pyoq-sql/sanic/">Sanic</a></li><li><a href="/pyoq-sql/serving/">Standalone services</a></li></ul></details><details class="side-group" data-group="Reference"><summary class="group" title="The details, once you know what you are looking for."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>Reference</summary><ul><li><a href="/pyoq-sql/cli/">Command line</a></li><li><a href="/pyoq-sql/configuration/">Configuration</a></li><li><a href="/pyoq-sql/errors/">Errors</a></li><li><a href="/pyoq-sql/troubleshooting/">Troubleshooting</a></li><li><a href="/pyoq-sql/testing/">Testing applications</a></li><li><a href="/pyoq-sql/releasing/">Releasing</a></li><li><a href="/pyoq-sql/licence/">Licence</a></li></ul></details><details class="side-group" data-group="APIs" open><summary class="group" title="Every package, every name it exports, and what each one does."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>APIs</summary><ul><li><a href="/pyoq-sql/api/references/">All references</a></li><li><a href="/pyoq-sql/api/internals/">Internals</a></li><li><a href="/pyoq-sql/api/pyoq/">pyoq</a></li><li><a href="/pyoq-sql/api/commands/">pyoq commands</a></li><li><a href="/pyoq-sql/api/native/">pyoq._native</a></li><li><a href="/pyoq-sql/api/cli/">pyoq.cli</a></li><li><a href="/pyoq-sql/api/config/">pyoq.config</a></li><li><a href="/pyoq-sql/api/descriptors/">pyoq.descriptors</a></li><li><a href="/pyoq-sql/api/diagnostics/">pyoq.diagnostics</a></li><li><a href="/pyoq-sql/api/django/">pyoq.django</a></li><li><a href="/pyoq-sql/api/dsl/">pyoq.dsl</a></li><li><a href="/pyoq-sql/api/errors/">pyoq.errors</a></li><li><a href="/pyoq-sql/api/fastapi/">pyoq.fastapi</a></li><li><a href="/pyoq-sql/api/fetching/">pyoq.fetching</a></li><li><a href="/pyoq-sql/api/generation/">pyoq.generation</a></li><li><a href="/pyoq-sql/api/hydration/">pyoq.hydration</a></li><li><a href="/pyoq-sql/api/migrations/">pyoq.migrations</a></li><li><a href="/pyoq-sql/api/naming/">pyoq.naming</a></li><li><a href="/pyoq-sql/api/policies/">pyoq.policies</a></li><li><a href="/pyoq-sql/api/query/">pyoq.query</a></li><li><a href="/pyoq-sql/api/query-expressions/">pyoq.query expressions</a></li><li><a href="/pyoq-sql/api/query-functions/">pyoq.query functions</a></li><li><a href="/pyoq-sql/api/query-execution/">pyoq.query.execution</a></li><li><a href="/pyoq-sql/api/query-mysql/" class="active" aria-current="page">pyoq.query.mysql</a></li><li><a href="/pyoq-sql/api/query-postgres/">pyoq.query.postgres</a></li><li><a href="/pyoq-sql/api/query-sqlite/">pyoq.query.sqlite</a></li><li><a href="/pyoq-sql/api/relations/">pyoq.relations</a></li><li><a href="/pyoq-sql/api/runtime/">pyoq.runtime</a></li><li><a href="/pyoq-sql/api/sanic/">pyoq.sanic</a></li><li><a href="/pyoq-sql/api/schema/">pyoq.schema</a></li><li><a href="/pyoq-sql/api/schema-dialects/">pyoq.schema dialects</a></li><li><a href="/pyoq-sql/api/serving/">pyoq.serving</a></li><li><a href="/pyoq-sql/api/snapshots/">pyoq.snapshots</a></li><li><a href="/pyoq-sql/api/tracing/">pyoq.tracing</a></li></ul></details></div></nav><script type="module">var e=`pyoq-sidebar`;function t(){try{return JSON.parse(sessionStorage.getItem(e)??`{}`)}catch{return{}}}function n(t){try{sessionStorage.setItem(e,JSON.stringify(t))}catch{}}var r=document.querySelector(`.side`),i=[...document.querySelectorAll(`.side-group`)],a=t();for(let e of i){let t=e.dataset.group;t&&(t in a&&(e.open=a[t]),e.addEventListener(`toggle`,()=>{a[t]=e.open,n(a)}))}function o(){if(!r||r.scrollHeight<=r.clientHeight)return;let e=r.querySelector(`a.active`);if(!e)return;let t=r.getBoundingClientRect(),n=e.getBoundingClientRect();n.top>=t.top&&n.bottom<=t.bottom||(r.scrollTop+=n.top-t.top-r.clientHeight/2+n.height/2)}requestAnimationFrame(o);</script><main id="content" data-pagefind-body><p class="crumb" data-pagefind-meta="group:APIs">APIs</p><article><h1>pyoq.query.mysql</h1><p class="lede" data-pagefind-ignore>Compiling, connecting and running against MySQL.</p><p>Each dialect fills in the same roles, so everything above it is written once. You reach these only to assemble a database by hand; <code>connect</code> puts them together for you.</p>
+<p>The asynchronous pieces are in <code>pyoq.query.mysql.aio</code>, listed at the end.</p>
+<h2 id="executionenvironment"><code>ExecutionEnvironment</code></h2>
+<p><em>dataclass</em></p>
+<p>Where a statement runs, so a failure can be read back knowing what was running.</p>
+<div class="code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">ExecutionEnvironment(connection: </span><span style="color:#A31515;--shiki-dark:#CE9178">'Connection'</span><span style="color:#000000;--shiki-dark:#D4D4D4">, opener: </span><span style="color:#A31515;--shiki-dark:#CE9178">'ConnectionOpener'</span><span style="color:#000000;--shiki-dark:#D4D4D4">, handler: </span><span style="color:#A31515;--shiki-dark:#CE9178">'FailureHandler'</span><span style="color:#000000;--shiki-dark:#D4D4D4">)</span></span></code></pre>
+<div class="monaco-host"></div></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Field</th><th>Type</th></tr></thead><tbody><tr><td><code>connection</code></td><td><code>Connection</code></td></tr><tr><td><code>opener</code></td><td><code>ConnectionOpener</code></td></tr><tr><td><code>handler</code></td><td><code>FailureHandler</code></td></tr></tbody></table>
+<h2 id="failurehandler"><code>FailureHandler</code></h2>
+<p><em>dataclass</em></p>
+<p>Turns this driver’s errors into PyOQ’s own.</p>
+<div class="code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">FailureHandler(invalidate: </span><span style="color:#A31515;--shiki-dark:#CE9178">'Callable[[], None]'</span><span style="color:#000000;--shiki-dark:#D4D4D4">, abort_transaction: </span><span style="color:#A31515;--shiki-dark:#CE9178">'Callable[[], None]'</span><span style="color:#000000;--shiki-dark:#D4D4D4"> = &#x3C;function _ignore_transaction_abort at </span><span style="color:#0000FF;--shiki-dark:#569CD6">0x</span><span style="color:#098658;--shiki-dark:#B5CEA8">10b7431a0</span><span style="color:#000000;--shiki-dark:#D4D4D4">>)</span></span></code></pre>
+<div class="monaco-host"></div></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Field</th><th>Type</th></tr></thead><tbody><tr><td><code>invalidate</code></td><td><code>Callable[[], None]</code></td></tr><tr><td><code>abort_transaction</code></td><td><code>Callable[[], None]</code></td></tr></tbody></table>
+<h2 id="mysqlbulkplanner"><code>MySQLBulkPlanner</code></h2>
+<p><em>class</em></p>
+<p>Splits a large write into the fewest statements this database’s parameter limit allows.</p>
+<div class="code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">MySQLBulkPlanner(compiler: </span><span style="color:#A31515;--shiki-dark:#CE9178">'MySQLCompiler'</span><span style="color:#000000;--shiki-dark:#D4D4D4">)</span></span></code></pre>
+<div class="monaco-host"></div></div>
+<h2 id="mysqlcapabilities"><code>MySQLCapabilities</code></h2>
+<p><em>dataclass</em></p>
+<p>What this database can express. A statement asking for something absent is refused while it is being built, not when it runs.</p>
+<div class="code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">MySQLCapabilities(maximum_parameters: </span><span style="color:#A31515;--shiki-dark:#CE9178">'int'</span><span style="color:#000000;--shiki-dark:#D4D4D4"> = </span><span style="color:#098658;--shiki-dark:#B5CEA8">65535</span><span style="color:#000000;--shiki-dark:#D4D4D4">, parameter_style: </span><span style="color:#A31515;--shiki-dark:#CE9178">'ParameterStyle'</span><span style="color:#000000;--shiki-dark:#D4D4D4"> = ParameterStyle.FORMAT, right_join: </span><span style="color:#A31515;--shiki-dark:#CE9178">'bool'</span><span style="color:#000000;--shiki-dark:#D4D4D4"> = </span><span style="color:#0000FF;--shiki-dark:#569CD6">True</span><span style="color:#000000;--shiki-dark:#D4D4D4">, full_join: </span><span style="color:#A31515;--shiki-dark:#CE9178">'bool'</span><span style="color:#000000;--shiki-dark:#D4D4D4"> = </span><span style="color:#0000FF;--shiki-dark:#569CD6">False</span><span style="color:#000000;--shiki-dark:#D4D4D4">, lateral_sources: </span><span style="color:#A31515;--shiki-dark:#CE9178">'bool'</span><span style="color:#000000;--shiki-dark:#D4D4D4"> = </span><span style="color:#0000FF;--shiki-dark:#569CD6">True</span><span style="color:#000000;--shiki-dark:#D4D4D4">, recursive_common_tables: </span><span style="color:#A31515;--shiki-dark:#CE9178">'bool'</span><span style="color:#000000;--shiki-dark:#D4D4D4"> = </span><span style="color:#0000FF;--shiki-dark:#569CD6">True</span><span style="color:#000000;--shiki-dark:#D4D4D4">, raw_expressions: </span><span style="color:#A31515;--shiki-dark:#CE9178">'bool'</span><span style="color:#000000;--shiki-dark:#D4D4D4"> = </span><span style="color:#0000FF;--shiki-dark:#569CD6">True</span><span style="color:#000000;--shiki-dark:#D4D4D4">, nested_collections: </span><span style="color:#A31515;--shiki-dark:#CE9178">'bool'</span><span style="color:#000000;--shiki-dark:#D4D4D4"> = </span><span style="color:#0000FF;--shiki-dark:#569CD6">True</span><span style="color:#000000;--shiki-dark:#D4D4D4">, ordered_nested_collections: </span><span style="color:#A31515;--shiki-dark:#CE9178">'bool'</span><span style="color:#000000;--shiki-dark:#D4D4D4"> = </span><span style="color:#0000FF;--shiki-dark:#569CD6">False</span><span style="color:#000000;--shiki-dark:#D4D4D4">, returning: </span><span style="color:#A31515;--shiki-dark:#CE9178">'bool'</span><span style="color:#000000;--shiki-dark:#D4D4D4"> = </span><span style="color:#0000FF;--shiki-dark:#569CD6">False</span><span style="color:#000000;--shiki-dark:#D4D4D4">, upsert: </span><span style="color:#A31515;--shiki-dark:#CE9178">'bool'</span><span style="color:#000000;--shiki-dark:#D4D4D4"> = </span><span style="color:#0000FF;--shiki-dark:#569CD6">True</span><span style="color:#000000;--shiki-dark:#D4D4D4">)</span></span></code></pre>
+<div class="monaco-host"></div></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Field</th><th>Type</th></tr></thead><tbody><tr><td><code>maximum_parameters</code></td><td><code>int</code></td></tr><tr><td><code>parameter_style</code></td><td><code>ParameterStyle</code></td></tr><tr><td><code>right_join</code></td><td><code>bool</code></td></tr><tr><td><code>full_join</code></td><td><code>bool</code></td></tr><tr><td><code>lateral_sources</code></td><td><code>bool</code></td></tr><tr><td><code>recursive_common_tables</code></td><td><code>bool</code></td></tr><tr><td><code>raw_expressions</code></td><td><code>bool</code></td></tr><tr><td><code>nested_collections</code></td><td><code>bool</code></td></tr><tr><td><code>ordered_nested_collections</code></td><td><code>bool</code></td></tr><tr><td><code>returning</code></td><td><code>bool</code></td></tr><tr><td><code>upsert</code></td><td><code>bool</code></td></tr></tbody></table>
+<h2 id="mysqlcompilationcontext"><code>MySQLCompilationContext</code></h2>
+<p><em>class</em></p>
+<p>What a compiler renders through: it binds values and collects the finished SQL.</p>
+<div class="code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">MySQLCompilationContext(capabilities: </span><span style="color:#A31515;--shiki-dark:#CE9178">'MySQLCapabilities'</span><span style="color:#000000;--shiki-dark:#D4D4D4">)</span></span></code></pre>
+<div class="monaco-host"></div></div>
+<h2 id="mysqlcompiler"><code>MySQLCompiler</code></h2>
+<p><em>class</em></p>
+<p>Turns a statement into SQL this database accepts.</p>
+<div class="code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">MySQLCompiler(capabilities: </span><span style="color:#A31515;--shiki-dark:#CE9178">'MySQLCapabilities | None'</span><span style="color:#000000;--shiki-dark:#D4D4D4"> = </span><span style="color:#0000FF;--shiki-dark:#569CD6">None</span><span style="color:#000000;--shiki-dark:#D4D4D4">)</span></span></code></pre>
+<div class="monaco-host"></div></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Method</th><th>Returns</th></tr></thead><tbody><tr><td><code>compile(statement: 'StatementProvider | StatementNode', /)</code></td><td><code>CompiledQuery</code></td></tr></tbody></table>
+<h2 id="mysqlconnectionfactory"><code>MySQLConnectionFactory</code></h2>
+<p><em>dataclass</em></p>
+<p>Opens a connection when the pool needs one.</p>
+<div class="code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">MySQLConnectionFactory(dsn: </span><span style="color:#A31515;--shiki-dark:#CE9178">'str'</span><span style="color:#000000;--shiki-dark:#D4D4D4">)</span></span></code></pre>
+<div class="monaco-host"></div></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Field</th><th>Type</th></tr></thead><tbody><tr><td><code>dsn</code></td><td><code>str</code></td></tr></tbody></table>
+<h2 id="mysqlconnectionfactoryprotocol"><code>MySQLConnectionFactoryProtocol</code></h2>
+<p><em>class</em></p>
+<p>What a connection factory has to satisfy, for a caller supplying its own.</p>
+<h2 id="mysqlconnectionlease"><code>MySQLConnectionLease</code></h2>
+<p><em>class</em></p>
+<p>One connection borrowed from the pool, returned when the lease ends.</p>
+<div class="code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">MySQLConnectionLease(*args, **kwargs)</span></span></code></pre>
+<div class="monaco-host"></div></div>
+<h2 id="mysqlcursorsession"><code>MySQLCursorSession</code></h2>
+<p><em>class</em></p>
+<p>A cursor held open across batches, which is how a streamed read is served.</p>
+<div class="code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">MySQLCursorSession(environment: </span><span style="color:#A31515;--shiki-dark:#CE9178">'ExecutionEnvironment'</span><span style="color:#000000;--shiki-dark:#D4D4D4">, cursor: </span><span style="color:#A31515;--shiki-dark:#CE9178">'Cursor'</span><span style="color:#000000;--shiki-dark:#D4D4D4">, monitor: </span><span style="color:#A31515;--shiki-dark:#CE9178">'MySQLExecutionMonitor'</span><span style="color:#000000;--shiki-dark:#D4D4D4">)</span></span></code></pre>
+<div class="monaco-host"></div></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Method</th><th>Returns</th></tr></thead><tbody><tr><td><code>checkpoint()</code></td><td>—</td></tr><tr><td><code>translate_driver_error(error: 'pymysql.Error')</code></td><td><code>NoReturn</code></td></tr><tr><td><code>fetch_batch(size: 'int')</code></td><td><code>list[tuple[object, ...]]</code></td></tr><tr><td><code>answered_with_more_than_one_result_set()</code></td><td><code>bool</code></td></tr><tr><td><code>close()</code></td><td>—</td></tr></tbody></table>
+<h2 id="mysqlexecutor"><code>MySQLExecutor</code></h2>
+<p><em>class</em></p>
+<p>Runs a compiled statement against a connection from the pool.</p>
+<div class="code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">MySQLExecutor(pool: </span><span style="color:#A31515;--shiki-dark:#CE9178">'MySQLPool'</span><span style="color:#000000;--shiki-dark:#D4D4D4">, compiler: </span><span style="color:#A31515;--shiki-dark:#CE9178">'MySQLCompiler | None'</span><span style="color:#000000;--shiki-dark:#D4D4D4"> = </span><span style="color:#0000FF;--shiki-dark:#569CD6">None</span><span style="color:#000000;--shiki-dark:#D4D4D4">)</span></span></code></pre>
+<div class="monaco-host"></div></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Method</th><th>Returns</th></tr></thead><tbody><tr><td><code>stream(query: 'Query[ResultRow]', /, *, policy: 'StreamPolicy | None' = None)</code></td><td><code>RowStream[ResultRow]</code></td></tr><tr><td><code>transaction(mode: 'TransactionMode' = TransactionMode.REPEATABLE_READ, *, control: 'ExecutionControl | None' = None)</code></td><td><code>MySQLTransaction</code></td></tr></tbody></table>
+<h2 id="mysqlexpressioncompiler"><code>MySQLExpressionCompiler</code></h2>
+<p><em>class</em></p>
+<p>Renders one expression. Each method takes a node and returns the SQL fragment for it.</p>
+<div class="code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">MySQLExpressionCompiler(context: </span><span style="color:#A31515;--shiki-dark:#CE9178">'ContextType'</span><span style="color:#000000;--shiki-dark:#D4D4D4">)</span></span></code></pre>
+<div class="monaco-host"></div></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Method</th><th>Returns</th></tr></thead><tbody><tr><td><code>qualified_field(node: 'FieldNode')</code></td><td><code>str</code></td></tr><tr><td><code>render_binary(node: 'BinaryNode', left: 'str', right: 'str')</code></td><td><code>str</code></td></tr><tr><td><code>validate_binary(node: 'BinaryNode')</code></td><td>—</td></tr><tr><td><code>render_json_elements(node: 'JsonElementsSourceNode')</code></td><td><code>str</code></td></tr><tr><td><code>render_json_keys(node: 'JsonKeysNode')</code></td><td><code>str</code></td></tr><tr><td><code>render_json(node: 'JsonNode')</code></td><td><code>str</code></td></tr><tr><td><code>render_json_write(node: 'JsonWriteNode')</code></td><td><code>str</code></td></tr><tr><td><code>render_json_contains(node: 'JsonContainsNode')</code></td><td><code>str</code></td></tr><tr><td><code>require_frame(node: 'FrameNode')</code></td><td>—</td></tr><tr><td><code>render_extract(node: 'ExtractNode')</code></td><td><code>str</code></td></tr><tr><td><code>render_string_predicate(node: 'FunctionNode')</code></td><td><code>str</code></td></tr><tr><td><code>require_raw_expressions()</code></td><td>—</td></tr></tbody></table>
+<h2 id="mysqlparameter"><code>MySQLParameter</code></h2>
+<p><em>class</em></p>
+<p>One value as this driver takes it.</p>
+<h2 id="mysqlpool"><code>MySQLPool</code></h2>
+<p><em>class</em></p>
+<p>The connections this process holds, and the rules for holding them.</p>
+<div class="code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">MySQLPool(factory: </span><span style="color:#A31515;--shiki-dark:#CE9178">'ConnectionFactory[ConnectionType]'</span><span style="color:#000000;--shiki-dark:#D4D4D4">, policy: </span><span style="color:#A31515;--shiki-dark:#CE9178">'PoolPolicy | None'</span><span style="color:#000000;--shiki-dark:#D4D4D4"> = </span><span style="color:#0000FF;--shiki-dark:#569CD6">None</span><span style="color:#000000;--shiki-dark:#D4D4D4">)</span></span></code></pre>
+<div class="monaco-host"></div></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Method</th><th>Returns</th></tr></thead><tbody><tr><td><code>reset(connection: 'Connection')</code></td><td><code>bool</code></td></tr><tr><td><code>validate(value: 'object')</code></td><td><code>Connection</code></td></tr><tr><td><code>dispose(connection: 'Connection')</code></td><td>—</td></tr></tbody></table>
+<h2 id="mysqlpoolpolicy"><code>MySQLPoolPolicy</code></h2>
+<p><em>dataclass</em></p>
+<p>The rules the pool is held to.</p>
+<div class="code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">MySQLPoolPolicy(maximum_size: </span><span style="color:#A31515;--shiki-dark:#CE9178">'int'</span><span style="color:#000000;--shiki-dark:#D4D4D4"> = </span><span style="color:#098658;--shiki-dark:#B5CEA8">5</span><span style="color:#000000;--shiki-dark:#D4D4D4">, minimum_size: </span><span style="color:#A31515;--shiki-dark:#CE9178">'int'</span><span style="color:#000000;--shiki-dark:#D4D4D4"> = </span><span style="color:#098658;--shiki-dark:#B5CEA8">0</span><span style="color:#000000;--shiki-dark:#D4D4D4">, checkout_timeout: </span><span style="color:#A31515;--shiki-dark:#CE9178">'float | None'</span><span style="color:#000000;--shiki-dark:#D4D4D4"> = </span><span style="color:#098658;--shiki-dark:#B5CEA8">30.0</span><span style="color:#000000;--shiki-dark:#D4D4D4">)</span></span></code></pre>
+<div class="monaco-host"></div></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Field</th><th>Type</th></tr></thead><tbody><tr><td><code>maximum_size</code></td><td><code>int</code></td></tr><tr><td><code>minimum_size</code></td><td><code>int</code></td></tr><tr><td><code>checkout_timeout</code></td><td><code>float | None</code></td></tr></tbody></table>
+<h2 id="mysqlpoolstats"><code>MySQLPoolStats</code></h2>
+<p><em>dataclass</em></p>
+<p>A reading of the pool, taken now.</p>
+<div class="code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">MySQLPoolStats(open_connections: </span><span style="color:#A31515;--shiki-dark:#CE9178">'int'</span><span style="color:#000000;--shiki-dark:#D4D4D4">, idle_connections: </span><span style="color:#A31515;--shiki-dark:#CE9178">'int'</span><span style="color:#000000;--shiki-dark:#D4D4D4">, checked_out_connections: </span><span style="color:#A31515;--shiki-dark:#CE9178">'int'</span><span style="color:#000000;--shiki-dark:#D4D4D4">, closed: </span><span style="color:#A31515;--shiki-dark:#CE9178">'bool'</span><span style="color:#000000;--shiki-dark:#D4D4D4">)</span></span></code></pre>
+<div class="monaco-host"></div></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Field</th><th>Type</th></tr></thead><tbody><tr><td><code>open_connections</code></td><td><code>int</code></td></tr><tr><td><code>idle_connections</code></td><td><code>int</code></td></tr><tr><td><code>checked_out_connections</code></td><td><code>int</code></td></tr><tr><td><code>closed</code></td><td><code>bool</code></td></tr></tbody></table>
+<h2 id="mysqlqueryoperations"><code>MySQLQueryOperations</code></h2>
+<p><em>class</em></p>
+<p>The operations a caller is given. See <a href="../query-execution/">pyoq.query.execution</a> for the full surface.</p>
+<div class="code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">MySQLQueryOperations(compiler: </span><span style="color:#A31515;--shiki-dark:#CE9178">'MySQLCompiler'</span><span style="color:#000000;--shiki-dark:#D4D4D4">)</span></span></code></pre>
+<div class="monaco-host"></div></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Method</th><th>Returns</th></tr></thead><tbody><tr><td><code>plan_bulk(statement: 'WriteProvider | WriteNode', /)</code></td><td><code>BulkPlan</code></td></tr><tr><td><code>last_inserted_id(cursor: 'DatabaseCursor')</code></td><td><code>int | None</code></td></tr></tbody></table>
+<h2 id="mysqltransaction"><code>MySQLTransaction</code></h2>
+<p><em>class</em></p>
+<p>One transaction, and the statements run inside it.</p>
+<div class="code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">MySQLTransaction(pool: </span><span style="color:#A31515;--shiki-dark:#CE9178">'MySQLPool'</span><span style="color:#000000;--shiki-dark:#D4D4D4">, compiler: </span><span style="color:#A31515;--shiki-dark:#CE9178">'MySQLCompiler'</span><span style="color:#000000;--shiki-dark:#D4D4D4">, mode: </span><span style="color:#A31515;--shiki-dark:#CE9178">'TransactionMode'</span><span style="color:#000000;--shiki-dark:#D4D4D4"> = TransactionMode.REPEATABLE_READ, control: </span><span style="color:#A31515;--shiki-dark:#CE9178">'ExecutionControl | None'</span><span style="color:#000000;--shiki-dark:#D4D4D4"> = </span><span style="color:#0000FF;--shiki-dark:#569CD6">None</span><span style="color:#000000;--shiki-dark:#D4D4D4">, *, parent: </span><span style="color:#A31515;--shiki-dark:#CE9178">'MySQLTransaction | None'</span><span style="color:#000000;--shiki-dark:#D4D4D4"> = </span><span style="color:#0000FF;--shiki-dark:#569CD6">None</span><span style="color:#000000;--shiki-dark:#D4D4D4">, state: </span><span style="color:#A31515;--shiki-dark:#CE9178">'MySQLTransactionState | None'</span><span style="color:#000000;--shiki-dark:#D4D4D4"> = </span><span style="color:#0000FF;--shiki-dark:#569CD6">None</span><span style="color:#000000;--shiki-dark:#D4D4D4">)</span></span></code></pre>
+<div class="monaco-host"></div></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Method</th><th>Returns</th></tr></thead><tbody><tr><td><code>savepoint(*, control: 'ExecutionControl | None' = None)</code></td><td><code>MySQLTransaction</code></td></tr><tr><td><code>stream(query: 'Query[ResultRow]', /, *, policy: 'StreamPolicy | None' = None)</code></td><td><code>RowStream[ResultRow]</code></td></tr></tbody></table>
+<h2 id="mysqltransactionstate"><code>MySQLTransactionState</code></h2>
+<p><em>class</em></p>
+<p>Whose connection a transaction holds, and what may use it.</p>
+<div class="code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">MySQLTransactionState()</span></span></code></pre>
+<div class="monaco-host"></div></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Method</th><th>Returns</th></tr></thead><tbody><tr><td><code>mark_server_rollback()</code></td><td>—</td></tr></tbody></table>
+<h2 id="mysqlwritecompilation"><code>MySQLWriteCompilation</code></h2>
+<p><em>class</em></p>
+<p>What a write becomes, which differs between databases more than a read does.</p>
+<div class="code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">MySQLWriteCompilation(context: </span><span style="color:#A31515;--shiki-dark:#CE9178">'MySQLCompilationContext'</span><span style="color:#000000;--shiki-dark:#D4D4D4">)</span></span></code></pre>
+<div class="monaco-host"></div></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Method</th><th>Returns</th></tr></thead><tbody><tr><td><code>insert_row_alias(node: 'InsertNode')</code></td><td><code>str | None</code></td></tr><tr><td><code>render_conflict(node: 'ConflictNode')</code></td><td><code>str</code></td></tr><tr><td><code>require_returning()</code></td><td>—</td></tr><tr><td><code>require_conflict_resolution()</code></td><td>—</td></tr></tbody></table>
+<h2 id="transactionmode"><code>TransactionMode</code></h2>
+<p><em>enum</em></p>
+<p>How a transaction begins. The words differ between databases, so each names its own.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Member</th><th>Value</th></tr></thead><tbody><tr><td><code>READ_COMMITTED</code></td><td><code>'READ_COMMITTED'</code></td></tr><tr><td><code>REPEATABLE_READ</code></td><td><code>'REPEATABLE_READ'</code></td></tr><tr><td><code>SERIALIZABLE</code></td><td><code>'SERIALIZABLE'</code></td></tr><tr><td><code>READ_ONLY</code></td><td><code>'READ_ONLY'</code></td></tr></tbody></table>
+<h2 id="adapt_parameter"><code>adapt_parameter</code></h2>
+<p><em>function</em></p>
+<p>One Python value as the driver takes it.</p>
+<div class="code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">adapt_parameter(value: </span><span style="color:#A31515;--shiki-dark:#CE9178">'object'</span><span style="color:#000000;--shiki-dark:#D4D4D4">) </span><span style="color:#CD3131;--shiki-dark:#F44747">-></span><span style="color:#A31515;--shiki-dark:#CE9178"> 'MySQLParameter'</span></span></code></pre>
+<div class="monaco-host"></div></div>
+<h2 id="adapt_parameters"><code>adapt_parameters</code></h2>
+<p><em>function</em></p>
+<p>A whole tuple of them, in order.</p>
+<div class="code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">adapt_parameters(values: </span><span style="color:#A31515;--shiki-dark:#CE9178">'tuple[object, ...]'</span><span style="color:#000000;--shiki-dark:#D4D4D4">) </span><span style="color:#CD3131;--shiki-dark:#F44747">-></span><span style="color:#A31515;--shiki-dark:#CE9178"> 'tuple[MySQLParameter, ...]'</span></span></code></pre>
+<div class="monaco-host"></div></div>
+<h1 id="the-asynchronous-package">The asynchronous package</h1>
+<p>In <code>pyoq.query.mysql.aio</code>. Each is its synchronous counterpart with the methods that reach the database awaited.</p>
+<h2 id="asyncexecutionenvironment"><code>AsyncExecutionEnvironment</code></h2>
+<p><em>dataclass</em></p>
+<p>Where a statement runs, so a failure can be read back knowing what was running.</p>
+<div class="code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">AsyncExecutionEnvironment(connection: </span><span style="color:#A31515;--shiki-dark:#CE9178">'AsyncMySQLConnection'</span><span style="color:#000000;--shiki-dark:#D4D4D4">, opener: </span><span style="color:#A31515;--shiki-dark:#CE9178">'AsyncConnectionOpener'</span><span style="color:#000000;--shiki-dark:#D4D4D4">, handler: </span><span style="color:#A31515;--shiki-dark:#CE9178">'AsyncFailureHandler'</span><span style="color:#000000;--shiki-dark:#D4D4D4">)</span></span></code></pre>
+<div class="monaco-host"></div></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Field</th><th>Type</th></tr></thead><tbody><tr><td><code>connection</code></td><td><code>AsyncMySQLConnection</code></td></tr><tr><td><code>opener</code></td><td><code>AsyncConnectionOpener</code></td></tr><tr><td><code>handler</code></td><td><code>AsyncFailureHandler</code></td></tr></tbody></table>
+<h2 id="asyncfailurehandler"><code>AsyncFailureHandler</code></h2>
+<p><em>dataclass</em></p>
+<p>Turns this driver’s errors into PyOQ’s own.</p>
+<div class="code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">AsyncFailureHandler(invalidate: </span><span style="color:#A31515;--shiki-dark:#CE9178">'Callable[[], None]'</span><span style="color:#000000;--shiki-dark:#D4D4D4">, abort_transaction: </span><span style="color:#A31515;--shiki-dark:#CE9178">'Callable[[], None]'</span><span style="color:#000000;--shiki-dark:#D4D4D4"> = &#x3C;function _ignore_transaction_abort at </span><span style="color:#0000FF;--shiki-dark:#569CD6">0x</span><span style="color:#098658;--shiki-dark:#B5CEA8">10b7d4040</span><span style="color:#000000;--shiki-dark:#D4D4D4">>)</span></span></code></pre>
+<div class="monaco-host"></div></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Field</th><th>Type</th></tr></thead><tbody><tr><td><code>invalidate</code></td><td><code>Callable[[], None]</code></td></tr><tr><td><code>abort_transaction</code></td><td><code>Callable[[], None]</code></td></tr></tbody></table>
+<h2 id="asyncmysqlconnection"><code>AsyncMySQLConnection</code></h2>
+<p><em>class</em></p>
+<p>The connection this driver gives back, as PyOQ expects it.</p>
+<div class="code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">AsyncMySQLConnection(*args, **kwargs)</span></span></code></pre>
+<div class="monaco-host"></div></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Method</th><th>Returns</th></tr></thead><tbody><tr><td><code>cursor(cursor_class: 'object' = Ellipsis, /)</code></td><td><code>AsyncMySQLCursor</code></td></tr><tr><td><code>close()</code></td><td>—</td></tr><tr><td><code>ensure_closed()</code></td><td>—</td></tr></tbody></table>
+<h2 id="asyncmysqlcursor"><code>AsyncMySQLCursor</code></h2>
+<p><em>class</em></p>
+<p>The cursor it opens.</p>
+<div class="code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">AsyncMySQLCursor(*args, **kwargs)</span></span></code></pre>
+<div class="monaco-host"></div></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Method</th><th>Returns</th></tr></thead><tbody><tr><td><code>execute(query: 'str', args: 'tuple[MySQLParameter, ...]', /)</code></td><td><code>int</code></td></tr><tr><td><code>fetchone()</code></td><td><code>tuple[object, ...] | None</code></td></tr><tr><td><code>fetchall()</code></td><td><code>Sequence[object]</code></td></tr><tr><td><code>fetchmany(size: 'int', /)</code></td><td><code>Sequence[object]</code></td></tr><tr><td><code>nextset()</code></td><td><code>bool | None</code></td></tr><tr><td><code>close()</code></td><td>—</td></tr></tbody></table>
+<h2 id="mysqlasyncconnectionfactory"><code>MySQLAsyncConnectionFactory</code></h2>
+<p><em>dataclass</em></p>
+<p>Opens a connection when the pool needs one.</p>
+<div class="code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">MySQLAsyncConnectionFactory(dsn: </span><span style="color:#A31515;--shiki-dark:#CE9178">'str'</span><span style="color:#000000;--shiki-dark:#D4D4D4">)</span></span></code></pre>
+<div class="monaco-host"></div></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Field</th><th>Type</th></tr></thead><tbody><tr><td><code>dsn</code></td><td><code>str</code></td></tr></tbody></table>
+<h2 id="mysqlasyncconnectionlease"><code>MySQLAsyncConnectionLease</code></h2>
+<p><em>class</em></p>
+<p>One connection borrowed from the pool, returned when the lease ends.</p>
+<div class="code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">MySQLAsyncConnectionLease(*args, **kwargs)</span></span></code></pre>
+<div class="monaco-host"></div></div>
+<h2 id="mysqlasynccursorsession"><code>MySQLAsyncCursorSession</code></h2>
+<p><em>class</em></p>
+<p>A cursor held open across batches, which is how a streamed read is served.</p>
+<div class="code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">MySQLAsyncCursorSession(environment: </span><span style="color:#A31515;--shiki-dark:#CE9178">'AsyncExecutionEnvironment'</span><span style="color:#000000;--shiki-dark:#D4D4D4">, cursor: </span><span style="color:#A31515;--shiki-dark:#CE9178">'AsyncMySQLCursor'</span><span style="color:#000000;--shiki-dark:#D4D4D4">, monitor: </span><span style="color:#A31515;--shiki-dark:#CE9178">'MySQLAsyncExecutionMonitor'</span><span style="color:#000000;--shiki-dark:#D4D4D4">)</span></span></code></pre>
+<div class="monaco-host"></div></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Method</th><th>Returns</th></tr></thead><tbody><tr><td><code>checkpoint()</code></td><td>—</td></tr><tr><td><code>translate_driver_error(error: 'BaseException')</code></td><td><code>NoReturn</code></td></tr><tr><td><code>fetch_batch(size: 'int')</code></td><td><code>list[tuple[object, ...]]</code></td></tr><tr><td><code>answered_with_more_than_one_result_set()</code></td><td><code>bool</code></td></tr><tr><td><code>close()</code></td><td>—</td></tr></tbody></table>
+<h2 id="mysqlasyncexecutor"><code>MySQLAsyncExecutor</code></h2>
+<p><em>class</em></p>
+<p>Runs a compiled statement against a connection from the pool.</p>
+<div class="code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">MySQLAsyncExecutor(pool: </span><span style="color:#A31515;--shiki-dark:#CE9178">'MySQLAsyncPool'</span><span style="color:#000000;--shiki-dark:#D4D4D4">, compiler: </span><span style="color:#A31515;--shiki-dark:#CE9178">'MySQLCompiler | None'</span><span style="color:#000000;--shiki-dark:#D4D4D4"> = </span><span style="color:#0000FF;--shiki-dark:#569CD6">None</span><span style="color:#000000;--shiki-dark:#D4D4D4">)</span></span></code></pre>
+<div class="monaco-host"></div></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Method</th><th>Returns</th></tr></thead><tbody><tr><td><code>stream(query: 'Query[ResultRow]', /, *, policy: 'StreamPolicy | None' = None)</code></td><td><code>AsyncRowStream[ResultRow]</code></td></tr><tr><td><code>transaction(mode: 'TransactionMode' = TransactionMode.REPEATABLE_READ, *, control: 'ExecutionControl | None' = None)</code></td><td><code>MySQLAsyncTransaction</code></td></tr></tbody></table>
+<h2 id="mysqlasyncpool"><code>MySQLAsyncPool</code></h2>
+<p><em>class</em></p>
+<p>The connections this process holds, and the rules for holding them.</p>
+<div class="code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">MySQLAsyncPool(factory: </span><span style="color:#A31515;--shiki-dark:#CE9178">'AsyncConnectionFactory[ConnectionType]'</span><span style="color:#000000;--shiki-dark:#D4D4D4">, policy: </span><span style="color:#A31515;--shiki-dark:#CE9178">'PoolPolicy | None'</span><span style="color:#000000;--shiki-dark:#D4D4D4"> = </span><span style="color:#0000FF;--shiki-dark:#569CD6">None</span><span style="color:#000000;--shiki-dark:#D4D4D4">)</span></span></code></pre>
+<div class="monaco-host"></div></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Method</th><th>Returns</th></tr></thead><tbody><tr><td><code>reset(connection: 'AsyncMySQLConnection')</code></td><td><code>bool</code></td></tr><tr><td><code>validate(value: 'object')</code></td><td><code>AsyncMySQLConnection</code></td></tr><tr><td><code>dispose(connection: 'AsyncMySQLConnection')</code></td><td>—</td></tr></tbody></table>
+<h2 id="mysqlasyncqueryoperations"><code>MySQLAsyncQueryOperations</code></h2>
+<p><em>class</em></p>
+<p>The operations a caller is given. See <a href="../query-execution/">pyoq.query.execution</a> for the full surface.</p>
+<div class="code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">MySQLAsyncQueryOperations(compiler: </span><span style="color:#A31515;--shiki-dark:#CE9178">'MySQLCompiler'</span><span style="color:#000000;--shiki-dark:#D4D4D4">)</span></span></code></pre>
+<div class="monaco-host"></div></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Method</th><th>Returns</th></tr></thead><tbody><tr><td><code>plan_bulk(statement: 'WriteProvider | WriteNode', /)</code></td><td><code>BulkPlan</code></td></tr><tr><td><code>last_inserted_id(cursor: 'AsyncDatabaseCursor')</code></td><td><code>int | None</code></td></tr></tbody></table>
+<h2 id="mysqlasynctransaction"><code>MySQLAsyncTransaction</code></h2>
+<p><em>class</em></p>
+<p>One transaction, and the statements run inside it.</p>
+<div class="code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">MySQLAsyncTransaction(pool: </span><span style="color:#A31515;--shiki-dark:#CE9178">'MySQLAsyncPool'</span><span style="color:#000000;--shiki-dark:#D4D4D4">, compiler: </span><span style="color:#A31515;--shiki-dark:#CE9178">'MySQLCompiler'</span><span style="color:#000000;--shiki-dark:#D4D4D4">, mode: </span><span style="color:#A31515;--shiki-dark:#CE9178">'TransactionMode'</span><span style="color:#000000;--shiki-dark:#D4D4D4"> = TransactionMode.REPEATABLE_READ, control: </span><span style="color:#A31515;--shiki-dark:#CE9178">'ExecutionControl | None'</span><span style="color:#000000;--shiki-dark:#D4D4D4"> = </span><span style="color:#0000FF;--shiki-dark:#569CD6">None</span><span style="color:#000000;--shiki-dark:#D4D4D4">, *, parent: </span><span style="color:#A31515;--shiki-dark:#CE9178">'MySQLAsyncTransaction | None'</span><span style="color:#000000;--shiki-dark:#D4D4D4"> = </span><span style="color:#0000FF;--shiki-dark:#569CD6">None</span><span style="color:#000000;--shiki-dark:#D4D4D4">, state: </span><span style="color:#A31515;--shiki-dark:#CE9178">'MySQLAsyncTransactionState | None'</span><span style="color:#000000;--shiki-dark:#D4D4D4"> = </span><span style="color:#0000FF;--shiki-dark:#569CD6">None</span><span style="color:#000000;--shiki-dark:#D4D4D4">)</span></span></code></pre>
+<div class="monaco-host"></div></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Method</th><th>Returns</th></tr></thead><tbody><tr><td><code>savepoint(*, control: 'ExecutionControl | None' = None)</code></td><td><code>MySQLAsyncTransaction</code></td></tr><tr><td><code>stream(query: 'Query[ResultRow]', /, *, policy: 'StreamPolicy | None' = None)</code></td><td><code>AsyncRowStream[ResultRow]</code></td></tr></tbody></table>
+<h2 id="mysqlasynctransactionstate"><code>MySQLAsyncTransactionState</code></h2>
+<p><em>class</em></p>
+<p>Whose connection a transaction holds, and what may use it.</p>
+<div class="code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">MySQLAsyncTransactionState()</span></span></code></pre>
+<div class="monaco-host"></div></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Method</th><th>Returns</th></tr></thead><tbody><tr><td><code>mark_server_rollback()</code></td><td>—</td></tr></tbody></table>
+<h2 id="transactionmode-1"><code>TransactionMode</code></h2>
+<p><em>enum</em></p>
+<p>How a transaction begins. The words differ between databases, so each names its own.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Member</th><th>Value</th></tr></thead><tbody><tr><td><code>READ_COMMITTED</code></td><td><code>'READ_COMMITTED'</code></td></tr><tr><td><code>REPEATABLE_READ</code></td><td><code>'REPEATABLE_READ'</code></td></tr><tr><td><code>SERIALIZABLE</code></td><td><code>'SERIALIZABLE'</code></td></tr><tr><td><code>READ_ONLY</code></td><td><code>'READ_ONLY'</code></td></tr></tbody></table>
+<h2 id="preferred_tls_context"><code>preferred_tls_context</code></h2>
+<p><em>function</em></p>
+<p>The TLS the asynchronous driver connects with unless told otherwise.</p>
+<div class="code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">preferred_tls_context() </span><span style="color:#CD3131;--shiki-dark:#F44747">-></span><span style="color:#A31515;--shiki-dark:#CE9178"> 'ssl.SSLContext'</span></span></code></pre>
+<div class="monaco-host"></div></div>
+<h2 id="the-execution-monitor">The execution monitor</h2>
+<p><code>MySQLExecutionMonitor</code> is not exported, but <code>MySQLCursorSession</code> names it in its signature. It is a server-side statement timeout together with a watchdog that ends a statement the timeout does not reach, which is how a timeout and a cancellation get to a connection that is already busy. It lives in <code>pyoq.query.mysql.commands</code>.</p>
+<p><code>MySQLAsyncExecutionMonitor</code>, in <code>pyoq.query.mysql.aio.commands</code>, is the same for the asynchronous driver.</p></article><nav class="pager" aria-label="Neighbouring pages"><a class="previous" href="/pyoq-sql/api/query-execution/"><span>Previous</span>pyoq.query.execution</a><a class="next" href="/pyoq-sql/api/query-postgres/"><span>Next</span>pyoq.query.postgres</a></nav><footer class="page-footer"><p>PyOQ is released under the <a href="/pyoq-sql/licence/" rel="license">MPL-2.0</a> licence.</p></footer></main><nav class="contents" aria-label="On this page"><p>On this page</p><ul><li><a href="#executionenvironment">ExecutionEnvironment</a></li><li><a href="#failurehandler">FailureHandler</a></li><li><a href="#mysqlbulkplanner">MySQLBulkPlanner</a></li><li><a href="#mysqlcapabilities">MySQLCapabilities</a></li><li><a href="#mysqlcompilationcontext">MySQLCompilationContext</a></li><li><a href="#mysqlcompiler">MySQLCompiler</a></li><li><a href="#mysqlconnectionfactory">MySQLConnectionFactory</a></li><li><a href="#mysqlconnectionfactoryprotocol">MySQLConnectionFactoryProtocol</a></li><li><a href="#mysqlconnectionlease">MySQLConnectionLease</a></li><li><a href="#mysqlcursorsession">MySQLCursorSession</a></li><li><a href="#mysqlexecutor">MySQLExecutor</a></li><li><a href="#mysqlexpressioncompiler">MySQLExpressionCompiler</a></li><li><a href="#mysqlparameter">MySQLParameter</a></li><li><a href="#mysqlpool">MySQLPool</a></li><li><a href="#mysqlpoolpolicy">MySQLPoolPolicy</a></li><li><a href="#mysqlpoolstats">MySQLPoolStats</a></li><li><a href="#mysqlqueryoperations">MySQLQueryOperations</a></li><li><a href="#mysqltransaction">MySQLTransaction</a></li><li><a href="#mysqltransactionstate">MySQLTransactionState</a></li><li><a href="#mysqlwritecompilation">MySQLWriteCompilation</a></li><li><a href="#transactionmode">TransactionMode</a></li><li><a href="#adapt_parameter">adapt_parameter</a></li><li><a href="#adapt_parameters">adapt_parameters</a></li><li><a href="#asyncexecutionenvironment">AsyncExecutionEnvironment</a></li><li><a href="#asyncfailurehandler">AsyncFailureHandler</a></li><li><a href="#asyncmysqlconnection">AsyncMySQLConnection</a></li><li><a href="#asyncmysqlcursor">AsyncMySQLCursor</a></li><li><a href="#mysqlasyncconnectionfactory">MySQLAsyncConnectionFactory</a></li><li><a href="#mysqlasyncconnectionlease">MySQLAsyncConnectionLease</a></li><li><a href="#mysqlasynccursorsession">MySQLAsyncCursorSession</a></li><li><a href="#mysqlasyncexecutor">MySQLAsyncExecutor</a></li><li><a href="#mysqlasyncpool">MySQLAsyncPool</a></li><li><a href="#mysqlasyncqueryoperations">MySQLAsyncQueryOperations</a></li><li><a href="#mysqlasynctransaction">MySQLAsyncTransaction</a></li><li><a href="#mysqlasynctransactionstate">MySQLAsyncTransactionState</a></li><li><a href="#transactionmode-1">TransactionMode</a></li><li><a href="#preferred_tls_context">preferred_tls_context</a></li><li><a href="#the-execution-monitor">The execution monitor</a></li></ul></nav></div><script type="module">document.addEventListener(`click`,e=>{let t=e.target?.closest(`[data-copy]`);if(!t)return;let n=(t.closest(`.code-shell`)?.querySelector(`pre`)?.textContent??``).replace(/\n$/,``);if(!n)return;let r=e=>{let n=t.querySelector(`[data-copy-label]`);n&&(n.textContent=e)};navigator.clipboard.writeText(n).then(()=>{t.dataset.copied=``,r(`Copied`),setTimeout(()=>{delete t.dataset.copied,r(`Copy`)},1600)},()=>r(`Press ⌘C`))});</script><script type="module" src="/pyoq-sql/_astro/CodeEditors.astro_astro_type_script_index_0_lang.C8S0YAI5.js"></script><script type="module" src="/pyoq-sql/_astro/Diagrams.astro_astro_type_script_index_0_lang.BNJty66e.js"></script></body></html>

@@ -1,0 +1,630 @@
+<!DOCTYPE html><html lang="en" data-appearance="light"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>LLM agent guide · PyOQ</title><meta name="description" content="Contracts, architecture, source routing, and safe change rules for coding agents."><link rel="canonical" href="https://teqpod.com/pyoq-sql/agents/"><meta name="robots" content="index, follow, max-image-preview:large"><meta name="theme-color" content="#1b6ef3"><link rel="sitemap" type="application/xml" href="/pyoq-sql/sitemap.xml"><meta property="og:type" content="article"><meta property="og:site_name" content="PyOQ"><meta property="og:locale" content="en"><meta property="og:title" content="LLM agent guide · PyOQ"><meta property="og:description" content="Contracts, architecture, source routing, and safe change rules for coding agents."><meta property="og:url" content="https://teqpod.com/pyoq-sql/agents/"><meta property="og:image" content="https://teqpod.com/pyoq-sql/brand/pyoq-banner.png"><meta property="og:image:type" content="image/png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="PyOQ, fully typed database-first SQL for Python"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="LLM agent guide · PyOQ"><meta name="twitter:description" content="Contracts, architecture, source routing, and safe change rules for coding agents."><meta name="twitter:image" content="https://teqpod.com/pyoq-sql/brand/pyoq-banner.png"><link rel="icon" type="image/svg+xml" href="/pyoq-sql/brand/pyoq-mark.svg"><link rel="icon" type="image/png" sizes="32x32" href="/pyoq-sql/brand/pyoq-favicon-32.png"><link rel="apple-touch-icon" href="/pyoq-sql/brand/pyoq-mark-180.png"><script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://teqpod.com/pyoq-sql/#site","name":"PyOQ","url":"https://teqpod.com/pyoq-sql/","description":"A database-first SQL toolkit with generated types, explicit execution, and native acceleration for Python applications."},{"@type":"SoftwareApplication","@id":"https://teqpod.com/pyoq-sql/#project","name":"PyOQ","description":"A database-first SQL toolkit with generated types, explicit execution, and native acceleration for Python applications.","url":"https://teqpod.com/pyoq-sql/","sameAs":["https://pypi.org/project/pyoq-sql/"],"applicationCategory":"DeveloperApplication","operatingSystem":"Linux, macOS, Windows","programmingLanguage":"Python","license":"https://teqpod.com/pyoq-sql/licence/","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}},{"@type":"TechArticle","headline":"LLM agent guide · PyOQ","description":"Contracts, architecture, source routing, and safe change rules for coding agents.","url":"https://teqpod.com/pyoq-sql/agents/","image":"https://teqpod.com/pyoq-sql/brand/pyoq-banner.png","isPartOf":{"@id":"https://teqpod.com/pyoq-sql/#site"},"about":{"@id":"https://teqpod.com/pyoq-sql/#project"},"inLanguage":"en","articleSection":"For LLMs"}]}</script><script>
+  (() => {
+    let chosen = null;
+    try {
+      chosen = localStorage.getItem("pyoq-appearance");
+    } catch {}
+    const dark = matchMedia("(prefers-color-scheme: dark)").matches;
+    document.documentElement.dataset.appearance = chosen ?? (dark ? "dark" : "light");
+  })();
+</script><link rel="stylesheet" href="/pyoq-sql/_astro/app.CXhD3KCe.css"></head><body><a class="skip" href="#content">Skip to content</a><header class="bar"><a class="wordmark" href="/pyoq-sql/" aria-label="PyOQ documentation home"><img class="brand-image" src="/pyoq-sql/brand/pyoq-mark.svg" width="30" height="30" alt=""><span class="brand-name">PyOQ</span><span class="brand-context">docs</span></a><div class="search" data-pagefind-ignore><svg class="glass" viewBox="0 0 20 20" width="15" height="15" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.8" d="M8.5 14.5a6 6 0 1 1 0-12 6 6 0 0 1 0 12Zm4.5-1.5 4 4"></path></svg><input id="search" type="search" placeholder="Search the documentation" autocomplete="off" spellcheck="false" aria-label="Search the documentation" aria-expanded="false" aria-controls="results"><kbd>/</kbd><div id="results" role="listbox" hidden></div></div><script>(function(){const runtime = "/pyoq-sql/pagefind/pagefind.js";
+const baseUrl = "/pyoq-sql/";
+
+  const field = document.getElementById("search");
+  const panel = document.getElementById("results");
+  let engine = null;
+  let chosen = -1;
+
+  async function ready() {
+    if (engine) return engine;
+    try {
+      engine = await import(runtime);
+      await engine.options({ baseUrl, excerptLength: 24 });
+      await engine.init();
+    } catch {
+      engine = "unavailable";
+    }
+    return engine;
+  }
+
+  function close() {
+    panel.hidden = true;
+    field.setAttribute("aria-expanded", "false");
+    chosen = -1;
+  }
+
+  function draw(results) {
+    if (!results.length) {
+      panel.innerHTML = '<p class="none">Nothing matches that.</p>';
+    } else {
+      panel.innerHTML = results
+        .map((result) => {
+          const where = result.meta?.group ?? "Documentation";
+          const title = result.meta?.title ?? "Untitled";
+          return `<a role="option" href="${result.url}">
+            <span class="where">${where}</span>
+            <span class="what">${title}</span>
+            <span class="bit">${result.excerpt}</span>
+          </a>`;
+        })
+        .join("");
+    }
+    panel.hidden = false;
+    field.setAttribute("aria-expanded", "true");
+    chosen = -1;
+  }
+
+  let running = 0;
+  async function run() {
+    const wanted = field.value.trim();
+    if (!wanted) return close();
+    const engine = await ready();
+    if (engine === "unavailable") {
+      panel.innerHTML =
+        '<p class="none">Search is built with the site. Run <code>bun run build</code>.</p>';
+      panel.hidden = false;
+      return;
+    }
+    const token = ++running;
+    const found = await engine.search(wanted);
+    if (token !== running) return;
+    const top = await Promise.all(found.results.slice(0, 8).map((one) => one.data()));
+    if (token !== running) return;
+    draw(top);
+  }
+
+  function move(step) {
+    const links = panel.querySelectorAll("a");
+    if (!links.length) return;
+    chosen = (chosen + step + links.length) % links.length;
+    links.forEach((link, at) => link.classList.toggle("on", at === chosen));
+    links[chosen].scrollIntoView({ block: "nearest" });
+  }
+
+  let waiting;
+  field?.addEventListener("input", () => {
+    clearTimeout(waiting);
+    waiting = setTimeout(run, 120);
+  });
+  field?.addEventListener("focus", ready);
+
+  field?.addEventListener("keydown", (event) => {
+    if (event.key === "ArrowDown") {
+      event.preventDefault();
+      move(1);
+    } else if (event.key === "ArrowUp") {
+      event.preventDefault();
+      move(-1);
+    } else if (event.key === "Enter" && chosen >= 0) {
+      event.preventDefault();
+      panel.querySelectorAll("a")[chosen].click();
+    } else if (event.key === "Escape") {
+      field.blur();
+      close();
+    }
+  });
+
+  document.addEventListener("click", (event) => {
+    if (!panel.contains(event.target) && event.target !== field) close();
+  });
+
+  // "/" reaches the field from anywhere, which is where a reader goes first.
+  document.addEventListener("keydown", (event) => {
+    const typing = /^(INPUT|TEXTAREA)$/.test(document.activeElement?.tagName ?? "");
+    if (event.key === "/" && !typing) {
+      event.preventDefault();
+      field.focus();
+      field.select();
+    }
+  });
+})();</script><button id="appearance" type="button" aria-label="Switch appearance"><svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M10 2a8 8 0 1 0 0 16 8 8 0 0 0 0-16Zm0 1.6V16.4a6.4 6.4 0 0 1 0-12.8Z"></path></svg></button><script type="module">var e=document.documentElement;document.getElementById(`appearance`)?.addEventListener(`click`,()=>{let t=e.dataset.appearance===`dark`?`light`:`dark`;e.dataset.appearance=t;try{localStorage.setItem(`pyoq-appearance`,t)}catch{}});</script></header><div class="page"><nav class="side" aria-label="Documentation"><details class="side-toggle"><summary>Contents</summary></details><div class="side-body"><details class="side-group" data-group="Start here"><summary class="group" title="What this is, whether it suits you, and getting it running."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>Start here</summary><ul><li><a href="/pyoq-sql/overview/">What PyOQ is</a></li><li><a href="/pyoq-sql/when-to-use/">When to use what</a></li><li><a href="/pyoq-sql/installing/">Installing</a></li><li><a href="/pyoq-sql/generating/">Generating your types</a></li><li><a href="/pyoq-sql/first-query/">Your first query</a></li></ul></details><details class="side-group" data-group="For LLMs" open><summary class="group" title="A compact project model and source map for coding agents."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>For LLMs</summary><ul><li><a href="/pyoq-sql/agents/" class="active" aria-current="page">LLM agent guide</a></li></ul></details><details class="side-group" data-group="Reading"><summary class="group" title="Everything that ends in rows coming back."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>Reading</summary><ul><li><a href="/pyoq-sql/selecting/">Selecting rows</a></li><li><a href="/pyoq-sql/expressions/">Expressions and conditions</a></li><li><a href="/pyoq-sql/joins/">Joins and set operations</a></li><li><a href="/pyoq-sql/routines/">Stored routines</a></li><li><a href="/pyoq-sql/results/">Reading results</a></li></ul></details><details class="side-group" data-group="Writing"><summary class="group" title="Everything that changes what is in the database."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>Writing</summary><ul><li><a href="/pyoq-sql/inserting/">Inserting rows</a></li><li><a href="/pyoq-sql/updating/">Updating and deleting</a></li><li><a href="/pyoq-sql/conflicts/">Conflict resolution</a></li><li><a href="/pyoq-sql/bulk/">Bulk writes</a></li></ul></details><details class="side-group" data-group="Your data"><summary class="group" title="What the schema says, and how PyOQ reads it back."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>Your data</summary><ul><li><a href="/pyoq-sql/relations/">Relations</a></li><li><a href="/pyoq-sql/types/">Column types</a></li><li><a href="/pyoq-sql/snapshots/">Snapshots and drift</a></li><li><a href="/pyoq-sql/migrations/">Migration lifecycle</a></li></ul></details><details class="side-group" data-group="Running statements"><summary class="group" title="What happens between a built statement and a row."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>Running statements</summary><ul><li><a href="/pyoq-sql/connections/">Connections and pools</a></li><li><a href="/pyoq-sql/mysql-application/">MySQL without a framework</a></li><li><a href="/pyoq-sql/async/">Asynchronous execution</a></li><li><a href="/pyoq-sql/transactions/">Transactions and streaming</a></li><li><a href="/pyoq-sql/dialects/">Dialects</a></li><li><a href="/pyoq-sql/diagnostics/">Diagnostics</a></li><li><a href="/pyoq-sql/policies/">Policies</a></li><li><a href="/pyoq-sql/security/">Security</a></li><li><a href="/pyoq-sql/performance/">Performance</a></li></ul></details><details class="side-group" data-group="Frameworks"><summary class="group" title="Running inside something that already owns the connection."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>Frameworks</summary><ul><li><a href="/pyoq-sql/alembic/">Alembic</a></li><li><a href="/pyoq-sql/django/">Django</a></li><li><a href="/pyoq-sql/fastapi/">FastAPI</a></li><li><a href="/pyoq-sql/sanic/">Sanic</a></li><li><a href="/pyoq-sql/serving/">Standalone services</a></li></ul></details><details class="side-group" data-group="Reference"><summary class="group" title="The details, once you know what you are looking for."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>Reference</summary><ul><li><a href="/pyoq-sql/cli/">Command line</a></li><li><a href="/pyoq-sql/configuration/">Configuration</a></li><li><a href="/pyoq-sql/errors/">Errors</a></li><li><a href="/pyoq-sql/troubleshooting/">Troubleshooting</a></li><li><a href="/pyoq-sql/testing/">Testing applications</a></li><li><a href="/pyoq-sql/releasing/">Releasing</a></li><li><a href="/pyoq-sql/licence/">Licence</a></li></ul></details><details class="side-group" data-group="APIs"><summary class="group" title="Every package, every name it exports, and what each one does."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>APIs</summary><ul><li><a href="/pyoq-sql/api/references/">All references</a></li><li><a href="/pyoq-sql/api/internals/">Internals</a></li><li><a href="/pyoq-sql/api/pyoq/">pyoq</a></li><li><a href="/pyoq-sql/api/commands/">pyoq commands</a></li><li><a href="/pyoq-sql/api/native/">pyoq._native</a></li><li><a href="/pyoq-sql/api/cli/">pyoq.cli</a></li><li><a href="/pyoq-sql/api/config/">pyoq.config</a></li><li><a href="/pyoq-sql/api/descriptors/">pyoq.descriptors</a></li><li><a href="/pyoq-sql/api/diagnostics/">pyoq.diagnostics</a></li><li><a href="/pyoq-sql/api/django/">pyoq.django</a></li><li><a href="/pyoq-sql/api/dsl/">pyoq.dsl</a></li><li><a href="/pyoq-sql/api/errors/">pyoq.errors</a></li><li><a href="/pyoq-sql/api/fastapi/">pyoq.fastapi</a></li><li><a href="/pyoq-sql/api/fetching/">pyoq.fetching</a></li><li><a href="/pyoq-sql/api/generation/">pyoq.generation</a></li><li><a href="/pyoq-sql/api/hydration/">pyoq.hydration</a></li><li><a href="/pyoq-sql/api/migrations/">pyoq.migrations</a></li><li><a href="/pyoq-sql/api/naming/">pyoq.naming</a></li><li><a href="/pyoq-sql/api/policies/">pyoq.policies</a></li><li><a href="/pyoq-sql/api/query/">pyoq.query</a></li><li><a href="/pyoq-sql/api/query-expressions/">pyoq.query expressions</a></li><li><a href="/pyoq-sql/api/query-functions/">pyoq.query functions</a></li><li><a href="/pyoq-sql/api/query-execution/">pyoq.query.execution</a></li><li><a href="/pyoq-sql/api/query-mysql/">pyoq.query.mysql</a></li><li><a href="/pyoq-sql/api/query-postgres/">pyoq.query.postgres</a></li><li><a href="/pyoq-sql/api/query-sqlite/">pyoq.query.sqlite</a></li><li><a href="/pyoq-sql/api/relations/">pyoq.relations</a></li><li><a href="/pyoq-sql/api/runtime/">pyoq.runtime</a></li><li><a href="/pyoq-sql/api/sanic/">pyoq.sanic</a></li><li><a href="/pyoq-sql/api/schema/">pyoq.schema</a></li><li><a href="/pyoq-sql/api/schema-dialects/">pyoq.schema dialects</a></li><li><a href="/pyoq-sql/api/serving/">pyoq.serving</a></li><li><a href="/pyoq-sql/api/snapshots/">pyoq.snapshots</a></li><li><a href="/pyoq-sql/api/tracing/">pyoq.tracing</a></li></ul></details></div></nav><script type="module">var e=`pyoq-sidebar`;function t(){try{return JSON.parse(sessionStorage.getItem(e)??`{}`)}catch{return{}}}function n(t){try{sessionStorage.setItem(e,JSON.stringify(t))}catch{}}var r=document.querySelector(`.side`),i=[...document.querySelectorAll(`.side-group`)],a=t();for(let e of i){let t=e.dataset.group;t&&(t in a&&(e.open=a[t]),e.addEventListener(`toggle`,()=>{a[t]=e.open,n(a)}))}function o(){if(!r||r.scrollHeight<=r.clientHeight)return;let e=r.querySelector(`a.active`);if(!e)return;let t=r.getBoundingClientRect(),n=e.getBoundingClientRect();n.top>=t.top&&n.bottom<=t.bottom||(r.scrollTop+=n.top-t.top-r.clientHeight/2+n.height/2)}requestAnimationFrame(o);</script><main id="content" data-pagefind-body><p class="crumb" data-pagefind-meta="group:For LLMs">For LLMs</p><article><h1>LLM agent guide</h1><p class="lede" data-pagefind-ignore>Contracts, architecture, source routing, and safe change rules for coding agents.</p><p>This page is the compact project context for LLM coding agents. Use it to
+identify the correct subsystem and its contracts before reading implementation
+files. It is intentionally explicit about boundaries that are easy to infer
+incorrectly.</p>
+<p>When working inside the repository, read the root <code>AGENTS.md</code> first. The current
+user request and repository instructions govern how work is performed. This
+page explains the product and where its behavior lives.</p>
+<h2 id="stable-project-facts">Stable project facts</h2>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Fact</th><th>Contract</th></tr></thead><tbody><tr><td>Distribution</td><td>Install <code>pyoq-sql</code>; import <code>pyoq</code></td></tr><tr><td>Python</td><td>Python 3.11 or later</td></tr><tr><td>Databases</td><td>SQLite, PostgreSQL, and MySQL</td></tr><tr><td>Async execution</td><td>PostgreSQL and MySQL only</td></tr><tr><td>Frameworks</td><td>Django, FastAPI, Sanic, and standalone services</td></tr><tr><td>Schema authority</td><td>The database schema or an explicit schema snapshot</td></tr><tr><td>Query model</td><td>Immutable, fully typed statement trees</td></tr><tr><td>Values</td><td>Bound parameters, never interpolated into SQL structure</td></tr><tr><td>Generated code</td><td>Deterministic, typed, Ruff-clean, and owned by its manifest</td></tr><tr><td>Runtime</td><td>Portable Python with an optional native acceleration path</td></tr></tbody></table>
+<p>PyOQ is database first and SQL centered. It is not an ORM, does not maintain a
+session-wide identity map, does not lazily load relations, and does not decide
+when application data is written. It reads schema facts, generates Python
+contracts, builds SQL statements, compiles them for a dialect, and executes
+them through explicit operations.</p>
+<h2 id="system-model">System model</h2>
+<figure class="diagram-shell" data-ready=""><div class="diagram-toolbar" aria-label="Diagram controls"><button type="button" data-diagram-action="in" aria-label="Zoom in" title="Zoom in"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="4.5" fill="none" stroke="currentColor" stroke-width="1.2"></circle><path d="M10.5 10.5 14 14M7 5v4M5 7h4" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"></path></svg></button><button type="button" data-diagram-action="out" aria-label="Zoom out" title="Zoom out"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="4.5" fill="none" stroke="currentColor" stroke-width="1.2"></circle><path d="M10.5 10.5 14 14M5 7h4" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"></path></svg></button><button type="button" data-diagram-action="reset" aria-label="Reset" title="Reset"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 7a4.5 4.5 0 1 1 1.2 3.1M3.5 7V3.8M3.5 7h3.1" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"></path></svg></button><button type="button" data-diagram-action="full" aria-label="Open" title="Open"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 6.5V3h3.5M10 3h3v3.5M13 10v3h-3.5M6.5 13H3v-3.5" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"></path></svg></button></div><div class="mermaid-canvas" role="img" aria-label="Diagram"><div class="diagram-viewport"><div class="diagram-transform"><svg data-renderer="beautiful-mermaid" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2703.0679999999998 130.9" width="2703.0679999999998" style="--bg:#FFFFFF;--fg:#27272A;--bg:var(--paper);--fg:var(--ink);--line:var(--ink-faint);--accent:var(--diagram-accent);--muted:var(--ink-soft);--surface:var(--paper-sunk);--border:var(--ink-faint);height:auto;max-width:100%">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+  text { font-family: 'Inter', system-ui, sans-serif; }
+  svg {
+    /* Derived from --bg and --fg (overridable via --line, --accent, etc.) */
+    --_text:          var(--fg);
+    --_text-sec:      var(--muted, color-mix(in srgb, var(--fg) 60%, var(--bg)));
+    --_text-muted:    var(--muted, color-mix(in srgb, var(--fg) 40%, var(--bg)));
+    --_text-faint:    color-mix(in srgb, var(--fg) 25%, var(--bg));
+    --_line:          var(--line, color-mix(in srgb, var(--fg) 50%, var(--bg)));
+    --_arrow:         var(--accent, color-mix(in srgb, var(--fg) 85%, var(--bg)));
+    --_node-fill:     var(--surface, color-mix(in srgb, var(--fg) 3%, var(--bg)));
+    --_node-stroke:   var(--border, color-mix(in srgb, var(--fg) 20%, var(--bg)));
+    --_group-fill:    var(--bg);
+    --_group-hdr:     color-mix(in srgb, var(--fg) 5%, var(--bg));
+    --_inner-stroke:  color-mix(in srgb, var(--fg) 12%, var(--bg));
+    --_key-badge:     color-mix(in srgb, var(--fg) 10%, var(--bg));
+  }
+</style>
+<defs>
+  <marker id="arrowhead" markerWidth="8" markerHeight="5" refX="7" refY="2.5" orient="auto">
+    <polygon points="0 0, 8 2.5, 0 5" fill="var(--_arrow)" stroke="var(--_arrow)" stroke-width="0.75" stroke-linejoin="round"></polygon>
+  </marker>
+  <marker id="arrowhead-start" markerWidth="8" markerHeight="5" refX="1" refY="2.5" orient="auto-start-reverse">
+    <polygon points="8 0, 0 2.5, 8 5" fill="var(--_arrow)" stroke="var(--_arrow)" stroke-width="0.75" stroke-linejoin="round"></polygon>
+  </marker>
+</defs>
+<polyline class="edge" data-from="Schema" data-to="Inspect" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="259.049,65.45 307.049,65.45" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)"></polyline>
+<polyline class="edge" data-from="Inspect" data-to="Model" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="459.408,65.45 507.408,65.45" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)"></polyline>
+<polyline class="edge" data-from="Model" data-to="Generate" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="693.112,65.45 741.112,65.45" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)"></polyline>
+<polyline class="edge" data-from="Generate" data-to="Package" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="924.593,65.45 972.593,65.45" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)"></polyline>
+<polyline class="edge" data-from="Package" data-to="Query" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="1196.829,65.45 1244.829,65.45" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)"></polyline>
+<polyline class="edge" data-from="Query" data-to="Compile" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="1415.713,65.45 1463.713,65.45" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)"></polyline>
+<polyline class="edge" data-from="Compile" data-to="Compiled" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="1598.288,65.45 1646.288,65.45" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)"></polyline>
+<polyline class="edge" data-from="Compiled" data-to="Operations" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="1849.0349999999999,65.45 1897.0349999999999,65.45" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)"></polyline>
+<polyline class="edge" data-from="Operations" data-to="Pool" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="2064.214,65.45 2112.214,65.45" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)"></polyline>
+<polyline class="edge" data-from="Pool" data-to="Database" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="2248.2709999999997,65.45 2296.2709999999997,65.45" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)"></polyline>
+<polyline class="edge" data-from="Database" data-to="Decode" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="2394.537,65.45 2442.537,65.45" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)"></polyline>
+<g class="node" data-id="Schema" data-label="Database schema or snapshot" data-shape="rectangle">
+  <rect x="40" y="47" width="219.04899999999998" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75"></rect>
+  <text x="149.5245" y="65.45" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Database schema or snapshot</text>
+</g>
+<g class="node" data-id="Inspect" data-label="Schema inspection" data-shape="rectangle">
+  <rect x="307.049" y="47" width="152.359" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75"></rect>
+  <text x="383.2285" y="65.45" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Schema inspection</text>
+</g>
+<g class="node" data-id="Model" data-label="Canonical schema model" data-shape="rectangle">
+  <rect x="507.408" y="47" width="185.70399999999998" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75"></rect>
+  <text x="600.26" y="65.45" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Canonical schema model</text>
+</g>
+<g class="node" data-id="Generate" data-label="Deterministic generation" data-shape="rectangle">
+  <rect x="741.112" y="47" width="183.481" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75"></rect>
+  <text x="832.8525" y="65.45" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Deterministic generation</text>
+</g>
+<g class="node" data-id="Package" data-label="Generated application package" data-shape="rectangle">
+  <rect x="972.593" y="47" width="224.23600000000002" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75"></rect>
+  <text x="1084.711" y="65.45" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Generated application package</text>
+</g>
+<g class="node" data-id="Query" data-label="Immutable typed query" data-shape="rectangle">
+  <rect x="1244.829" y="47" width="170.884" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75"></rect>
+  <text x="1330.271" y="65.45" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Immutable typed query</text>
+</g>
+<g class="node" data-id="Compile" data-label="Dialect compiler" data-shape="rectangle">
+  <rect x="1463.713" y="47" width="134.57500000000002" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75"></rect>
+  <text x="1531.0004999999999" y="65.45" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Dialect compiler</text>
+</g>
+<g class="node" data-id="Compiled" data-label="SQL and bound parameters" data-shape="rectangle">
+  <rect x="1646.288" y="47" width="202.74699999999996" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75"></rect>
+  <text x="1747.6615" y="65.45" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">SQL and bound parameters</text>
+</g>
+<g class="node" data-id="Operations" data-label="Execution operations" data-shape="rectangle">
+  <rect x="1897.0349999999999" y="47" width="167.179" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75"></rect>
+  <text x="1980.6245" y="65.45" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Execution operations</text>
+</g>
+<g class="node" data-id="Pool" data-label="Connection pool" data-shape="rectangle">
+  <rect x="2112.214" y="47" width="136.05700000000002" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75"></rect>
+  <text x="2180.2425" y="65.45" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Connection pool</text>
+</g>
+<g class="node" data-id="Database" data-label="Database" data-shape="cylinder">
+  <rect x="2296.2709999999997" y="47" width="98.26599999999999" height="36.900000000000006" fill="var(--_node-fill)" stroke="none"></rect>
+  <line x1="2296.2709999999997" y1="47" x2="2296.2709999999997" y2="83.9" stroke="var(--_node-stroke)" stroke-width="0.75"></line>
+  <line x1="2394.537" y1="47" x2="2394.537" y2="83.9" stroke="var(--_node-stroke)" stroke-width="0.75"></line>
+  <ellipse cx="2345.4039999999995" cy="83.9" rx="49.132999999999996" ry="7" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75"></ellipse>
+  <ellipse cx="2345.4039999999995" cy="47" rx="49.132999999999996" ry="7" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75"></ellipse>
+  <text x="2345.4039999999995" y="65.45" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Database</text>
+</g>
+<g class="node" data-id="Decode" data-label="Typed decoding and hydration" data-shape="rectangle">
+  <rect x="2442.537" y="47" width="220.53099999999998" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75"></rect>
+  <text x="2552.8025" y="65.45" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Typed decoding and hydration</text>
+</g>
+</svg></div></div></div></figure>
+<p>Keep these stages separate. Generation does not execute queries. Query builders
+do not open connections. Compilers do not own pools. Framework adapters do not
+reimplement schema inspection or execution.</p>
+<h2 id="source-routing">Source routing</h2>
+<p>Read the narrowest relevant package first. Do not scan the entire repository
+for every task.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Concern</th><th>Primary source</th><th>Supporting guide</th></tr></thead><tbody><tr><td>Configuration and containment</td><td><code>src/pyoq/config</code></td><td><a href="../configuration/">Configuration</a></td></tr><tr><td>Schema facts and inspection</td><td><code>src/pyoq/schema</code></td><td><a href="../types/">Column types</a></td></tr><tr><td>Generated packages</td><td><code>src/pyoq/generation</code></td><td><a href="../generating/">Generating your types</a></td></tr><tr><td>Pure query construction</td><td><code>src/pyoq/query</code></td><td><a href="../selecting/">Selecting rows</a></td></tr><tr><td>SQL rendering</td><td><code>src/pyoq/query/rendering</code> and dialect packages</td><td><a href="../dialects/">Dialects</a></td></tr><tr><td>Execution and pooling</td><td><code>src/pyoq/query/execution</code></td><td><a href="../connections/">Connections and pools</a></td></tr><tr><td>Bound fluent API</td><td><code>src/pyoq/dsl</code></td><td><a href="../when-to-use/">When to use what</a></td></tr><tr><td>Result hydration</td><td><code>src/pyoq/hydration</code></td><td><a href="../results/">Reading results</a></td></tr><tr><td>Relation planning and fetches</td><td><code>src/pyoq/relations</code>, <code>src/pyoq/fetching</code></td><td><a href="../relations/">Relations</a></td></tr><tr><td>Query limits and observability</td><td><code>src/pyoq/policies</code>, <code>src/pyoq/diagnostics</code></td><td><a href="../policies/">Policies</a></td></tr><tr><td>Framework lifecycle</td><td><code>src/pyoq/django</code>, <code>src/pyoq/fastapi</code>, <code>src/pyoq/sanic</code></td><td><a href="#framework-routing">Framework routing</a></td></tr><tr><td>Native runtime selection</td><td><code>src/pyoq/runtime</code></td><td><a href="../performance/">Performance</a></td></tr><tr><td>Supported public names</td><td>Package <code>__init__.py</code> files</td><td><a href="../api/references/">API reference</a></td></tr></tbody></table>
+<p>Tests mirror the source layout. Start with the matching directory under
+<code>tests</code>, then inspect <code>tests/contracts</code> when behavior must be identical across
+dialects. Use <code>tests/distribution</code> for packaging, documentation, compatibility,
+and release contracts.</p>
+<h2 id="generated-api-model">Generated API model</h2>
+<p>Generated packages expose two related names for a table:</p>
+<ul>
+<li>A class such as <code>Account</code>, which owns generated insert and update builders.</li>
+<li>A table descriptor such as <code>ACCOUNT</code>, which owns typed column descriptors.</li>
+</ul>
+<div class="code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#AF00DB;--shiki-dark:#C586C0">from</span><span style="color:#000000;--shiki-dark:#D4D4D4"> application.database </span><span style="color:#AF00DB;--shiki-dark:#C586C0">import</span><span style="color:#000000;--shiki-dark:#D4D4D4"> ACCOUNT, Account</span></span>
+<span class="line"><span style="color:#AF00DB;--shiki-dark:#C586C0">from</span><span style="color:#000000;--shiki-dark:#D4D4D4"> pyoq.query </span><span style="color:#AF00DB;--shiki-dark:#C586C0">import</span><span style="color:#000000;--shiki-dark:#D4D4D4"> insert_into</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">values = Account.builder().name(</span><span style="color:#A31515;--shiki-dark:#CE9178">"Example"</span><span style="color:#000000;--shiki-dark:#D4D4D4">).build()</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">statement = (</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">    insert_into(ACCOUNT, ACCOUNT.NAME)</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">    .values(values.name)</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">    .returning(ACCOUNT.ID, ACCOUNT.NAME)</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">)</span></span></code></pre>
+<div class="monaco-host"></div></div>
+<p>Builders produce immutable values and never perform I/O. Required insert
+fields are represented by staged builder types, so <code>build()</code> becomes available
+only when the required values have been supplied. Generated files must be
+changed through the schema model and renderer, never by editing generated
+output.</p>
+<p>Generation has two layouts. Flat layout writes one package and is the default.
+Profile layout writes one package per database below a shared base. Each has an
+isolated manifest. An all-profile run prepares every schema and publishes the
+base once, so no profile may write before every plan has validated.</p>
+<p>See <a href="../generating/">Generating your types</a>, <a href="../inserting/">Inserting rows</a>,
+and <a href="../updating/">Updating and deleting</a> for complete application examples.</p>
+<h2 id="query-and-execution-model">Query and execution model</h2>
+<p>There are two public construction styles:</p>
+<ul>
+<li>Functions in <code>pyoq.query</code> build immutable statements without a database.</li>
+<li><code>using(operations)</code> creates a bound fluent context whose terminal methods
+execute through those operations.</li>
+</ul>
+<p>Framework-free synchronous applications should enter <code>connect()</code> once at their
+composition root. It can load the selected <code>pyproject.toml</code> profile or accept a
+direct data source with <code>Dialect</code>. The yielded <code>Database</code> is a <code>DslContext</code> with
+transactions, streaming, and pool statistics. The context owns and closes its
+pool. Structured server profiles keep host, port, database, username, password,
+and pool limits in one configuration source. A complete <code>${VARIABLE_NAME}</code>
+value resolves from the process environment; every other string is literal.
+Do not enter the context for every repository operation.</p>
+<p>Use the pure query API for reusable statements, compilation tests, advanced
+features, and code that should not know how connections are owned. Use the
+bound context for application code that benefits from a single fluent chain.</p>
+<p>Result cardinality is explicit:</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Operation</th><th>Contract</th></tr></thead><tbody><tr><td><code>fetch_all()</code> or <code>many()</code></td><td>Zero or more rows</td></tr><tr><td><code>fetch_optional()</code> or <code>one_or_none()</code></td><td>Zero or one row; duplicates fail</td></tr><tr><td><code>fetch_one()</code> or <code>one()</code></td><td>Exactly one row; absence and duplicates fail</td></tr><tr><td><code>execute()</code></td><td>Execute a write and return its execution result</td></tr></tbody></table>
+<p>Transactions yield an operations object. Execute through that yielded object
+so every statement uses the transaction’s connection:</p>
+<div class="code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#AF00DB;--shiki-dark:#C586C0">with</span><span style="color:#000000;--shiki-dark:#D4D4D4"> database.transaction() </span><span style="color:#AF00DB;--shiki-dark:#C586C0">as</span><span style="color:#000000;--shiki-dark:#D4D4D4"> transaction:</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">    transaction.execute(first_statement)</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">    transaction.execute(second_statement)</span></span></code></pre>
+<div class="monaco-host"></div></div>
+<p>The asynchronous form uses <code>async with</code> and awaited operations. There is no
+asynchronous SQLite executor. Read <a href="../async/">Asynchronous execution</a> and
+<a href="../transactions/">Transactions and streaming</a> before changing these paths.</p>
+<h2 id="dialect-contract">Dialect contract</h2>
+<p>Supporting a feature means more than producing plausible SQL. A complete
+dialect feature has:</p>
+<ol>
+<li>A typed public construction API.</li>
+<li>An immutable query or schema representation.</li>
+<li>Correct dialect rendering or explicit emulation.</li>
+<li>A precise rejection when the dialect cannot support it.</li>
+<li>Parameter adaptation and result decoding where values cross the driver.</li>
+<li>Tests against the real database when server behavior matters.</li>
+</ol>
+<p>Do not claim a shared capability because one compiler accepts its syntax.
+SQLite is not evidence for PostgreSQL or MySQL behavior. Locking, routines,
+arrays, JSON operations, returning clauses, concurrency, and driver conversion
+require the relevant dialect contract tests.</p>
+<h2 id="framework-routing">Framework routing</h2>
+<p>Framework adapters own lifecycle integration, not database semantics.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Framework</th><th>Ownership model</th><th>Guide</th></tr></thead><tbody><tr><td>Django</td><td>Uses the connection and transaction Django already owns</td><td><a href="../django/">Django</a></td></tr><tr><td>FastAPI</td><td>Opens pools in lifespan and injects typed operations</td><td><a href="../fastapi/">FastAPI</a></td></tr><tr><td>Sanic</td><td>Opens pools per worker and exposes request-scoped access</td><td><a href="../sanic/">Sanic</a></td></tr><tr><td>Standalone</td><td><code>connect()</code> opens once and closes once</td><td><a href="../serving/">Standalone services</a></td></tr></tbody></table>
+<p>Shared reflection, generation, compilation, decoding, pooling, and transaction
+behavior belongs in the core package. An adapter should translate framework
+lifecycle and configuration into those shared services.</p>
+<p>Django profile generation maps configured database aliases to core generation
+profiles. One alias owns one generated package and manifest. An all-database
+run must use the shared atomic profile publication path rather than looping
+over single-profile writes.</p>
+<h2 id="invariants-an-agent-must-preserve">Invariants an agent must preserve</h2>
+<ul>
+<li>Query trees and schema value objects remain immutable.</li>
+<li>Application values travel as bound parameters.</li>
+<li>Identifiers come from trusted schema descriptors or validated identifier
+APIs, not from ordinary bound values.</li>
+<li>Builders remain free of hidden I/O.</li>
+<li>One schema fact has one canonical representation.</li>
+<li>Generation remains deterministic and atomically replaces only manifest-owned
+files.</li>
+<li>Public APIs remain fully typed under strict Mypy and Pyright.</li>
+<li>Unsupported behavior raises a precise public error before partial execution.</li>
+<li>Pools, streams, transactions, and framework resources have explicit owners
+and bounded lifetimes.</li>
+<li>Performance changes are accepted only with measured throughput and memory
+evidence while the portable runtime remains functional.</li>
+</ul>
+<h2 id="common-incorrect-assumptions">Common incorrect assumptions</h2>
+<p>Do not infer these behaviors:</p>
+<ul>
+<li><code>where()</code> does not accept several independent arguments. Compose conditions
+with <code>&#x26;</code> or <code>|</code> and pass one condition.</li>
+<li>Joins use <code>.join(source).on(condition)</code>, not an <code>on=</code> argument to <code>join()</code>.</li>
+<li>Stream sizing is configured with <code>StreamPolicy</code>, not a <code>batch_size</code> keyword
+on the stream method.</li>
+<li>A transaction context yields transaction-bound operations. Do not execute
+its statements through the outer database object.</li>
+<li><code>SyncDatabase</code> and <code>AsyncDatabase</code> are lifecycle wrappers. Their <code>operations</code>
+member performs database work.</li>
+<li><code>select_from(TABLE)</code> renders <code>SELECT *</code>. Prefer explicit columns when schema
+changes must not alter the result shape.</li>
+<li>Generated builders live on the generated table class; typed fields live on
+the generated table descriptor instance.</li>
+<li>SQLite support does not imply asynchronous SQLite execution.</li>
+<li>Generated files are outputs, not an alternative source of schema truth.</li>
+</ul>
+<h2 id="task-to-context-lookup">Task-to-context lookup</h2>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Requested change</th><th>Read first</th><th>Then verify</th></tr></thead><tbody><tr><td>Add a query operator or function</td><td><a href="../expressions/">Expressions and conditions</a></td><td>All three compilers and capability tests</td></tr><tr><td>Add a statement form</td><td>Relevant reading or writing guide</td><td>Immutable model, compiler, execution, decoding</td></tr><tr><td>Add a reflected database type</td><td><a href="../types/">Column types</a></td><td>Inspector, schema codec, renderer, driver adaptation</td></tr><tr><td>Change generated code</td><td><a href="../generating/">Generating your types</a></td><td>Determinism, Ruff, strict typing, manifest ownership</td></tr><tr><td>Change pool or transaction behavior</td><td><a href="../connections/">Connections and pools</a></td><td>Sync, async, exhaustion, cleanup, contention</td></tr><tr><td>Add framework integration</td><td>Relevant framework guide</td><td>Shared-core reuse and lifecycle shutdown</td></tr><tr><td>Improve relation fetching</td><td><a href="../relations/">Relations</a></td><td>Query count, identity, hydration, parameter limits</td></tr><tr><td>Improve performance</td><td><a href="../performance/">Performance</a></td><td>Portable and native benchmark contracts</td></tr><tr><td>Change packaging or release behavior</td><td><a href="../releasing/">Releasing</a></td><td>Clean build, artifacts, dependencies, installation</td></tr></tbody></table>
+<h2 id="safe-change-procedure">Safe change procedure</h2>
+<ol>
+<li>Identify the owning package and its mirrored tests.</li>
+<li>Read the public guide and exported names for the affected contract.</li>
+<li>Reproduce the current behavior with the smallest relevant test.</li>
+<li>Change the canonical model before adapters or generated output.</li>
+<li>Add dialect-specific rendering, rejection, decoding, and live evidence as
+required.</li>
+<li>Update generated behavior in its renderer and regenerate fixtures.</li>
+<li>Update public documentation and runnable examples in the same change.</li>
+<li>Run the narrow tests first, then the repository checks required by the
+affected boundary.</li>
+</ol>
+<p>Never silently narrow a requirement to make an existing test pass. Record a
+missing capability as unsupported until its entire contract is implemented.</p>
+<h2 id="verification-map">Verification map</h2>
+<p>Use the smallest checks that provide fast feedback, then run the complete gates
+for the change boundary:</p>
+<div class="code-shell" data-lang="bash" data-terminal=""><div class="code-head"><span class="code-lang">Terminal</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Terminal code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#795E26;--shiki-dark:#DCDCAA">uv</span><span style="color:#A31515;--shiki-dark:#CE9178"> run</span><span style="color:#0000FF;--shiki-dark:#569CD6"> --no-sync</span><span style="color:#A31515;--shiki-dark:#CE9178"> ruff</span><span style="color:#A31515;--shiki-dark:#CE9178"> check</span><span style="color:#A31515;--shiki-dark:#CE9178"> .</span></span>
+<span class="line"><span style="color:#795E26;--shiki-dark:#DCDCAA">uv</span><span style="color:#A31515;--shiki-dark:#CE9178"> run</span><span style="color:#0000FF;--shiki-dark:#569CD6"> --no-sync</span><span style="color:#A31515;--shiki-dark:#CE9178"> ruff</span><span style="color:#A31515;--shiki-dark:#CE9178"> format</span><span style="color:#0000FF;--shiki-dark:#569CD6"> --check</span><span style="color:#A31515;--shiki-dark:#CE9178"> .</span></span>
+<span class="line"><span style="color:#795E26;--shiki-dark:#DCDCAA">uv</span><span style="color:#A31515;--shiki-dark:#CE9178"> run</span><span style="color:#0000FF;--shiki-dark:#569CD6"> --no-sync</span><span style="color:#A31515;--shiki-dark:#CE9178"> mypy</span></span>
+<span class="line"><span style="color:#795E26;--shiki-dark:#DCDCAA">uv</span><span style="color:#A31515;--shiki-dark:#CE9178"> run</span><span style="color:#0000FF;--shiki-dark:#569CD6"> --no-sync</span><span style="color:#A31515;--shiki-dark:#CE9178"> pyright</span></span>
+<span class="line"><span style="color:#795E26;--shiki-dark:#DCDCAA">uv</span><span style="color:#A31515;--shiki-dark:#CE9178"> run</span><span style="color:#0000FF;--shiki-dark:#569CD6"> --no-sync</span><span style="color:#A31515;--shiki-dark:#CE9178"> pytest</span></span></code></pre>
+<div class="monaco-host"></div></div>
+<p>Native changes also require Rust formatting, lint, and tests. Performance
+changes require the maintained benchmark contracts. Documentation changes
+require the link, import, SQL-pair, Astro, production build, and search-index
+checks described in <a href="../testing/">Testing applications</a>.</p>
+<h2 id="completion-rule">Completion rule</h2>
+<p>A feature is complete only when its public typing, immutable representation,
+dialect behavior, parameter handling, result decoding, execution evidence,
+documentation, and failure behavior agree. Passing a narrow unit test proves
+only that narrow contract.</p>
+<p>When evidence and prose disagree, treat executable repository evidence as the
+current behavior, correct the prose, and raise any product-level mismatch as a
+separate change rather than documenting behavior that does not exist.</p></article><nav class="pager" aria-label="Neighbouring pages"><a class="previous" href="/pyoq-sql/first-query/"><span>Previous</span>Your first query</a><a class="next" href="/pyoq-sql/selecting/"><span>Next</span>Selecting rows</a></nav><footer class="page-footer"><p>PyOQ is released under the <a href="/pyoq-sql/licence/" rel="license">MPL-2.0</a> licence.</p></footer></main><nav class="contents" aria-label="On this page"><p>On this page</p><ul><li><a href="#stable-project-facts">Stable project facts</a></li><li><a href="#system-model">System model</a></li><li><a href="#source-routing">Source routing</a></li><li><a href="#generated-api-model">Generated API model</a></li><li><a href="#query-and-execution-model">Query and execution model</a></li><li><a href="#dialect-contract">Dialect contract</a></li><li><a href="#framework-routing">Framework routing</a></li><li><a href="#invariants-an-agent-must-preserve">Invariants an agent must preserve</a></li><li><a href="#common-incorrect-assumptions">Common incorrect assumptions</a></li><li><a href="#task-to-context-lookup">Task-to-context lookup</a></li><li><a href="#safe-change-procedure">Safe change procedure</a></li><li><a href="#verification-map">Verification map</a></li><li><a href="#completion-rule">Completion rule</a></li></ul></nav></div><script type="module">document.addEventListener(`click`,e=>{let t=e.target?.closest(`[data-copy]`);if(!t)return;let n=(t.closest(`.code-shell`)?.querySelector(`pre`)?.textContent??``).replace(/\n$/,``);if(!n)return;let r=e=>{let n=t.querySelector(`[data-copy-label]`);n&&(n.textContent=e)};navigator.clipboard.writeText(n).then(()=>{t.dataset.copied=``,r(`Copied`),setTimeout(()=>{delete t.dataset.copied,r(`Copy`)},1600)},()=>r(`Press ⌘C`))});</script><script type="module" src="/pyoq-sql/_astro/CodeEditors.astro_astro_type_script_index_0_lang.C8S0YAI5.js"></script><script type="module" src="/pyoq-sql/_astro/Diagrams.astro_astro_type_script_index_0_lang.BNJty66e.js"></script></body></html>

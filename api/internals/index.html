@@ -1,0 +1,1554 @@
+<!DOCTYPE html><html lang="en" data-appearance="light"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Internals · PyOQ</title><meta name="description" content="Everything else the package defines, and why none of it is a contract."><link rel="canonical" href="https://teqpod.com/pyoq-sql/api/internals/"><meta name="robots" content="index, follow, max-image-preview:large"><meta name="theme-color" content="#1b6ef3"><link rel="sitemap" type="application/xml" href="/pyoq-sql/sitemap.xml"><meta property="og:type" content="article"><meta property="og:site_name" content="PyOQ"><meta property="og:locale" content="en"><meta property="og:title" content="Internals · PyOQ"><meta property="og:description" content="Everything else the package defines, and why none of it is a contract."><meta property="og:url" content="https://teqpod.com/pyoq-sql/api/internals/"><meta property="og:image" content="https://teqpod.com/pyoq-sql/brand/pyoq-banner.png"><meta property="og:image:type" content="image/png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="PyOQ, fully typed database-first SQL for Python"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Internals · PyOQ"><meta name="twitter:description" content="Everything else the package defines, and why none of it is a contract."><meta name="twitter:image" content="https://teqpod.com/pyoq-sql/brand/pyoq-banner.png"><link rel="icon" type="image/svg+xml" href="/pyoq-sql/brand/pyoq-mark.svg"><link rel="icon" type="image/png" sizes="32x32" href="/pyoq-sql/brand/pyoq-favicon-32.png"><link rel="apple-touch-icon" href="/pyoq-sql/brand/pyoq-mark-180.png"><script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://teqpod.com/pyoq-sql/#site","name":"PyOQ","url":"https://teqpod.com/pyoq-sql/","description":"A database-first SQL toolkit with generated types, explicit execution, and native acceleration for Python applications."},{"@type":"SoftwareApplication","@id":"https://teqpod.com/pyoq-sql/#project","name":"PyOQ","description":"A database-first SQL toolkit with generated types, explicit execution, and native acceleration for Python applications.","url":"https://teqpod.com/pyoq-sql/","sameAs":["https://pypi.org/project/pyoq-sql/"],"applicationCategory":"DeveloperApplication","operatingSystem":"Linux, macOS, Windows","programmingLanguage":"Python","license":"https://teqpod.com/pyoq-sql/licence/","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}},{"@type":"TechArticle","headline":"Internals · PyOQ","description":"Everything else the package defines, and why none of it is a contract.","url":"https://teqpod.com/pyoq-sql/api/internals/","image":"https://teqpod.com/pyoq-sql/brand/pyoq-banner.png","isPartOf":{"@id":"https://teqpod.com/pyoq-sql/#site"},"about":{"@id":"https://teqpod.com/pyoq-sql/#project"},"inLanguage":"en","articleSection":"APIs"}]}</script><script>
+  (() => {
+    let chosen = null;
+    try {
+      chosen = localStorage.getItem("pyoq-appearance");
+    } catch {}
+    const dark = matchMedia("(prefers-color-scheme: dark)").matches;
+    document.documentElement.dataset.appearance = chosen ?? (dark ? "dark" : "light");
+  })();
+</script><link rel="stylesheet" href="/pyoq-sql/_astro/app.CXhD3KCe.css"></head><body><a class="skip" href="#content">Skip to content</a><header class="bar"><a class="wordmark" href="/pyoq-sql/" aria-label="PyOQ documentation home"><img class="brand-image" src="/pyoq-sql/brand/pyoq-mark.svg" width="30" height="30" alt=""><span class="brand-name">PyOQ</span><span class="brand-context">docs</span></a><div class="search" data-pagefind-ignore><svg class="glass" viewBox="0 0 20 20" width="15" height="15" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.8" d="M8.5 14.5a6 6 0 1 1 0-12 6 6 0 0 1 0 12Zm4.5-1.5 4 4"></path></svg><input id="search" type="search" placeholder="Search the documentation" autocomplete="off" spellcheck="false" aria-label="Search the documentation" aria-expanded="false" aria-controls="results"><kbd>/</kbd><div id="results" role="listbox" hidden></div></div><script>(function(){const runtime = "/pyoq-sql/pagefind/pagefind.js";
+const baseUrl = "/pyoq-sql/";
+
+  const field = document.getElementById("search");
+  const panel = document.getElementById("results");
+  let engine = null;
+  let chosen = -1;
+
+  async function ready() {
+    if (engine) return engine;
+    try {
+      engine = await import(runtime);
+      await engine.options({ baseUrl, excerptLength: 24 });
+      await engine.init();
+    } catch {
+      engine = "unavailable";
+    }
+    return engine;
+  }
+
+  function close() {
+    panel.hidden = true;
+    field.setAttribute("aria-expanded", "false");
+    chosen = -1;
+  }
+
+  function draw(results) {
+    if (!results.length) {
+      panel.innerHTML = '<p class="none">Nothing matches that.</p>';
+    } else {
+      panel.innerHTML = results
+        .map((result) => {
+          const where = result.meta?.group ?? "Documentation";
+          const title = result.meta?.title ?? "Untitled";
+          return `<a role="option" href="${result.url}">
+            <span class="where">${where}</span>
+            <span class="what">${title}</span>
+            <span class="bit">${result.excerpt}</span>
+          </a>`;
+        })
+        .join("");
+    }
+    panel.hidden = false;
+    field.setAttribute("aria-expanded", "true");
+    chosen = -1;
+  }
+
+  let running = 0;
+  async function run() {
+    const wanted = field.value.trim();
+    if (!wanted) return close();
+    const engine = await ready();
+    if (engine === "unavailable") {
+      panel.innerHTML =
+        '<p class="none">Search is built with the site. Run <code>bun run build</code>.</p>';
+      panel.hidden = false;
+      return;
+    }
+    const token = ++running;
+    const found = await engine.search(wanted);
+    if (token !== running) return;
+    const top = await Promise.all(found.results.slice(0, 8).map((one) => one.data()));
+    if (token !== running) return;
+    draw(top);
+  }
+
+  function move(step) {
+    const links = panel.querySelectorAll("a");
+    if (!links.length) return;
+    chosen = (chosen + step + links.length) % links.length;
+    links.forEach((link, at) => link.classList.toggle("on", at === chosen));
+    links[chosen].scrollIntoView({ block: "nearest" });
+  }
+
+  let waiting;
+  field?.addEventListener("input", () => {
+    clearTimeout(waiting);
+    waiting = setTimeout(run, 120);
+  });
+  field?.addEventListener("focus", ready);
+
+  field?.addEventListener("keydown", (event) => {
+    if (event.key === "ArrowDown") {
+      event.preventDefault();
+      move(1);
+    } else if (event.key === "ArrowUp") {
+      event.preventDefault();
+      move(-1);
+    } else if (event.key === "Enter" && chosen >= 0) {
+      event.preventDefault();
+      panel.querySelectorAll("a")[chosen].click();
+    } else if (event.key === "Escape") {
+      field.blur();
+      close();
+    }
+  });
+
+  document.addEventListener("click", (event) => {
+    if (!panel.contains(event.target) && event.target !== field) close();
+  });
+
+  // "/" reaches the field from anywhere, which is where a reader goes first.
+  document.addEventListener("keydown", (event) => {
+    const typing = /^(INPUT|TEXTAREA)$/.test(document.activeElement?.tagName ?? "");
+    if (event.key === "/" && !typing) {
+      event.preventDefault();
+      field.focus();
+      field.select();
+    }
+  });
+})();</script><button id="appearance" type="button" aria-label="Switch appearance"><svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M10 2a8 8 0 1 0 0 16 8 8 0 0 0 0-16Zm0 1.6V16.4a6.4 6.4 0 0 1 0-12.8Z"></path></svg></button><script type="module">var e=document.documentElement;document.getElementById(`appearance`)?.addEventListener(`click`,()=>{let t=e.dataset.appearance===`dark`?`light`:`dark`;e.dataset.appearance=t;try{localStorage.setItem(`pyoq-appearance`,t)}catch{}});</script></header><div class="page"><nav class="side" aria-label="Documentation"><details class="side-toggle"><summary>Contents</summary></details><div class="side-body"><details class="side-group" data-group="Start here"><summary class="group" title="What this is, whether it suits you, and getting it running."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>Start here</summary><ul><li><a href="/pyoq-sql/overview/">What PyOQ is</a></li><li><a href="/pyoq-sql/when-to-use/">When to use what</a></li><li><a href="/pyoq-sql/installing/">Installing</a></li><li><a href="/pyoq-sql/generating/">Generating your types</a></li><li><a href="/pyoq-sql/first-query/">Your first query</a></li></ul></details><details class="side-group" data-group="For LLMs"><summary class="group" title="A compact project model and source map for coding agents."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>For LLMs</summary><ul><li><a href="/pyoq-sql/agents/">LLM agent guide</a></li></ul></details><details class="side-group" data-group="Reading"><summary class="group" title="Everything that ends in rows coming back."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>Reading</summary><ul><li><a href="/pyoq-sql/selecting/">Selecting rows</a></li><li><a href="/pyoq-sql/expressions/">Expressions and conditions</a></li><li><a href="/pyoq-sql/joins/">Joins and set operations</a></li><li><a href="/pyoq-sql/routines/">Stored routines</a></li><li><a href="/pyoq-sql/results/">Reading results</a></li></ul></details><details class="side-group" data-group="Writing"><summary class="group" title="Everything that changes what is in the database."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>Writing</summary><ul><li><a href="/pyoq-sql/inserting/">Inserting rows</a></li><li><a href="/pyoq-sql/updating/">Updating and deleting</a></li><li><a href="/pyoq-sql/conflicts/">Conflict resolution</a></li><li><a href="/pyoq-sql/bulk/">Bulk writes</a></li></ul></details><details class="side-group" data-group="Your data"><summary class="group" title="What the schema says, and how PyOQ reads it back."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>Your data</summary><ul><li><a href="/pyoq-sql/relations/">Relations</a></li><li><a href="/pyoq-sql/types/">Column types</a></li><li><a href="/pyoq-sql/snapshots/">Snapshots and drift</a></li><li><a href="/pyoq-sql/migrations/">Migration lifecycle</a></li></ul></details><details class="side-group" data-group="Running statements"><summary class="group" title="What happens between a built statement and a row."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>Running statements</summary><ul><li><a href="/pyoq-sql/connections/">Connections and pools</a></li><li><a href="/pyoq-sql/mysql-application/">MySQL without a framework</a></li><li><a href="/pyoq-sql/async/">Asynchronous execution</a></li><li><a href="/pyoq-sql/transactions/">Transactions and streaming</a></li><li><a href="/pyoq-sql/dialects/">Dialects</a></li><li><a href="/pyoq-sql/diagnostics/">Diagnostics</a></li><li><a href="/pyoq-sql/policies/">Policies</a></li><li><a href="/pyoq-sql/security/">Security</a></li><li><a href="/pyoq-sql/performance/">Performance</a></li></ul></details><details class="side-group" data-group="Frameworks"><summary class="group" title="Running inside something that already owns the connection."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>Frameworks</summary><ul><li><a href="/pyoq-sql/alembic/">Alembic</a></li><li><a href="/pyoq-sql/django/">Django</a></li><li><a href="/pyoq-sql/fastapi/">FastAPI</a></li><li><a href="/pyoq-sql/sanic/">Sanic</a></li><li><a href="/pyoq-sql/serving/">Standalone services</a></li></ul></details><details class="side-group" data-group="Reference"><summary class="group" title="The details, once you know what you are looking for."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>Reference</summary><ul><li><a href="/pyoq-sql/cli/">Command line</a></li><li><a href="/pyoq-sql/configuration/">Configuration</a></li><li><a href="/pyoq-sql/errors/">Errors</a></li><li><a href="/pyoq-sql/troubleshooting/">Troubleshooting</a></li><li><a href="/pyoq-sql/testing/">Testing applications</a></li><li><a href="/pyoq-sql/releasing/">Releasing</a></li><li><a href="/pyoq-sql/licence/">Licence</a></li></ul></details><details class="side-group" data-group="APIs" open><summary class="group" title="Every package, every name it exports, and what each one does."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>APIs</summary><ul><li><a href="/pyoq-sql/api/references/">All references</a></li><li><a href="/pyoq-sql/api/internals/" class="active" aria-current="page">Internals</a></li><li><a href="/pyoq-sql/api/pyoq/">pyoq</a></li><li><a href="/pyoq-sql/api/commands/">pyoq commands</a></li><li><a href="/pyoq-sql/api/native/">pyoq._native</a></li><li><a href="/pyoq-sql/api/cli/">pyoq.cli</a></li><li><a href="/pyoq-sql/api/config/">pyoq.config</a></li><li><a href="/pyoq-sql/api/descriptors/">pyoq.descriptors</a></li><li><a href="/pyoq-sql/api/diagnostics/">pyoq.diagnostics</a></li><li><a href="/pyoq-sql/api/django/">pyoq.django</a></li><li><a href="/pyoq-sql/api/dsl/">pyoq.dsl</a></li><li><a href="/pyoq-sql/api/errors/">pyoq.errors</a></li><li><a href="/pyoq-sql/api/fastapi/">pyoq.fastapi</a></li><li><a href="/pyoq-sql/api/fetching/">pyoq.fetching</a></li><li><a href="/pyoq-sql/api/generation/">pyoq.generation</a></li><li><a href="/pyoq-sql/api/hydration/">pyoq.hydration</a></li><li><a href="/pyoq-sql/api/migrations/">pyoq.migrations</a></li><li><a href="/pyoq-sql/api/naming/">pyoq.naming</a></li><li><a href="/pyoq-sql/api/policies/">pyoq.policies</a></li><li><a href="/pyoq-sql/api/query/">pyoq.query</a></li><li><a href="/pyoq-sql/api/query-expressions/">pyoq.query expressions</a></li><li><a href="/pyoq-sql/api/query-functions/">pyoq.query functions</a></li><li><a href="/pyoq-sql/api/query-execution/">pyoq.query.execution</a></li><li><a href="/pyoq-sql/api/query-mysql/">pyoq.query.mysql</a></li><li><a href="/pyoq-sql/api/query-postgres/">pyoq.query.postgres</a></li><li><a href="/pyoq-sql/api/query-sqlite/">pyoq.query.sqlite</a></li><li><a href="/pyoq-sql/api/relations/">pyoq.relations</a></li><li><a href="/pyoq-sql/api/runtime/">pyoq.runtime</a></li><li><a href="/pyoq-sql/api/sanic/">pyoq.sanic</a></li><li><a href="/pyoq-sql/api/schema/">pyoq.schema</a></li><li><a href="/pyoq-sql/api/schema-dialects/">pyoq.schema dialects</a></li><li><a href="/pyoq-sql/api/serving/">pyoq.serving</a></li><li><a href="/pyoq-sql/api/snapshots/">pyoq.snapshots</a></li><li><a href="/pyoq-sql/api/tracing/">pyoq.tracing</a></li></ul></details></div></nav><script type="module">var e=`pyoq-sidebar`;function t(){try{return JSON.parse(sessionStorage.getItem(e)??`{}`)}catch{return{}}}function n(t){try{sessionStorage.setItem(e,JSON.stringify(t))}catch{}}var r=document.querySelector(`.side`),i=[...document.querySelectorAll(`.side-group`)],a=t();for(let e of i){let t=e.dataset.group;t&&(t in a&&(e.open=a[t]),e.addEventListener(`toggle`,()=>{a[t]=e.open,n(a)}))}function o(){if(!r||r.scrollHeight<=r.clientHeight)return;let e=r.querySelector(`a.active`);if(!e)return;let t=r.getBoundingClientRect(),n=e.getBoundingClientRect();n.top>=t.top&&n.bottom<=t.bottom||(r.scrollTop+=n.top-t.top-r.clientHeight/2+n.height/2)}requestAnimationFrame(o);</script><main id="content" data-pagefind-body><p class="crumb" data-pagefind-meta="group:APIs">APIs</p><article><h1>Internals</h1><p class="lede" data-pagefind-ignore>Everything else the package defines, and why none of it is a contract.</p><p>Python has no way to stop you importing these, so they are listed rather than
+left for you to find. <strong>None of them is a supported import.</strong> They are how the
+package is built rather than what it offers: they carry no compatibility
+promise, and any of them may change or go in a patch release.</p>
+<p>What is supported is <a href="../references/">All references</a> and the pages beside it.
+If something here looks like the only way to do what you need, that is worth
+raising as an issue rather than importing.</p>
+<p>Type variables are left out: <code>Value1</code>, <code>ResultRow</code> and their kind are generic
+parameters rather than things to call.</p>
+<h2 id="pyoqcli"><code>pyoq.cli</code></h2>
+<p>The command line’s own parts: how arguments are parsed and which service answers each command.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Name</th><th>Kind</th><th>What it is</th></tr></thead><tbody><tr><td><code>CommandName</code></td><td>enum</td><td>Enum where members are also (and must be) strings In <code>pyoq.cli.commands</code>.</td></tr><tr><td><code>CommandParser</code></td><td>class</td><td>Object for parsing command line strings into Python objects. In <code>pyoq.cli.commands</code>.</td></tr><tr><td><code>ConfigurationSource</code></td><td>dataclass</td><td>— In <code>pyoq.cli.commands</code>.</td></tr><tr><td><code>DriftCommand(source: 'ConfigurationSource')</code></td><td>dataclass</td><td>— In <code>pyoq.cli.commands</code>.</td></tr><tr><td><code>DriftService(*args, **kwargs)</code></td><td>protocol</td><td>Base class for protocol classes. In <code>pyoq.cli.services</code>.</td></tr><tr><td><code>GenerateCommand(source: 'ConfigurationSource', mode: 'GenerationMode')</code></td><td>dataclass</td><td>— In <code>pyoq.cli.commands</code>.</td></tr><tr><td><code>GenerationService(*args, **kwargs)</code></td><td>protocol</td><td>Base class for protocol classes. In <code>pyoq.cli.services</code>.</td></tr><tr><td><code>InspectCommand(source: 'ConfigurationSource')</code></td><td>dataclass</td><td>— In <code>pyoq.cli.commands</code>.</td></tr><tr><td><code>InspectionService(*args, **kwargs)</code></td><td>protocol</td><td>Base class for protocol classes. In <code>pyoq.cli.services</code>.</td></tr><tr><td><code>ParserExitError(status: 'int', message: 'str | None')</code></td><td>class</td><td>Common base class for all non-exit exceptions. In <code>pyoq.cli.commands</code>.</td></tr><tr><td><code>SchemaDriftService(source: 'SchemaSource')</code></td><td>dataclass</td><td>Comparing the recorded schema against what the database now holds. In <code>pyoq.cli.defaults</code>.</td></tr><tr><td><code>SchemaInspectionService(source: 'SchemaSource')</code></td><td>dataclass</td><td>— In <code>pyoq.cli.defaults</code>.</td></tr><tr><td><code>SnapshotCommand(source: 'ConfigurationSource')</code></td><td>dataclass</td><td>— In <code>pyoq.cli.commands</code>.</td></tr><tr><td><code>SnapshotRecordingService(source: 'SchemaSource')</code></td><td>dataclass</td><td>Writing what the database holds to the file a project reviews. In <code>pyoq.cli.defaults</code>.</td></tr><tr><td><code>SnapshotService(*args, **kwargs)</code></td><td>protocol</td><td>Base class for protocol classes. In <code>pyoq.cli.services</code>.</td></tr><tr><td><code>UnavailableDriftService()</code></td><td>class</td><td>— In <code>pyoq.cli.services</code>.</td></tr><tr><td><code>UnavailableGenerationService()</code></td><td>class</td><td>— In <code>pyoq.cli.services</code>.</td></tr><tr><td><code>UnavailableInspectionService()</code></td><td>class</td><td>— In <code>pyoq.cli.services</code>.</td></tr><tr><td><code>UnavailableSnapshotService()</code></td><td>class</td><td>— In <code>pyoq.cli.services</code>.</td></tr><tr><td><code>create_parser(output: 'IO[str] | None' = None) -> 'CommandParser'</code></td><td>function</td><td>— In <code>pyoq.cli.commands</code>.</td></tr><tr><td><code>default_generation_pipeline(source: 'SchemaSource') -> 'GenerationPipeline'</code></td><td>function</td><td>— In <code>pyoq.cli.defaults</code>.</td></tr></tbody></table>
+<h2 id="pyoqdiagnostics"><code>pyoq.diagnostics</code></h2>
+<p>What a pool has to offer for metrics to be taken from it.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Name</th><th>Kind</th><th>What it is</th></tr></thead><tbody><tr><td><code>ReportsPoolStats(*args, **kwargs)</code></td><td>protocol</td><td>Anything that can say how its connections are being used. In <code>pyoq.diagnostics.metrics</code>.</td></tr></tbody></table>
+<h2 id="pyoqdjango"><code>pyoq.django</code></h2>
+<p>What the Django integration needs from Django’s own backend.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Name</th><th>Kind</th><th>What it is</th></tr></thead><tbody><tr><td><code>LastRowCursor(*args, **kwargs)</code></td><td>protocol</td><td>Base class for protocol classes. In <code>pyoq.django.execution</code>.</td></tr><tr><td><code>MYSQL_TIMEOUT</code></td><td>value</td><td>The session setting one backend uses to bound a statement. In <code>pyoq.django.timeouts</code>.</td></tr><tr><td><code>POSTGRES_TIMEOUT</code></td><td>value</td><td>The session setting one backend uses to bound a statement. In <code>pyoq.django.timeouts</code>.</td></tr><tr><td><code>PyoqConfig(app_name, app_module)</code></td><td>class</td><td>Named for the toolkit rather than for the package it lives under. In <code>pyoq.django.apps</code>.</td></tr><tr><td><code>TimeoutSetting(name: 'str', reads: 'bool' = True, writes: 'bool' = True)</code></td><td>dataclass</td><td>The session setting one backend uses to bound a statement. In <code>pyoq.django.timeouts</code>.</td></tr><tr><td><code>TypeParser(*args, **kwargs)</code></td><td>protocol</td><td>Base class for protocol classes. In <code>pyoq.django.schema</code>.</td></tr><tr><td><code>applied</code></td><td>function</td><td>Bound statements for the length of this block, and leave no trace. In <code>pyoq.django.timeouts</code>.</td></tr><tr><td><code>django_configuration(dialect: 'DatabaseDialect', /) -> 'Configuration'</code></td><td>function</td><td>Where generated output goes, with no database named. In <code>pyoq.django.settings</code>.</td></tr><tr><td><code>pyoq_settings() -> 'dict[str, object]'</code></td><td>function</td><td>The project’s PyOQ settings, which it has to have written itself. In <code>pyoq.django.settings</code>.</td></tr></tbody></table>
+<h2 id="pyoqdjangomanagementcommands"><code>pyoq.django.management.commands</code></h2>
+<p>Django’s own management commands, subclassed so <code>makemigrations</code> regenerates.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Name</th><th>Kind</th><th>What it is</th></tr></thead><tbody><tr><td><code>Command(stdout=None, stderr=None, no_color=False, force_color=False)</code></td><td>class</td><td>The base class from which all management commands ultimately derive. In <code>pyoq.django.management.commands.makemigrations</code>.</td></tr><tr><td><code>Command(stdout=None, stderr=None, no_color=False, force_color=False)</code></td><td>class</td><td>The base class from which all management commands ultimately derive. In <code>pyoq.django.management.commands.pyoq_codegen</code>.</td></tr></tbody></table>
+<h2 id="pyoqdsl"><code>pyoq.dsl</code></h2>
+<p>Reading the names a result came back under.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Name</th><th>Kind</th><th>What it is</th></tr></thead><tbody><tr><td><code>labels_of</code></td><td>function</td><td>— In <code>pyoq.dsl.labels</code>.</td></tr></tbody></table>
+<h2 id="pyoqfetching"><code>pyoq.fetching</code></h2>
+<p>Naming the tables one fetch reads, so two appearances do not collide.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Name</th><th>Kind</th><th>What it is</th></tr></thead><tbody><tr><td><code>TableBinding(table: 'ObjectReference', alias: 'str | None' = None)</code></td><td>dataclass</td><td>A table, and what a column of it is written under in this statement. In <code>pyoq.fetching.tables</code>.</td></tr><tr><td><code>TableNames(reserved: 'frozenset[str]' = frozenset())</code></td><td>class</td><td>Names for the appearances one statement reads, each different. In <code>pyoq.fetching.tables</code>.</td></tr></tbody></table>
+<h2 id="pyoqgeneration"><code>pyoq.generation</code></h2>
+<p>What the generated package is, as a model, before it is written.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Name</th><th>Kind</th><th>What it is</th></tr></thead><tbody><tr><td><code>GeneratedColumn</code></td><td>dataclass</td><td>— In <code>pyoq.generation.model</code>.</td></tr><tr><td><code>GeneratedDomain</code></td><td>dataclass</td><td>A domain as a type of its own, distinct from the type it is written over. In <code>pyoq.generation.model</code>.</td></tr><tr><td><code>GeneratedEnum</code></td><td>dataclass</td><td>— In <code>pyoq.generation.model</code>.</td></tr><tr><td><code>GeneratedKey</code></td><td>dataclass</td><td>— In <code>pyoq.generation.model</code>.</td></tr><tr><td><code>GeneratedOverload(function_name: 'str', routines: 'tuple[GeneratedRoutine, ...]')</code></td><td>dataclass</td><td>Routines a database lets share one name, called under that name. In <code>pyoq.generation.model</code>.</td></tr><tr><td><code>GeneratedPackage</code></td><td>dataclass</td><td>— In <code>pyoq.generation.model</code>.</td></tr><tr><td><code>GeneratedRelation</code></td><td>dataclass</td><td>— In <code>pyoq.generation.model</code>.</td></tr><tr><td><code>GeneratedRoutine</code></td><td>dataclass</td><td>A routine as a call a caller can make, with the database’s own signature. In <code>pyoq.generation.model</code>.</td></tr><tr><td><code>GeneratedRoutineParameter(source: 'RoutineParameter', field_name: 'str', annotation: 'str')</code></td><td>dataclass</td><td>— In <code>pyoq.generation.model</code>.</td></tr><tr><td><code>GeneratedTable</code></td><td>dataclass</td><td>— In <code>pyoq.generation.model</code>.</td></tr><tr><td><code>build_codegen_package</code></td><td>function</td><td>— In <code>pyoq.generation.model</code>.</td></tr><tr><td><code>output_path(root: 'Path', relative_path: 'PurePosixPath') -> 'Path'</code></td><td>function</td><td>— In <code>pyoq.generation.contracts</code>.</td></tr></tbody></table>
+<h2 id="pyoqgenerationrendering"><code>pyoq.generation.rendering</code></h2>
+<p>Turning a plan into Python source, one concern at a time.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Name</th><th>Kind</th><th>What it is</th></tr></thead><tbody><tr><td><code>AnnotationImports</code></td><td>dataclass</td><td>— In <code>pyoq.generation.rendering.imports</code>.</td></tr><tr><td><code>PythonSource(_lines: 'list[str]' = &#x3C;factory>)</code></td><td>dataclass</td><td>— In <code>pyoq.generation.rendering.source</code>.</td></tr><tr><td><code>literal(value: 'str | None') -> 'str'</code></td><td>function</td><td>— In <code>pyoq.generation.rendering.source</code>.</td></tr><tr><td><code>plan_annotation_imports</code></td><td>function</td><td>— In <code>pyoq.generation.rendering.imports</code>.</td></tr><tr><td><code>render_all(names: 'tuple[str, ...]') -> 'tuple[str, ...]'</code></td><td>function</td><td>— In <code>pyoq.generation.rendering.source</code>.</td></tr><tr><td><code>render_domains</code></td><td>function</td><td>A domain becomes a name of its own over the type it is written over. In <code>pyoq.generation.rendering.domains</code>.</td></tr><tr><td><code>render_enums</code></td><td>function</td><td>— In <code>pyoq.generation.rendering.enums</code>.</td></tr><tr><td><code>render_exports</code></td><td>function</td><td>— In <code>pyoq.generation.rendering.exports</code>.</td></tr><tr><td><code>render_from_import(module: 'str', names: 'tuple[str, ...]') -> 'tuple[str, ...]'</code></td><td>function</td><td>— In <code>pyoq.generation.rendering.source</code>.</td></tr><tr><td><code>render_relations</code></td><td>function</td><td>— In <code>pyoq.generation.rendering.relations</code>.</td></tr><tr><td><code>render_routines</code></td><td>function</td><td>A routine as a call whose signature is the database’s, not a caller’s. In <code>pyoq.generation.rendering.routines</code>.</td></tr><tr><td><code>render_rows</code></td><td>function</td><td>— In <code>pyoq.generation.rendering.rows</code>.</td></tr><tr><td><code>render_string_tuple(values: 'tuple[str, ...]') -> 'str'</code></td><td>function</td><td>— In <code>pyoq.generation.rendering.source</code>.</td></tr><tr><td><code>render_subscript</code></td><td>function</td><td>— In <code>pyoq.generation.rendering.source</code>.</td></tr><tr><td><code>render_tables</code></td><td>function</td><td>— In <code>pyoq.generation.rendering.tables</code>.</td></tr><tr><td><code>render_writes(package: 'GeneratedPackage') -> 'RenderedFile'</code></td><td>function</td><td>— In <code>pyoq.generation.rendering.writes</code>.</td></tr><tr><td><code>within_limit(line: 'str') -> 'str'</code></td><td>function</td><td>Suppress the length rule on a line only a longer name could shorten. In <code>pyoq.generation.rendering.source</code>.</td></tr></tbody></table>
+<h2 id="pyoqpolicies"><code>pyoq.policies</code></h2>
+<p>What a policy set asks of a database it governs.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Name</th><th>Kind</th><th>What it is</th></tr></thead><tbody><tr><td><code>SupportsAsyncStreaming(*args, **kwargs)</code></td><td>protocol</td><td>The same, for a database that is awaited. In <code>pyoq.policies.governed</code>.</td></tr><tr><td><code>SupportsStreaming(*args, **kwargs)</code></td><td>protocol</td><td>A database that can read a result a piece at a time. In <code>pyoq.policies.governed</code>.</td></tr><tr><td><code>family_for_value(value: 'object', /) -> 'ScalarFamily'</code></td><td>function</td><td>What a policy’s own value is, so it binds like any other. In <code>pyoq.policies.model</code>.</td></tr></tbody></table>
+<h2 id="pyoqquery"><code>pyoq.query</code></h2>
+<p>The statement model’s own parts: nodes the builders make, and the pieces that carry a collection back.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Name</th><th>Kind</th><th>What it is</th></tr></thead><tbody><tr><td><code>ArrayOperation</code></td><td>enum</td><td>What is being asked of an array and one other thing. In <code>pyoq.query.nodes</code>.</td></tr><tr><td><code>CallNode</code></td><td>dataclass</td><td>A stored procedure asked to run. In <code>pyoq.query.write_nodes</code>.</td></tr><tr><td><code>CollectionEntry(key: 'str', expression: 'ExpressionNode')</code></td><td>dataclass</td><td>One named value each row of a collection carries. In <code>pyoq.query.nodes</code>.</td></tr><tr><td><code>CollectionJoinNode</code></td><td>dataclass</td><td>A table a collection reads alongside the one the relation names. In <code>pyoq.query.nodes</code>.</td></tr><tr><td><code>CollectionNode</code></td><td>dataclass</td><td>A related table’s rows, gathered into one value beside their parent. In <code>pyoq.query.nodes</code>.</td></tr><tr><td><code>CollectionOrderNode(expression: 'ExpressionNode', descending: 'bool' = False)</code></td><td>dataclass</td><td>— In <code>pyoq.query.nodes</code>.</td></tr><tr><td><code>ColumnedTable(*args, **kwargs)</code></td><td>protocol</td><td>A table that names its own columns, which a generated table does. In <code>pyoq.query.sources</code>.</td></tr><tr><td><code>EVERY_ROW</code></td><td>value</td><td>What a row is measured against: its partition, in its order. In <code>pyoq.query.nodes</code>.</td></tr><tr><td><code>ExistsNode(query: 'QueryNode', negated: 'bool' = False)</code></td><td>dataclass</td><td>Whether a query returns anything at all. In <code>pyoq.query.nodes</code>.</td></tr><tr><td><code>FrameBound</code></td><td>enum</td><td>Where a frame starts or ends, relative to the row being measured. In <code>pyoq.query.nodes</code>.</td></tr><tr><td><code>FrameBoundNode(bound: 'FrameBound', offset: 'ExpressionNode | None' = None)</code></td><td>dataclass</td><td>One edge of a frame, and how far from the row it sits. In <code>pyoq.query.nodes</code>.</td></tr><tr><td><code>FrameKind</code></td><td>enum</td><td>What a frame counts: rows, values, or peer groups. In <code>pyoq.query.nodes</code>.</td></tr><tr><td><code>JsonBuild</code></td><td>enum</td><td>Whether a JSON value is being built as an object or as an array. In <code>pyoq.query.nodes</code>.</td></tr><tr><td><code>JsonOperation</code></td><td>enum</td><td>What is being asked of a JSON value at a path. In <code>pyoq.query.nodes</code>.</td></tr><tr><td><code>JsonWrite</code></td><td>enum</td><td>How a value is put into a JSON document. In <code>pyoq.query.nodes</code>.</td></tr><tr><td><code>LockNode</code></td><td>dataclass</td><td>Rows held for this transaction, so nobody else changes them first. In <code>pyoq.query.select_nodes</code>.</td></tr><tr><td><code>LockStrength</code></td><td>enum</td><td>How much of a row a lock holds, from the whole row down to its key. In <code>pyoq.query.select_nodes</code>.</td></tr><tr><td><code>LockWait</code></td><td>enum</td><td>What a statement does about rows somebody else has already locked. In <code>pyoq.query.select_nodes</code>.</td></tr><tr><td><code>NamedWindowNode(name: 'str', specification: 'WindowSpecificationNode')</code></td><td>dataclass</td><td>A window written once in a query and looked through by several rows. In <code>pyoq.query.nodes</code>.</td></tr><tr><td><code>Operation</code></td><td>enum</td><td>One thing a caller can ask for, named at the grain support is decided. In <code>pyoq.query.capabilities</code>.</td></tr><tr><td><code>OperationSupport</code></td><td>dataclass</td><td>One operation: what each dialect does, what it reads back, what runs it. In <code>pyoq.query.capabilities</code>.</td></tr><tr><td><code>ResultDescriptor</code></td><td>dataclass</td><td>Everything one expression answers with, derived from the tree once. In <code>pyoq.query.results</code>.</td></tr><tr><td><code>SourceBase(node: 'SourceNode', qualifier: 'str')</code></td><td>class</td><td>— In <code>pyoq.query.sources</code>.</td></tr><tr><td><code>StatementCompiler(*args, **kwargs)</code></td><td>protocol</td><td>Base class for protocol classes. In <code>pyoq.query.statements</code>.</td></tr><tr><td><code>Support</code></td><td>enum</td><td>How a dialect answers one operation. In <code>pyoq.query.capabilities</code>.</td></tr><tr><td><code>TableLike(*args, **kwargs)</code></td><td>protocol</td><td>Base class for protocol classes. In <code>pyoq.query.sources</code>.</td></tr><tr><td><code>WindowReferenceNode(name: 'str')</code></td><td>dataclass</td><td>A window the query declared once under a name. In <code>pyoq.query.nodes</code>.</td></tr><tr><td><code>WindowSpecificationNode</code></td><td>dataclass</td><td>What a row is measured against: its partition, in its order. In <code>pyoq.query.nodes</code>.</td></tr><tr><td><code>argument(value: 'object', /) -> 'NodeProvider'</code></td><td>function</td><td>A routine argument, whether it was given as an expression or a value. In <code>pyoq.query.routines</code>.</td></tr><tr><td><code>bound_value_count(node: 'ExpressionNode') -> 'int'</code></td><td>function</td><td>— In <code>pyoq.query.binding</code>.</td></tr><tr><td><code>checked_routine_name(name: 'str') -> 'str'</code></td><td>function</td><td>A routine name, checked because it is written into the SQL, not bound. In <code>pyoq.query.vendor</code>.</td></tr><tr><td><code>checked_routine_qualifier(value: 'str | None', label: 'str') -> 'str | None'</code></td><td>function</td><td>Where a routine is kept, held to being a name a database can hold. In <code>pyoq.query.vendor</code>.</td></tr><tr><td><code>decode_row</code></td><td>function</td><td>One row given back as it was described. In <code>pyoq.query.decoding</code>.</td></tr><tr><td><code>decode_rows</code></td><td>function</td><td>Every row given back as it was described. In <code>pyoq.query.decoding</code>.</td></tr><tr><td><code>decode_value(value: 'object', target: 'type[object] | None', /) -> 'object'</code></td><td>function</td><td>One value, as the type it was declared to hold. In <code>pyoq.query.decoding</code>.</td></tr><tr><td><code>expression_family(node: 'ExpressionNode') -> 'ScalarFamily'</code></td><td>function</td><td>What kind of value this node answers with. In <code>pyoq.query.results</code>.</td></tr><tr><td><code>family_for_kind(kind: 'TypeKind', /) -> 'ScalarFamily'</code></td><td>function</td><td>What kind of value a column declared with this SQL type holds. In <code>pyoq.query.results</code>.</td></tr><tr><td><code>family_for_type(value_type: 'type[object]') -> 'ScalarFamily'</code></td><td>function</td><td>What kind of value a column of this type holds. In <code>pyoq.query.results</code>.</td></tr><tr><td><code>family_for_value(value: 'object') -> 'ScalarFamily'</code></td><td>function</td><td>— In <code>pyoq.query.expressions</code>.</td></tr><tr><td><code>kind_for_target(target: 'type[object]', /) -> 'TypeKind'</code></td><td>function</td><td>The database type a Python type asks for, or a refusal naming it. In <code>pyoq.query.casts</code>.</td></tr><tr><td><code>looking_through</code></td><td>function</td><td>One function and the window it reads, named by the query or written here. In <code>pyoq.query.windows</code>.</td></tr><tr><td><code>order_node(value: 'object') -> 'OrderNode'</code></td><td>function</td><td>— In <code>pyoq.query.projections</code>.</td></tr><tr><td><code>projected_types(node: 'object', /) -> 'tuple[type[object] | None, ...]'</code></td><td>function</td><td>The type each projected column was declared to hold, in order. In <code>pyoq.query.decoding</code>.</td></tr><tr><td><code>projection_bound_value_count(projections: 'tuple[ProjectionNode, ...]') -> 'int'</code></td><td>function</td><td>— In <code>pyoq.query.binding</code>.</td></tr><tr><td><code>projection_node(value: 'object') -> 'ProjectionNode'</code></td><td>function</td><td>— In <code>pyoq.query.projections</code>.</td></tr><tr><td><code>require_boolean(value: 'object', clause: 'str')</code></td><td>function</td><td>— In <code>pyoq.query.expressions</code>.</td></tr><tr><td><code>require_identifier(value: 'str', label: 'str')</code></td><td>function</td><td>A name written into the SQL, held to being one a database can hold. In <code>pyoq.query.sources</code>.</td></tr><tr><td><code>resolve_source(value: 'object') -> 'SourceNode'</code></td><td>function</td><td>— In <code>pyoq.query.sources</code>.</td></tr><tr><td><code>result_descriptor(node: 'ExpressionNode', /) -> 'ResultDescriptor'</code></td><td>function</td><td>What this expression answers with, which one place decides. In <code>pyoq.query.results</code>.</td></tr><tr><td><code>row_bound_value_count(row: 'tuple[ExpressionNode, ...]') -> 'int'</code></td><td>function</td><td>— In <code>pyoq.query.binding</code>.</td></tr><tr><td><code>subquery_source</code></td><td>function</td><td>— In <code>pyoq.query.sources</code>.</td></tr><tr><td><code>support_for(operation: 'Operation', dialect: 'DatabaseDialect', /) -> 'Support'</code></td><td>function</td><td>How that dialect answers that operation. In <code>pyoq.query.capabilities</code>.</td></tr><tr><td><code>write_target(table: 'TableLike', /) -> 'WriteTargetNode'</code></td><td>function</td><td>— In <code>pyoq.query.sources</code>.</td></tr></tbody></table>
+<h2 id="pyoqquerymysql"><code>pyoq.query.mysql</code></h2>
+<p>MySQL’s own driver handling: reading its errors, and ending a statement.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Name</th><th>Kind</th><th>What it is</th></tr></thead><tbody><tr><td><code>error_code(error: 'BaseException') -> 'int | None'</code></td><td>function</td><td>— In <code>pyoq.query.mysql.health</code>.</td></tr><tr><td><code>is_cancellation(error: 'BaseException') -> 'bool'</code></td><td>function</td><td>— In <code>pyoq.query.mysql.health</code>.</td></tr><tr><td><code>is_connection_failure(error: 'BaseException') -> 'bool'</code></td><td>function</td><td>Report whether the server said the connection itself is gone. In <code>pyoq.query.mysql.health</code>.</td></tr><tr><td><code>is_timeout(error: 'BaseException') -> 'bool'</code></td><td>function</td><td>— In <code>pyoq.query.mysql.health</code>.</td></tr><tr><td><code>is_transaction_abort(error: 'BaseException') -> 'bool'</code></td><td>function</td><td>— In <code>pyoq.query.mysql.health</code>.</td></tr><tr><td><code>kill_query(opener: 'ConnectionOpener', victim: 'int')</code></td><td>function</td><td>Interrupt a running statement from a second connection. In <code>pyoq.query.mysql.commands</code>.</td></tr><tr><td><code>open_cursor</code></td><td>function</td><td>— In <code>pyoq.query.mysql.commands</code>.</td></tr><tr><td><code>run_sql</code></td><td>function</td><td>— In <code>pyoq.query.mysql.commands</code>.</td></tr></tbody></table>
+<h2 id="pyoqquerymysqlaio"><code>pyoq.query.mysql.aio</code></h2>
+<p>The same for the asynchronous MySQL driver.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Name</th><th>Kind</th><th>What it is</th></tr></thead><tbody><tr><td><code>OwnedConnection(connection: '_DriverConnection')</code></td><td>class</td><td>A driver connection that knows whether it has been closed. In <code>pyoq.query.mysql.aio.driver</code>.</td></tr><tr><td><code>await_watchdog(watchdog: 'Task[None]')</code></td><td>function</td><td>Wait for a watchdog this monitor owns, without inheriting its fate. In <code>pyoq.query.mysql.aio.commands</code>.</td></tr><tr><td><code>driver_errors() -> 'type[BaseException]'</code></td><td>function</td><td>The exception hierarchy this driver raises. In <code>pyoq.query.mysql.aio.driver</code>.</td></tr><tr><td><code>interface_errors() -> 'type[BaseException]'</code></td><td>function</td><td>What the driver raises when its own connection is unusable. In <code>pyoq.query.mysql.aio.driver</code>.</td></tr><tr><td><code>kill_query(opener: 'AsyncConnectionOpener', victim: 'int')</code></td><td>function</td><td>Interrupt a running statement from a second connection. In <code>pyoq.query.mysql.aio.commands</code>.</td></tr><tr><td><code>load_driver() -> 'ModuleType'</code></td><td>function</td><td>— In <code>pyoq.query.mysql.aio.driver</code>.</td></tr><tr><td><code>open_connection(settings: 'MySQLConnectionSettings') -> 'AsyncMySQLConnection'</code></td><td>function</td><td>Open one driver connection and hand it back as a typed protocol. In <code>pyoq.query.mysql.aio.driver</code>.</td></tr><tr><td><code>open_cursor</code></td><td>function</td><td>— In <code>pyoq.query.mysql.aio.commands</code>.</td></tr><tr><td><code>operational_errors() -> 'type[BaseException]'</code></td><td>function</td><td>What the driver raises for a server-reported operational failure. In <code>pyoq.query.mysql.aio.driver</code>.</td></tr><tr><td><code>read_connection_id(connection: 'AsyncMySQLConnection') -> 'int'</code></td><td>function</td><td>Read the identifier a kill has to name. In <code>pyoq.query.mysql.aio.commands</code>.</td></tr><tr><td><code>require_live_connection(environment: 'AsyncExecutionEnvironment')</code></td><td>function</td><td>Refuse to read through a connection whose socket is already gone. In <code>pyoq.query.mysql.aio.commands</code>.</td></tr><tr><td><code>run_sql</code></td><td>function</td><td>— In <code>pyoq.query.mysql.aio.commands</code>.</td></tr><tr><td><code>unbuffered_cursor_class() -> 'object'</code></td><td>function</td><td>The driver’s unbuffered cursor, which keeps streaming memory bounded. In <code>pyoq.query.mysql.aio.driver</code>.</td></tr></tbody></table>
+<h2 id="pyoqquerypostgres"><code>pyoq.query.postgres</code></h2>
+<p>PostgreSQL’s own driver handling: cursors, pipelines, and reading its errors.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Name</th><th>Kind</th><th>What it is</th></tr></thead><tbody><tr><td><code>is_cancellation(error: 'psycopg.Error') -> 'bool'</code></td><td>function</td><td>— In <code>pyoq.query.postgres.health</code>.</td></tr><tr><td><code>is_connection_failure(error: 'psycopg.Error') -> 'bool'</code></td><td>function</td><td>— In <code>pyoq.query.postgres.health</code>.</td></tr><tr><td><code>open_cursor</code></td><td>function</td><td>— In <code>pyoq.query.postgres.commands</code>.</td></tr><tr><td><code>pipeline_supported(enabled: 'bool') -> 'bool'</code></td><td>function</td><td>— In <code>pyoq.query.postgres.bulk</code>.</td></tr><tr><td><code>run_pipeline</code></td><td>function</td><td>— In <code>pyoq.query.postgres.bulk</code>.</td></tr><tr><td><code>run_sql</code></td><td>function</td><td>— In <code>pyoq.query.postgres.commands</code>.</td></tr></tbody></table>
+<h2 id="pyoqquerypostgresaio"><code>pyoq.query.postgres.aio</code></h2>
+<p>The same for the asynchronous PostgreSQL driver.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Name</th><th>Kind</th><th>What it is</th></tr></thead><tbody><tr><td><code>await_watchdog(watchdog: 'Task[None]')</code></td><td>function</td><td>Wait for a watchdog this monitor owns, without inheriting its fate. In <code>pyoq.query.postgres.aio.commands</code>.</td></tr><tr><td><code>open_cursor</code></td><td>function</td><td>— In <code>pyoq.query.postgres.aio.commands</code>.</td></tr><tr><td><code>run_pipeline</code></td><td>function</td><td>— In <code>pyoq.query.postgres.aio.bulk</code>.</td></tr><tr><td><code>run_sql</code></td><td>function</td><td>— In <code>pyoq.query.postgres.aio.commands</code>.</td></tr></tbody></table>
+<h2 id="pyoqqueryrendering"><code>pyoq.query.rendering</code></h2>
+<p>Shared SQL rendering the dialects specialise.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Name</th><th>Kind</th><th>What it is</th></tr></thead><tbody><tr><td><code>CollectionFunctions</code></td><td>dataclass</td><td>How one dialect gathers rows into a single value, and builds one. In <code>pyoq.query.rendering.expressions</code>.</td></tr><tr><td><code>ExpressionRenderer(context: 'ContextType')</code></td><td>class</td><td>Helper class that provides a standard way to create an ABC using inheritance. In <code>pyoq.query.rendering.expressions</code>.</td></tr><tr><td><code>ExpressionText(*args, **kwargs)</code></td><td>protocol</td><td>Base class for protocol classes. In <code>pyoq.query.rendering.projections</code>.</td></tr><tr><td><code>IdentifierQuoting</code></td><td>dataclass</td><td>— In <code>pyoq.query.rendering.identifiers</code>.</td></tr><tr><td><code>QueryRenderer(expressions: 'ExpressionText')</code></td><td>class</td><td>Helper class that provides a standard way to create an ABC using inheritance. In <code>pyoq.query.rendering.queries</code>.</td></tr><tr><td><code>SourceRenderer</code></td><td>class</td><td>— In <code>pyoq.query.rendering.sources</code>.</td></tr><tr><td><code>WriteRenderer(expressions: 'ExpressionText')</code></td><td>class</td><td>Helper class that provides a standard way to create an ABC using inheritance. In <code>pyoq.query.rendering.writes</code>.</td></tr><tr><td><code>compile_projection</code></td><td>function</td><td>— In <code>pyoq.query.rendering.projections</code>.</td></tr><tr><td><code>compile_projections</code></td><td>function</td><td>— In <code>pyoq.query.rendering.projections</code>.</td></tr></tbody></table>
+<h2 id="pyoqquerysqlite"><code>pyoq.query.sqlite</code></h2>
+<p>SQLite’s own compilation and execution pieces.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Name</th><th>Kind</th><th>What it is</th></tr></thead><tbody><tr><td><code>SQLiteCompilationContext(capabilities: 'SQLiteCapabilities')</code></td><td>class</td><td>— In <code>pyoq.query.sqlite.context</code>.</td></tr><tr><td><code>SQLiteCursorSession</code></td><td>class</td><td>— In <code>pyoq.query.sqlite.commands</code>.</td></tr><tr><td><code>SQLiteExecutionMonitor(control: 'ExecutionControl | None')</code></td><td>class</td><td>— In <code>pyoq.query.sqlite.commands</code>.</td></tr><tr><td><code>SQLiteExpressionCompiler(context: 'ContextType')</code></td><td>class</td><td>Helper class that provides a standard way to create an ABC using inheritance. In <code>pyoq.query.sqlite.expressions</code>.</td></tr><tr><td><code>SQLiteQueryOperations(compiler: 'SQLiteCompiler')</code></td><td>class</td><td>Helper class that provides a standard way to create an ABC using inheritance. In <code>pyoq.query.sqlite.operations</code>.</td></tr><tr><td><code>SQLiteWriteCompilation(context: 'SQLiteCompilationContext')</code></td><td>class</td><td>Helper class that provides a standard way to create an ABC using inheritance. In <code>pyoq.query.sqlite.writes</code>.</td></tr><tr><td><code>is_connection_failure(error: 'sqlite3.Error') -> 'bool'</code></td><td>function</td><td>— In <code>pyoq.query.sqlite.health</code>.</td></tr><tr><td><code>open_cursor</code></td><td>function</td><td>— In <code>pyoq.query.sqlite.commands</code>.</td></tr><tr><td><code>run_sql</code></td><td>function</td><td>— In <code>pyoq.query.sqlite.commands</code>.</td></tr></tbody></table>
+<h2 id="pyoqruntime"><code>pyoq.runtime</code></h2>
+<p>Choosing between the native and the portable implementation.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Name</th><th>Kind</th><th>What it is</th></tr></thead><tbody><tr><td><code>RuntimeBackend(*args, **kwargs)</code></td><td>protocol</td><td>Base class for protocol classes. In <code>pyoq.runtime.selection</code>.</td></tr><tr><td><code>load_native_runtime() -> pyoq.runtime.selection.RuntimeBackend</code></td><td>function</td><td>— In <code>pyoq.runtime.selection</code>.</td></tr><tr><td><code>load_python_runtime() -> pyoq.runtime.selection.RuntimeBackend</code></td><td>function</td><td>— In <code>pyoq.runtime.selection</code>.</td></tr><tr><td><code>select_runtime</code></td><td>function</td><td>— In <code>pyoq.runtime.selection</code>.</td></tr></tbody></table>
+<h2 id="pyoqschema"><code>pyoq.schema</code></h2>
+<p>Reading a snapshot in and writing one out.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Name</th><th>Kind</th><th>What it is</th></tr></thead><tbody><tr><td><code>NamedSchemaItem(*args, **kwargs)</code></td><td>protocol</td><td>Base class for protocol classes. In <code>pyoq.schema.models</code>.</td></tr><tr><td><code>decode_snapshot(value: 'str') -> 'SchemaSnapshot'</code></td><td>function</td><td>— In <code>pyoq.schema.codec</code>.</td></tr><tr><td><code>encode_snapshot(snapshot: 'SchemaSnapshot') -> 'str'</code></td><td>function</td><td>— In <code>pyoq.schema.codec</code>.</td></tr></tbody></table>
+<h2 id="pyoqschemamysql"><code>pyoq.schema.mysql</code></h2>
+<p>What MySQL’s catalog gives back, before it becomes a schema.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Name</th><th>Kind</th><th>What it is</th></tr></thead><tbody><tr><td><code>CheckRecord(table: 'str', name: 'str', clause: 'str')</code></td><td>dataclass</td><td>— In <code>pyoq.schema.mysql.records</code>.</td></tr><tr><td><code>ColumnRecord</code></td><td>dataclass</td><td>— In <code>pyoq.schema.mysql.records</code>.</td></tr><tr><td><code>ConstraintRecord</code></td><td>dataclass</td><td>— In <code>pyoq.schema.mysql.records</code>.</td></tr><tr><td><code>IndexRecord</code></td><td>dataclass</td><td>— In <code>pyoq.schema.mysql.records</code>.</td></tr><tr><td><code>NamedRecord(*args, **kwargs)</code></td><td>protocol</td><td>Base class for protocol classes. In <code>pyoq.schema.mysql.reflection</code>.</td></tr><tr><td><code>ObjectRecord</code></td><td>dataclass</td><td>— In <code>pyoq.schema.mysql.records</code>.</td></tr><tr><td><code>RoutineRecord</code></td><td>dataclass</td><td>— In <code>pyoq.schema.mysql.records</code>.</td></tr><tr><td><code>mysql_enum_values(declared_type: 'str') -> 'tuple[str, ...]'</code></td><td>function</td><td>The labels a column-level enum lists, in the order it lists them. In <code>pyoq.schema.mysql.types</code>.</td></tr><tr><td><code>read_check(row: 'tuple[object, ...]') -> 'CheckRecord'</code></td><td>function</td><td>— In <code>pyoq.schema.mysql.records</code>.</td></tr><tr><td><code>read_column(row: 'tuple[object, ...]') -> 'ColumnRecord'</code></td><td>function</td><td>— In <code>pyoq.schema.mysql.records</code>.</td></tr><tr><td><code>read_constraint(row: 'tuple[object, ...]') -> 'ConstraintRecord'</code></td><td>function</td><td>— In <code>pyoq.schema.mysql.records</code>.</td></tr><tr><td><code>read_index(row: 'tuple[object, ...]') -> 'IndexRecord'</code></td><td>function</td><td>— In <code>pyoq.schema.mysql.records</code>.</td></tr><tr><td><code>read_object(row: 'tuple[object, ...]') -> 'ObjectRecord'</code></td><td>function</td><td>— In <code>pyoq.schema.mysql.records</code>.</td></tr><tr><td><code>read_routine(row: 'tuple[object, ...]') -> 'RoutineRecord'</code></td><td>function</td><td>— In <code>pyoq.schema.mysql.records</code>.</td></tr></tbody></table>
+<h2 id="pyoqschemapostgres"><code>pyoq.schema.postgres</code></h2>
+<p>What PostgreSQL’s catalog gives back, before it becomes a schema.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Name</th><th>Kind</th><th>What it is</th></tr></thead><tbody><tr><td><code>ColumnRecord</code></td><td>dataclass</td><td>— In <code>pyoq.schema.postgres.records</code>.</td></tr><tr><td><code>ConstraintRecord</code></td><td>dataclass</td><td>— In <code>pyoq.schema.postgres.records</code>.</td></tr><tr><td><code>DomainCheckRecord(schema: 'str', domain: 'str', name: 'str', definition: 'str')</code></td><td>dataclass</td><td>— In <code>pyoq.schema.postgres.records</code>.</td></tr><tr><td><code>DomainRecord</code></td><td>dataclass</td><td>— In <code>pyoq.schema.postgres.records</code>.</td></tr><tr><td><code>EnumRecord(schema: 'str', name: 'str', label: 'str', comment: 'str | None')</code></td><td>dataclass</td><td>— In <code>pyoq.schema.postgres.records</code>.</td></tr><tr><td><code>IndexRecord</code></td><td>dataclass</td><td>— In <code>pyoq.schema.postgres.records</code>.</td></tr><tr><td><code>ObjectRecord</code></td><td>dataclass</td><td>— In <code>pyoq.schema.postgres.records</code>.</td></tr><tr><td><code>RoutineRecord</code></td><td>dataclass</td><td>— In <code>pyoq.schema.postgres.records</code>.</td></tr><tr><td><code>read_column(row: 'tuple[object, ...]') -> 'ColumnRecord'</code></td><td>function</td><td>— In <code>pyoq.schema.postgres.records</code>.</td></tr><tr><td><code>read_constraint(row: 'tuple[object, ...]') -> 'ConstraintRecord'</code></td><td>function</td><td>— In <code>pyoq.schema.postgres.records</code>.</td></tr><tr><td><code>read_domain(row: 'tuple[object, ...]') -> 'DomainRecord'</code></td><td>function</td><td>— In <code>pyoq.schema.postgres.records</code>.</td></tr><tr><td><code>read_domain_check(row: 'tuple[object, ...]') -> 'DomainCheckRecord'</code></td><td>function</td><td>— In <code>pyoq.schema.postgres.records</code>.</td></tr><tr><td><code>read_enum(row: 'tuple[object, ...]') -> 'EnumRecord'</code></td><td>function</td><td>— In <code>pyoq.schema.postgres.records</code>.</td></tr><tr><td><code>read_index(row: 'tuple[object, ...]') -> 'IndexRecord'</code></td><td>function</td><td>— In <code>pyoq.schema.postgres.records</code>.</td></tr><tr><td><code>read_object(row: 'tuple[object, ...]') -> 'ObjectRecord'</code></td><td>function</td><td>— In <code>pyoq.schema.postgres.records</code>.</td></tr><tr><td><code>read_routine(row: 'tuple[object, ...]') -> 'RoutineRecord'</code></td><td>function</td><td>— In <code>pyoq.schema.postgres.records</code>.</td></tr></tbody></table>
+<h2 id="pyoqschemasqlite"><code>pyoq.schema.sqlite</code></h2>
+<p>What SQLite’s catalog gives back, before it becomes a schema.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Name</th><th>Kind</th><th>What it is</th></tr></thead><tbody><tr><td><code>ColumnRecord</code></td><td>dataclass</td><td>— In <code>pyoq.schema.sqlite.records</code>.</td></tr><tr><td><code>ForeignKeyRecord</code></td><td>dataclass</td><td>— In <code>pyoq.schema.sqlite.records</code>.</td></tr><tr><td><code>IndexRecord</code></td><td>dataclass</td><td>— In <code>pyoq.schema.sqlite.records</code>.</td></tr><tr><td><code>IndexTermRecord</code></td><td>dataclass</td><td>— In <code>pyoq.schema.sqlite.records</code>.</td></tr><tr><td><code>ParsedCheck(name: 'str | None', expression: 'str')</code></td><td>dataclass</td><td>— In <code>pyoq.schema.sqlite.sql</code>.</td></tr><tr><td><code>ParsedIndexTerm(expression: 'str', descending: 'bool')</code></td><td>dataclass</td><td>— In <code>pyoq.schema.sqlite.sql</code>.</td></tr><tr><td><code>SchemaObjectRecord(kind: 'str', name: 'str', sql: 'str | None')</code></td><td>dataclass</td><td>— In <code>pyoq.schema.sqlite.records</code>.</td></tr><tr><td><code>check_constraints(create_sql: 'str | None') -> 'tuple[ParsedCheck, ...]'</code></td><td>function</td><td>— In <code>pyoq.schema.sqlite.sql</code>.</td></tr><tr><td><code>descending_primary_columns(create_sql: 'str | None') -> 'frozenset[str]'</code></td><td>function</td><td>— In <code>pyoq.schema.sqlite.sql</code>.</td></tr><tr><td><code>foreign_key(row: 'object') -> 'ForeignKeyRecord'</code></td><td>function</td><td>— In <code>pyoq.schema.sqlite.records</code>.</td></tr><tr><td><code>generated_columns(create_sql: 'str | None') -> 'dict[str, tuple[str, bool]]'</code></td><td>function</td><td>— In <code>pyoq.schema.sqlite.sql</code>.</td></tr><tr><td><code>index(row: 'object') -> 'IndexRecord'</code></td><td>function</td><td>— In <code>pyoq.schema.sqlite.records</code>.</td></tr><tr><td><code>index_parts</code></td><td>function</td><td>— In <code>pyoq.schema.sqlite.sql</code>.</td></tr><tr><td><code>index_term(row: 'object') -> 'IndexTermRecord'</code></td><td>function</td><td>— In <code>pyoq.schema.sqlite.records</code>.</td></tr><tr><td><code>schema_object(row: 'object') -> 'SchemaObjectRecord'</code></td><td>function</td><td>— In <code>pyoq.schema.sqlite.records</code>.</td></tr><tr><td><code>split_top_level(value: 'str') -> 'tuple[str, ...]'</code></td><td>function</td><td>— In <code>pyoq.schema.sqlite.sql</code>.</td></tr><tr><td><code>sqlite_type(declared_type: 'str') -> 'SqlType'</code></td><td>function</td><td>— In <code>pyoq.schema.sqlite.types</code>.</td></tr><tr><td><code>table_options(create_sql: 'str | None') -> 'tuple[bool, bool]'</code></td><td>function</td><td>— In <code>pyoq.schema.sqlite.sql</code>.</td></tr><tr><td><code>view_query(create_sql: 'str | None') -> 'str | None'</code></td><td>function</td><td>— In <code>pyoq.schema.sqlite.sql</code>.</td></tr></tbody></table>
+<h2 id="pyoqsnapshots"><code>pyoq.snapshots</code></h2>
+<p>Where a snapshot comes from.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Name</th><th>Kind</th><th>What it is</th></tr></thead><tbody><tr><td><code>ConfiguredSchemaSource(live: 'SchemaSource' = DialectRoutingSchemaSource())</code></td><td>dataclass</td><td>The recorded schema where a project keeps one, the database otherwise. In <code>pyoq.snapshots.routing</code>.</td></tr><tr><td><code>HasName(*args, **kwargs)</code></td><td>protocol</td><td>Anything a schema names, which is everything compared here. In <code>pyoq.snapshots.drift</code>.</td></tr></tbody></table></article><nav class="pager" aria-label="Neighbouring pages"><a class="previous" href="/pyoq-sql/api/references/"><span>Previous</span>All references</a><a class="next" href="/pyoq-sql/api/pyoq/"><span>Next</span>pyoq</a></nav><footer class="page-footer"><p>PyOQ is released under the <a href="/pyoq-sql/licence/" rel="license">MPL-2.0</a> licence.</p></footer></main><nav class="contents" aria-label="On this page"><p>On this page</p><ul><li><a href="#pyoqcli">pyoq.cli</a></li><li><a href="#pyoqdiagnostics">pyoq.diagnostics</a></li><li><a href="#pyoqdjango">pyoq.django</a></li><li><a href="#pyoqdjangomanagementcommands">pyoq.django.management.commands</a></li><li><a href="#pyoqdsl">pyoq.dsl</a></li><li><a href="#pyoqfetching">pyoq.fetching</a></li><li><a href="#pyoqgeneration">pyoq.generation</a></li><li><a href="#pyoqgenerationrendering">pyoq.generation.rendering</a></li><li><a href="#pyoqpolicies">pyoq.policies</a></li><li><a href="#pyoqquery">pyoq.query</a></li><li><a href="#pyoqquerymysql">pyoq.query.mysql</a></li><li><a href="#pyoqquerymysqlaio">pyoq.query.mysql.aio</a></li><li><a href="#pyoqquerypostgres">pyoq.query.postgres</a></li><li><a href="#pyoqquerypostgresaio">pyoq.query.postgres.aio</a></li><li><a href="#pyoqqueryrendering">pyoq.query.rendering</a></li><li><a href="#pyoqquerysqlite">pyoq.query.sqlite</a></li><li><a href="#pyoqruntime">pyoq.runtime</a></li><li><a href="#pyoqschema">pyoq.schema</a></li><li><a href="#pyoqschemamysql">pyoq.schema.mysql</a></li><li><a href="#pyoqschemapostgres">pyoq.schema.postgres</a></li><li><a href="#pyoqschemasqlite">pyoq.schema.sqlite</a></li><li><a href="#pyoqsnapshots">pyoq.snapshots</a></li></ul></nav></div><script type="module">document.addEventListener(`click`,e=>{let t=e.target?.closest(`[data-copy]`);if(!t)return;let n=(t.closest(`.code-shell`)?.querySelector(`pre`)?.textContent??``).replace(/\n$/,``);if(!n)return;let r=e=>{let n=t.querySelector(`[data-copy-label]`);n&&(n.textContent=e)};navigator.clipboard.writeText(n).then(()=>{t.dataset.copied=``,r(`Copied`),setTimeout(()=>{delete t.dataset.copied,r(`Copy`)},1600)},()=>r(`Press ⌘C`))});</script><script type="module" src="/pyoq-sql/_astro/CodeEditors.astro_astro_type_script_index_0_lang.C8S0YAI5.js"></script><script type="module" src="/pyoq-sql/_astro/Diagrams.astro_astro_type_script_index_0_lang.BNJty66e.js"></script></body></html>

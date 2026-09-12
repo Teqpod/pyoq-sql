@@ -1,0 +1,565 @@
+<!DOCTYPE html><html lang="en" data-appearance="light"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>MySQL without a framework · PyOQ</title><meta name="description" content="A larger Python application with generated types and one process-owned pool."><link rel="canonical" href="https://teqpod.com/pyoq-sql/mysql-application/"><meta name="robots" content="index, follow, max-image-preview:large"><meta name="theme-color" content="#1b6ef3"><link rel="sitemap" type="application/xml" href="/pyoq-sql/sitemap.xml"><meta property="og:type" content="article"><meta property="og:site_name" content="PyOQ"><meta property="og:locale" content="en"><meta property="og:title" content="MySQL without a framework · PyOQ"><meta property="og:description" content="A larger Python application with generated types and one process-owned pool."><meta property="og:url" content="https://teqpod.com/pyoq-sql/mysql-application/"><meta property="og:image" content="https://teqpod.com/pyoq-sql/brand/pyoq-banner.png"><meta property="og:image:type" content="image/png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="PyOQ, fully typed database-first SQL for Python"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="MySQL without a framework · PyOQ"><meta name="twitter:description" content="A larger Python application with generated types and one process-owned pool."><meta name="twitter:image" content="https://teqpod.com/pyoq-sql/brand/pyoq-banner.png"><link rel="icon" type="image/svg+xml" href="/pyoq-sql/brand/pyoq-mark.svg"><link rel="icon" type="image/png" sizes="32x32" href="/pyoq-sql/brand/pyoq-favicon-32.png"><link rel="apple-touch-icon" href="/pyoq-sql/brand/pyoq-mark-180.png"><script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://teqpod.com/pyoq-sql/#site","name":"PyOQ","url":"https://teqpod.com/pyoq-sql/","description":"A database-first SQL toolkit with generated types, explicit execution, and native acceleration for Python applications."},{"@type":"SoftwareApplication","@id":"https://teqpod.com/pyoq-sql/#project","name":"PyOQ","description":"A database-first SQL toolkit with generated types, explicit execution, and native acceleration for Python applications.","url":"https://teqpod.com/pyoq-sql/","sameAs":["https://pypi.org/project/pyoq-sql/"],"applicationCategory":"DeveloperApplication","operatingSystem":"Linux, macOS, Windows","programmingLanguage":"Python","license":"https://teqpod.com/pyoq-sql/licence/","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}},{"@type":"TechArticle","headline":"MySQL without a framework · PyOQ","description":"A larger Python application with generated types and one process-owned pool.","url":"https://teqpod.com/pyoq-sql/mysql-application/","image":"https://teqpod.com/pyoq-sql/brand/pyoq-banner.png","isPartOf":{"@id":"https://teqpod.com/pyoq-sql/#site"},"about":{"@id":"https://teqpod.com/pyoq-sql/#project"},"inLanguage":"en","articleSection":"Running statements"}]}</script><script>
+  (() => {
+    let chosen = null;
+    try {
+      chosen = localStorage.getItem("pyoq-appearance");
+    } catch {}
+    const dark = matchMedia("(prefers-color-scheme: dark)").matches;
+    document.documentElement.dataset.appearance = chosen ?? (dark ? "dark" : "light");
+  })();
+</script><link rel="stylesheet" href="/pyoq-sql/_astro/app.CXhD3KCe.css"></head><body><a class="skip" href="#content">Skip to content</a><header class="bar"><a class="wordmark" href="/pyoq-sql/" aria-label="PyOQ documentation home"><img class="brand-image" src="/pyoq-sql/brand/pyoq-mark.svg" width="30" height="30" alt=""><span class="brand-name">PyOQ</span><span class="brand-context">docs</span></a><div class="search" data-pagefind-ignore><svg class="glass" viewBox="0 0 20 20" width="15" height="15" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.8" d="M8.5 14.5a6 6 0 1 1 0-12 6 6 0 0 1 0 12Zm4.5-1.5 4 4"></path></svg><input id="search" type="search" placeholder="Search the documentation" autocomplete="off" spellcheck="false" aria-label="Search the documentation" aria-expanded="false" aria-controls="results"><kbd>/</kbd><div id="results" role="listbox" hidden></div></div><script>(function(){const runtime = "/pyoq-sql/pagefind/pagefind.js";
+const baseUrl = "/pyoq-sql/";
+
+  const field = document.getElementById("search");
+  const panel = document.getElementById("results");
+  let engine = null;
+  let chosen = -1;
+
+  async function ready() {
+    if (engine) return engine;
+    try {
+      engine = await import(runtime);
+      await engine.options({ baseUrl, excerptLength: 24 });
+      await engine.init();
+    } catch {
+      engine = "unavailable";
+    }
+    return engine;
+  }
+
+  function close() {
+    panel.hidden = true;
+    field.setAttribute("aria-expanded", "false");
+    chosen = -1;
+  }
+
+  function draw(results) {
+    if (!results.length) {
+      panel.innerHTML = '<p class="none">Nothing matches that.</p>';
+    } else {
+      panel.innerHTML = results
+        .map((result) => {
+          const where = result.meta?.group ?? "Documentation";
+          const title = result.meta?.title ?? "Untitled";
+          return `<a role="option" href="${result.url}">
+            <span class="where">${where}</span>
+            <span class="what">${title}</span>
+            <span class="bit">${result.excerpt}</span>
+          </a>`;
+        })
+        .join("");
+    }
+    panel.hidden = false;
+    field.setAttribute("aria-expanded", "true");
+    chosen = -1;
+  }
+
+  let running = 0;
+  async function run() {
+    const wanted = field.value.trim();
+    if (!wanted) return close();
+    const engine = await ready();
+    if (engine === "unavailable") {
+      panel.innerHTML =
+        '<p class="none">Search is built with the site. Run <code>bun run build</code>.</p>';
+      panel.hidden = false;
+      return;
+    }
+    const token = ++running;
+    const found = await engine.search(wanted);
+    if (token !== running) return;
+    const top = await Promise.all(found.results.slice(0, 8).map((one) => one.data()));
+    if (token !== running) return;
+    draw(top);
+  }
+
+  function move(step) {
+    const links = panel.querySelectorAll("a");
+    if (!links.length) return;
+    chosen = (chosen + step + links.length) % links.length;
+    links.forEach((link, at) => link.classList.toggle("on", at === chosen));
+    links[chosen].scrollIntoView({ block: "nearest" });
+  }
+
+  let waiting;
+  field?.addEventListener("input", () => {
+    clearTimeout(waiting);
+    waiting = setTimeout(run, 120);
+  });
+  field?.addEventListener("focus", ready);
+
+  field?.addEventListener("keydown", (event) => {
+    if (event.key === "ArrowDown") {
+      event.preventDefault();
+      move(1);
+    } else if (event.key === "ArrowUp") {
+      event.preventDefault();
+      move(-1);
+    } else if (event.key === "Enter" && chosen >= 0) {
+      event.preventDefault();
+      panel.querySelectorAll("a")[chosen].click();
+    } else if (event.key === "Escape") {
+      field.blur();
+      close();
+    }
+  });
+
+  document.addEventListener("click", (event) => {
+    if (!panel.contains(event.target) && event.target !== field) close();
+  });
+
+  // "/" reaches the field from anywhere, which is where a reader goes first.
+  document.addEventListener("keydown", (event) => {
+    const typing = /^(INPUT|TEXTAREA)$/.test(document.activeElement?.tagName ?? "");
+    if (event.key === "/" && !typing) {
+      event.preventDefault();
+      field.focus();
+      field.select();
+    }
+  });
+})();</script><button id="appearance" type="button" aria-label="Switch appearance"><svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M10 2a8 8 0 1 0 0 16 8 8 0 0 0 0-16Zm0 1.6V16.4a6.4 6.4 0 0 1 0-12.8Z"></path></svg></button><script type="module">var e=document.documentElement;document.getElementById(`appearance`)?.addEventListener(`click`,()=>{let t=e.dataset.appearance===`dark`?`light`:`dark`;e.dataset.appearance=t;try{localStorage.setItem(`pyoq-appearance`,t)}catch{}});</script></header><div class="page"><nav class="side" aria-label="Documentation"><details class="side-toggle"><summary>Contents</summary></details><div class="side-body"><details class="side-group" data-group="Start here"><summary class="group" title="What this is, whether it suits you, and getting it running."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>Start here</summary><ul><li><a href="/pyoq-sql/overview/">What PyOQ is</a></li><li><a href="/pyoq-sql/when-to-use/">When to use what</a></li><li><a href="/pyoq-sql/installing/">Installing</a></li><li><a href="/pyoq-sql/generating/">Generating your types</a></li><li><a href="/pyoq-sql/first-query/">Your first query</a></li></ul></details><details class="side-group" data-group="For LLMs"><summary class="group" title="A compact project model and source map for coding agents."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>For LLMs</summary><ul><li><a href="/pyoq-sql/agents/">LLM agent guide</a></li></ul></details><details class="side-group" data-group="Reading"><summary class="group" title="Everything that ends in rows coming back."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>Reading</summary><ul><li><a href="/pyoq-sql/selecting/">Selecting rows</a></li><li><a href="/pyoq-sql/expressions/">Expressions and conditions</a></li><li><a href="/pyoq-sql/joins/">Joins and set operations</a></li><li><a href="/pyoq-sql/routines/">Stored routines</a></li><li><a href="/pyoq-sql/results/">Reading results</a></li></ul></details><details class="side-group" data-group="Writing"><summary class="group" title="Everything that changes what is in the database."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>Writing</summary><ul><li><a href="/pyoq-sql/inserting/">Inserting rows</a></li><li><a href="/pyoq-sql/updating/">Updating and deleting</a></li><li><a href="/pyoq-sql/conflicts/">Conflict resolution</a></li><li><a href="/pyoq-sql/bulk/">Bulk writes</a></li></ul></details><details class="side-group" data-group="Your data"><summary class="group" title="What the schema says, and how PyOQ reads it back."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>Your data</summary><ul><li><a href="/pyoq-sql/relations/">Relations</a></li><li><a href="/pyoq-sql/types/">Column types</a></li><li><a href="/pyoq-sql/snapshots/">Snapshots and drift</a></li><li><a href="/pyoq-sql/migrations/">Migration lifecycle</a></li></ul></details><details class="side-group" data-group="Running statements" open><summary class="group" title="What happens between a built statement and a row."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>Running statements</summary><ul><li><a href="/pyoq-sql/connections/">Connections and pools</a></li><li><a href="/pyoq-sql/mysql-application/" class="active" aria-current="page">MySQL without a framework</a></li><li><a href="/pyoq-sql/async/">Asynchronous execution</a></li><li><a href="/pyoq-sql/transactions/">Transactions and streaming</a></li><li><a href="/pyoq-sql/dialects/">Dialects</a></li><li><a href="/pyoq-sql/diagnostics/">Diagnostics</a></li><li><a href="/pyoq-sql/policies/">Policies</a></li><li><a href="/pyoq-sql/security/">Security</a></li><li><a href="/pyoq-sql/performance/">Performance</a></li></ul></details><details class="side-group" data-group="Frameworks"><summary class="group" title="Running inside something that already owns the connection."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>Frameworks</summary><ul><li><a href="/pyoq-sql/alembic/">Alembic</a></li><li><a href="/pyoq-sql/django/">Django</a></li><li><a href="/pyoq-sql/fastapi/">FastAPI</a></li><li><a href="/pyoq-sql/sanic/">Sanic</a></li><li><a href="/pyoq-sql/serving/">Standalone services</a></li></ul></details><details class="side-group" data-group="Reference"><summary class="group" title="The details, once you know what you are looking for."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>Reference</summary><ul><li><a href="/pyoq-sql/cli/">Command line</a></li><li><a href="/pyoq-sql/configuration/">Configuration</a></li><li><a href="/pyoq-sql/errors/">Errors</a></li><li><a href="/pyoq-sql/troubleshooting/">Troubleshooting</a></li><li><a href="/pyoq-sql/testing/">Testing applications</a></li><li><a href="/pyoq-sql/releasing/">Releasing</a></li><li><a href="/pyoq-sql/licence/">Licence</a></li></ul></details><details class="side-group" data-group="APIs"><summary class="group" title="Every package, every name it exports, and what each one does."><svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>APIs</summary><ul><li><a href="/pyoq-sql/api/references/">All references</a></li><li><a href="/pyoq-sql/api/internals/">Internals</a></li><li><a href="/pyoq-sql/api/pyoq/">pyoq</a></li><li><a href="/pyoq-sql/api/commands/">pyoq commands</a></li><li><a href="/pyoq-sql/api/native/">pyoq._native</a></li><li><a href="/pyoq-sql/api/cli/">pyoq.cli</a></li><li><a href="/pyoq-sql/api/config/">pyoq.config</a></li><li><a href="/pyoq-sql/api/descriptors/">pyoq.descriptors</a></li><li><a href="/pyoq-sql/api/diagnostics/">pyoq.diagnostics</a></li><li><a href="/pyoq-sql/api/django/">pyoq.django</a></li><li><a href="/pyoq-sql/api/dsl/">pyoq.dsl</a></li><li><a href="/pyoq-sql/api/errors/">pyoq.errors</a></li><li><a href="/pyoq-sql/api/fastapi/">pyoq.fastapi</a></li><li><a href="/pyoq-sql/api/fetching/">pyoq.fetching</a></li><li><a href="/pyoq-sql/api/generation/">pyoq.generation</a></li><li><a href="/pyoq-sql/api/hydration/">pyoq.hydration</a></li><li><a href="/pyoq-sql/api/migrations/">pyoq.migrations</a></li><li><a href="/pyoq-sql/api/naming/">pyoq.naming</a></li><li><a href="/pyoq-sql/api/policies/">pyoq.policies</a></li><li><a href="/pyoq-sql/api/query/">pyoq.query</a></li><li><a href="/pyoq-sql/api/query-expressions/">pyoq.query expressions</a></li><li><a href="/pyoq-sql/api/query-functions/">pyoq.query functions</a></li><li><a href="/pyoq-sql/api/query-execution/">pyoq.query.execution</a></li><li><a href="/pyoq-sql/api/query-mysql/">pyoq.query.mysql</a></li><li><a href="/pyoq-sql/api/query-postgres/">pyoq.query.postgres</a></li><li><a href="/pyoq-sql/api/query-sqlite/">pyoq.query.sqlite</a></li><li><a href="/pyoq-sql/api/relations/">pyoq.relations</a></li><li><a href="/pyoq-sql/api/runtime/">pyoq.runtime</a></li><li><a href="/pyoq-sql/api/sanic/">pyoq.sanic</a></li><li><a href="/pyoq-sql/api/schema/">pyoq.schema</a></li><li><a href="/pyoq-sql/api/schema-dialects/">pyoq.schema dialects</a></li><li><a href="/pyoq-sql/api/serving/">pyoq.serving</a></li><li><a href="/pyoq-sql/api/snapshots/">pyoq.snapshots</a></li><li><a href="/pyoq-sql/api/tracing/">pyoq.tracing</a></li></ul></details></div></nav><script type="module">var e=`pyoq-sidebar`;function t(){try{return JSON.parse(sessionStorage.getItem(e)??`{}`)}catch{return{}}}function n(t){try{sessionStorage.setItem(e,JSON.stringify(t))}catch{}}var r=document.querySelector(`.side`),i=[...document.querySelectorAll(`.side-group`)],a=t();for(let e of i){let t=e.dataset.group;t&&(t in a&&(e.open=a[t]),e.addEventListener(`toggle`,()=>{a[t]=e.open,n(a)}))}function o(){if(!r||r.scrollHeight<=r.clientHeight)return;let e=r.querySelector(`a.active`);if(!e)return;let t=r.getBoundingClientRect(),n=e.getBoundingClientRect();n.top>=t.top&&n.bottom<=t.bottom||(r.scrollTop+=n.top-t.top-r.clientHeight/2+n.height/2)}requestAnimationFrame(o);</script><main id="content" data-pagefind-body><p class="crumb" data-pagefind-meta="group:Running statements">Running statements</p><article><h1>MySQL without a framework</h1><p class="lede" data-pagefind-ignore>A larger Python application with generated types and one process-owned pool.</p><p>This guide builds a multi-module Python application without Django, FastAPI,
+Sanic, or another framework. The application owns one MySQL pool for the life
+of its process. Each operation borrows a connection, and each transaction keeps
+one connection until its block exits.</p>
+<h2 id="the-ownership-model">The ownership model</h2>
+<figure class="diagram-shell" data-ready=""><div class="diagram-toolbar" aria-label="Diagram controls"><button type="button" data-diagram-action="in" aria-label="Zoom in" title="Zoom in"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="4.5" fill="none" stroke="currentColor" stroke-width="1.2"></circle><path d="M10.5 10.5 14 14M7 5v4M5 7h4" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"></path></svg></button><button type="button" data-diagram-action="out" aria-label="Zoom out" title="Zoom out"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="4.5" fill="none" stroke="currentColor" stroke-width="1.2"></circle><path d="M10.5 10.5 14 14M5 7h4" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"></path></svg></button><button type="button" data-diagram-action="reset" aria-label="Reset" title="Reset"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 7a4.5 4.5 0 1 1 1.2 3.1M3.5 7V3.8M3.5 7h3.1" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"></path></svg></button><button type="button" data-diagram-action="full" aria-label="Open" title="Open"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 6.5V3h3.5M10 3h3v3.5M13 10v3h-3.5M6.5 13H3v-3.5" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"></path></svg></button></div><div class="mermaid-canvas" role="img" aria-label="Diagram"><div class="diagram-viewport"><div class="diagram-transform"><svg data-renderer="beautiful-mermaid" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1594.8580000000002 181.8" width="1594.8580000000002" style="--bg:#FFFFFF;--fg:#27272A;--bg:var(--paper);--fg:var(--ink);--line:var(--ink-faint);--accent:var(--diagram-accent);--muted:var(--ink-soft);--surface:var(--paper-sunk);--border:var(--ink-faint);height:auto;max-width:100%">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+  text { font-family: 'Inter', system-ui, sans-serif; }
+  svg {
+    /* Derived from --bg and --fg (overridable via --line, --accent, etc.) */
+    --_text:          var(--fg);
+    --_text-sec:      var(--muted, color-mix(in srgb, var(--fg) 60%, var(--bg)));
+    --_text-muted:    var(--muted, color-mix(in srgb, var(--fg) 40%, var(--bg)));
+    --_text-faint:    color-mix(in srgb, var(--fg) 25%, var(--bg));
+    --_line:          var(--line, color-mix(in srgb, var(--fg) 50%, var(--bg)));
+    --_arrow:         var(--accent, color-mix(in srgb, var(--fg) 85%, var(--bg)));
+    --_node-fill:     var(--surface, color-mix(in srgb, var(--fg) 3%, var(--bg)));
+    --_node-stroke:   var(--border, color-mix(in srgb, var(--fg) 20%, var(--bg)));
+    --_group-fill:    var(--bg);
+    --_group-hdr:     color-mix(in srgb, var(--fg) 5%, var(--bg));
+    --_inner-stroke:  color-mix(in srgb, var(--fg) 12%, var(--bg));
+    --_key-badge:     color-mix(in srgb, var(--fg) 10%, var(--bg));
+  }
+</style>
+<defs>
+  <marker id="arrowhead" markerWidth="8" markerHeight="5" refX="7" refY="2.5" orient="auto">
+    <polygon points="0 0, 8 2.5, 0 5" fill="var(--_arrow)" stroke="var(--_arrow)" stroke-width="0.75" stroke-linejoin="round"></polygon>
+  </marker>
+  <marker id="arrowhead-start" markerWidth="8" markerHeight="5" refX="1" refY="2.5" orient="auto-start-reverse">
+    <polygon points="8 0, 0 2.5, 8 5" fill="var(--_arrow)" stroke="var(--_arrow)" stroke-width="0.75" stroke-linejoin="round"></polygon>
+  </marker>
+</defs>
+<polyline class="edge" data-from="entry" data-to="lifecycle" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="197.54600000000002,90.9 221.54600000000002,90.9 221.54600000000002,90.9 445.90500000000003,90.9" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)"></polyline>
+<polyline class="edge" data-from="lifecycle" data-to="pool" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="603.451,90.9 627.451,90.9 627.451,58.45 651.4510000000002,58.45" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)"></polyline>
+<polyline class="edge" data-from="pool" data-to="executor" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="766.0190000000002,58.45 814.0190000000002,58.45" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)"></polyline>
+<polyline class="edge" data-from="executor" data-to="service" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="956.7450000000003,58.45 1004.7450000000003,58.45" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)"></polyline>
+<polyline class="edge" data-from="service" data-to="repository" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="1160.0680000000004,58.45 1184.0680000000002,58.45 1184.0680000000002,58.45 1409.909,58.45" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)"></polyline>
+<polyline class="edge" data-from="service" data-to="transaction" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="1160.0680000000004,58.45 1184.0680000000002,58.45 1184.0680000000002,73.17500000000001 1208.0680000000002,73.17500000000001" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)"></polyline>
+<polyline class="edge" data-from="transaction" data-to="repository" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="1361.909,73.17500000000001 1397.909,73.17500000000001 1397.909,64.60000000000001 1409.909,64.60000000000001" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)"></polyline>
+<polyline class="edge" data-from="entry" data-to="shutdown" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="197.54600000000002,90.9 221.54600000000002,90.9 221.54600000000002,105.62500000000001 245.54600000000002,105.62500000000001" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)"></polyline>
+<polyline class="edge" data-from="shutdown" data-to="lifecycle" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="397.90500000000003,105.625 433.90500000000003,105.625 433.90500000000003,97.05000000000001 445.90500000000003,97.05000000000001" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)"></polyline>
+<polyline class="edge" data-from="lifecycle" data-to="closed" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="603.451,90.9 627.451,90.9 627.451,123.35000000000001 651.451,123.35000000000001" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)"></polyline>
+<g class="node" data-id="entry" data-label="Process entry point" data-shape="rectangle">
+  <rect x="40" y="72.45" width="157.54600000000002" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75"></rect>
+  <text x="118.77300000000001" y="90.9" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Process entry point</text>
+</g>
+<g class="node" data-id="lifecycle" data-label="Connect from profile" data-shape="rectangle">
+  <rect x="445.90500000000003" y="72.45" width="157.54600000000002" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75"></rect>
+  <text x="524.678" y="90.9" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Connect from profile</text>
+</g>
+<g class="node" data-id="pool" data-label="MySQL pool" data-shape="rectangle">
+  <rect x="651.4510000000002" y="40" width="114.568" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75"></rect>
+  <text x="708.7350000000002" y="58.45" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">MySQL pool</text>
+</g>
+<g class="node" data-id="executor" data-label="MySQL executor" data-shape="rectangle">
+  <rect x="814.0190000000002" y="40" width="142.726" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75"></rect>
+  <text x="885.3820000000003" y="58.45" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">MySQL executor</text>
+</g>
+<g class="node" data-id="service" data-label="Application service" data-shape="rectangle">
+  <rect x="1004.7450000000003" y="40" width="155.323" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75"></rect>
+  <text x="1082.4065000000003" y="58.45" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Application service</text>
+</g>
+<g class="node" data-id="repository" data-label="Typed repository" data-shape="rectangle">
+  <rect x="1409.909" y="40" width="144.949" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75"></rect>
+  <text x="1482.3835000000001" y="58.45" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Typed repository</text>
+</g>
+<g class="node" data-id="transaction" data-label="Transaction scope" data-shape="rectangle">
+  <rect x="1208.0680000000002" y="54.72500000000001" width="153.841" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75"></rect>
+  <text x="1284.9885000000002" y="73.17500000000001" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Transaction scope</text>
+</g>
+<g class="node" data-id="shutdown" data-label="Process shutdown" data-shape="rectangle">
+  <rect x="245.54600000000002" y="87.17500000000001" width="152.359" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75"></rect>
+  <text x="321.7255" y="105.62500000000001" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Process shutdown</text>
+</g>
+<g class="node" data-id="closed" data-label="Close pool" data-shape="rectangle">
+  <rect x="651.451" y="104.9" width="103.453" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75"></rect>
+  <text x="703.1775" y="123.35000000000001" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Close pool</text>
+</g>
+</svg></div></div></div></figure>
+<p>The entry point is the composition root. It creates infrastructure, passes
+dependencies inward, and closes infrastructure after application work stops.
+Nothing opens a connection while modules are imported.</p>
+<h2 id="install-the-project">Install the project</h2>
+<div class="code-shell" data-lang="bash" data-terminal=""><div class="code-head"><span class="code-lang">Terminal</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Terminal code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#795E26;--shiki-dark:#DCDCAA">uv</span><span style="color:#A31515;--shiki-dark:#CE9178"> add</span><span style="color:#A31515;--shiki-dark:#CE9178"> "pyoq-sql[mysql]"</span></span>
+<span class="line"><span style="color:#795E26;--shiki-dark:#DCDCAA">uv</span><span style="color:#A31515;--shiki-dark:#CE9178"> add</span><span style="color:#0000FF;--shiki-dark:#569CD6"> --dev</span><span style="color:#A31515;--shiki-dark:#CE9178"> ruff</span><span style="color:#A31515;--shiki-dark:#CE9178"> mypy</span><span style="color:#A31515;--shiki-dark:#CE9178"> pyright</span><span style="color:#A31515;--shiki-dark:#CE9178"> pytest</span></span></code></pre>
+<div class="monaco-host"></div></div>
+<p>The MySQL extra installs PyMySQL. A machine running the application needs the
+wheel and driver, but it does not need Rust.</p>
+<h2 id="organise-the-modules">Organise the modules</h2>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Path</th><th>Responsibility</th></tr></thead><tbody><tr><td><code>pyproject.toml</code></td><td>package metadata, generation destination, and schema profile</td></tr><tr><td><code>src/application/repositories/accounts.py</code></td><td>account persistence statements</td></tr><tr><td><code>src/application/services/accounts.py</code></td><td>transaction boundary and application rules</td></tr><tr><td><code>src/application/main.py</code></td><td>process composition and shutdown</td></tr><tr><td><code>src/application/generated_database/</code></td><td>generated tables, rows, writes, relations, and routines</td></tr><tr><td><code>tests/integration/test_accounts.py</code></td><td>behavior against a real MySQL schema</td></tr></tbody></table>
+<p>The generated directory is entirely owned by PyOQ. Keep application code in
+the surrounding modules, never inside that directory.</p>
+<h2 id="configure-generation">Configure generation</h2>
+<div class="code-shell" data-lang="toml"><div class="code-head"><span class="code-lang">Configuration</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Configuration code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="toml"><code><span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">[project]</span></span>
+<span class="line"><span style="color:#001080;--shiki-dark:#9CDCFE">name</span><span style="color:#000000;--shiki-dark:#D4D4D4"> = </span><span style="color:#A31515;--shiki-dark:#CE9178">"account-service"</span></span>
+<span class="line"><span style="color:#001080;--shiki-dark:#9CDCFE">version</span><span style="color:#000000;--shiki-dark:#D4D4D4"> = </span><span style="color:#A31515;--shiki-dark:#CE9178">"1.0.0"</span></span>
+<span class="line"><span style="color:#001080;--shiki-dark:#9CDCFE">requires-python</span><span style="color:#000000;--shiki-dark:#D4D4D4"> = </span><span style="color:#A31515;--shiki-dark:#CE9178">">=3.11"</span></span>
+<span class="line"><span style="color:#001080;--shiki-dark:#9CDCFE">dependencies</span><span style="color:#000000;--shiki-dark:#D4D4D4"> = [</span></span>
+<span class="line"><span style="color:#A31515;--shiki-dark:#CE9178">    "pyoq-sql[mysql]>=1.0.0"</span><span style="color:#000000;--shiki-dark:#D4D4D4">,</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">]</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">[project.scripts]</span></span>
+<span class="line"><span style="color:#001080;--shiki-dark:#9CDCFE">account-service</span><span style="color:#000000;--shiki-dark:#D4D4D4"> = </span><span style="color:#A31515;--shiki-dark:#CE9178">"application.main:main"</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">[tool.pyoq]</span></span>
+<span class="line"><span style="color:#001080;--shiki-dark:#9CDCFE">codegen-directory</span><span style="color:#000000;--shiki-dark:#D4D4D4"> = </span><span style="color:#A31515;--shiki-dark:#CE9178">"src/application/generated_database"</span></span>
+<span class="line"><span style="color:#001080;--shiki-dark:#9CDCFE">codegen-package</span><span style="color:#000000;--shiki-dark:#D4D4D4"> = </span><span style="color:#A31515;--shiki-dark:#CE9178">"application.generated_database"</span></span>
+<span class="line"><span style="color:#001080;--shiki-dark:#9CDCFE">selected-profile</span><span style="color:#000000;--shiki-dark:#D4D4D4"> = </span><span style="color:#A31515;--shiki-dark:#CE9178">"default"</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">[tool.pyoq.profiles.default]</span></span>
+<span class="line"><span style="color:#001080;--shiki-dark:#9CDCFE">dialect</span><span style="color:#000000;--shiki-dark:#D4D4D4"> = </span><span style="color:#A31515;--shiki-dark:#CE9178">"mysql"</span></span>
+<span class="line"><span style="color:#001080;--shiki-dark:#9CDCFE">host</span><span style="color:#000000;--shiki-dark:#D4D4D4"> = </span><span style="color:#A31515;--shiki-dark:#CE9178">"127.0.0.1"</span></span>
+<span class="line"><span style="color:#001080;--shiki-dark:#9CDCFE">port</span><span style="color:#000000;--shiki-dark:#D4D4D4"> = </span><span style="color:#098658;--shiki-dark:#B5CEA8">3306</span></span>
+<span class="line"><span style="color:#001080;--shiki-dark:#9CDCFE">database</span><span style="color:#000000;--shiki-dark:#D4D4D4"> = </span><span style="color:#A31515;--shiki-dark:#CE9178">"${MYSQL_DATABASE}"</span></span>
+<span class="line"><span style="color:#001080;--shiki-dark:#9CDCFE">username</span><span style="color:#000000;--shiki-dark:#D4D4D4"> = </span><span style="color:#A31515;--shiki-dark:#CE9178">"${MYSQL_USERNAME}"</span></span>
+<span class="line"><span style="color:#001080;--shiki-dark:#9CDCFE">password</span><span style="color:#000000;--shiki-dark:#D4D4D4"> = </span><span style="color:#A31515;--shiki-dark:#CE9178">"${MYSQL_PASSWORD}"</span></span>
+<span class="line"><span style="color:#001080;--shiki-dark:#9CDCFE">minimum-pool-size</span><span style="color:#000000;--shiki-dark:#D4D4D4"> = </span><span style="color:#098658;--shiki-dark:#B5CEA8">1</span></span>
+<span class="line"><span style="color:#001080;--shiki-dark:#9CDCFE">maximum-pool-size</span><span style="color:#000000;--shiki-dark:#D4D4D4"> = </span><span style="color:#098658;--shiki-dark:#B5CEA8">10</span></span>
+<span class="line"><span style="color:#001080;--shiki-dark:#9CDCFE">pool-checkout-timeout</span><span style="color:#000000;--shiki-dark:#D4D4D4"> = </span><span style="color:#098658;--shiki-dark:#B5CEA8">3.0</span></span></code></pre>
+<div class="monaco-host"></div></div>
+<p>Export the secret values before generation or application startup:</p>
+<div class="code-shell" data-lang="bash" data-terminal=""><div class="code-head"><span class="code-lang">Terminal</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Terminal code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#0000FF;--shiki-dark:#569CD6">export</span><span style="color:#001080;--shiki-dark:#9CDCFE"> MYSQL_DATABASE</span><span style="color:#000000;--shiki-dark:#D4D4D4">=</span><span style="color:#A31515;--shiki-dark:#CE9178">"application"</span></span>
+<span class="line"><span style="color:#0000FF;--shiki-dark:#569CD6">export</span><span style="color:#001080;--shiki-dark:#9CDCFE"> MYSQL_USERNAME</span><span style="color:#000000;--shiki-dark:#D4D4D4">=</span><span style="color:#A31515;--shiki-dark:#CE9178">"application_user"</span></span>
+<span class="line"><span style="color:#0000FF;--shiki-dark:#569CD6">export</span><span style="color:#001080;--shiki-dark:#9CDCFE"> MYSQL_PASSWORD</span><span style="color:#000000;--shiki-dark:#D4D4D4">=</span><span style="color:#A31515;--shiki-dark:#CE9178">"replace-with-a-secret"</span></span></code></pre>
+<div class="monaco-host"></div></div>
+<p>PyOQ percent-encodes credentials when it constructs the internal data source
+name. A setting in the exact <code>${VARIABLE_NAME}</code> form comes from the process
+environment; any other string is literal. MySQL data source names
+do not accept query or fragment options. Pool behavior belongs in the profile,
+not in URL parameters.</p>
+<p>Apply schema changes with the migration tool that owns your schema, then
+generate the package:</p>
+<div class="code-shell" data-lang="bash" data-terminal=""><div class="code-head"><span class="code-lang">Terminal</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Terminal code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#795E26;--shiki-dark:#DCDCAA">uv</span><span style="color:#A31515;--shiki-dark:#CE9178"> run</span><span style="color:#A31515;--shiki-dark:#CE9178"> pyoq</span><span style="color:#A31515;--shiki-dark:#CE9178"> generate</span><span style="color:#0000FF;--shiki-dark:#569CD6"> --project-root</span><span style="color:#A31515;--shiki-dark:#CE9178"> .</span></span>
+<span class="line"><span style="color:#795E26;--shiki-dark:#DCDCAA">uv</span><span style="color:#A31515;--shiki-dark:#CE9178"> run</span><span style="color:#A31515;--shiki-dark:#CE9178"> pyoq</span><span style="color:#A31515;--shiki-dark:#CE9178"> generate</span><span style="color:#0000FF;--shiki-dark:#569CD6"> --project-root</span><span style="color:#A31515;--shiki-dark:#CE9178"> .</span><span style="color:#0000FF;--shiki-dark:#569CD6"> --check</span></span></code></pre>
+<div class="monaco-host"></div></div>
+<p>Use <code>--check</code> in CI. It reports generated drift without rewriting files. A
+recorded schema snapshot can make the check independent of database access.</p>
+<p>The remaining examples assume the schema generated an <code>ACCOUNTS</code> table
+descriptor and an <code>AccountsRow</code> value with these columns:</p>
+<div class="code-shell" data-lang="sql"><div class="code-head"><span class="code-lang">SQL</span><button class="code-copy" type="button" data-copy="" aria-label="Copy SQL code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="sql"><code><span class="line"><span style="color:#0000FF;--shiki-dark:#569CD6">CREATE</span><span style="color:#0000FF;--shiki-dark:#569CD6"> TABLE</span><span style="color:#795E26;--shiki-dark:#DCDCAA"> accounts</span><span style="color:#000000;--shiki-dark:#D4D4D4"> (</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">    id </span><span style="color:#0000FF;--shiki-dark:#569CD6">BIGINT</span><span style="color:#0000FF;--shiki-dark:#569CD6"> NOT NULL</span><span style="color:#000000;--shiki-dark:#D4D4D4"> AUTO_INCREMENT </span><span style="color:#0000FF;--shiki-dark:#569CD6">PRIMARY KEY</span><span style="color:#000000;--shiki-dark:#D4D4D4">,</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">    email </span><span style="color:#0000FF;--shiki-dark:#569CD6">VARCHAR</span><span style="color:#000000;--shiki-dark:#D4D4D4">(</span><span style="color:#098658;--shiki-dark:#B5CEA8">320</span><span style="color:#000000;--shiki-dark:#D4D4D4">) </span><span style="color:#0000FF;--shiki-dark:#569CD6">NOT NULL</span><span style="color:#0000FF;--shiki-dark:#569CD6"> UNIQUE</span><span style="color:#000000;--shiki-dark:#D4D4D4">,</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">    display_name </span><span style="color:#0000FF;--shiki-dark:#569CD6">VARCHAR</span><span style="color:#000000;--shiki-dark:#D4D4D4">(</span><span style="color:#098658;--shiki-dark:#B5CEA8">120</span><span style="color:#000000;--shiki-dark:#D4D4D4">) </span><span style="color:#0000FF;--shiki-dark:#569CD6">NOT NULL</span><span style="color:#000000;--shiki-dark:#D4D4D4">,</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">    active </span><span style="color:#0000FF;--shiki-dark:#569CD6">BOOLEAN</span><span style="color:#0000FF;--shiki-dark:#569CD6"> NOT NULL</span><span style="color:#0000FF;--shiki-dark:#569CD6"> DEFAULT</span><span style="color:#000000;--shiki-dark:#D4D4D4"> TRUE</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">);</span></span></code></pre>
+<div class="monaco-host"></div></div>
+<h2 id="keep-connection-behavior-in-the-profile">Keep connection behavior in the profile</h2>
+<p><code>connect()</code> resolves the profile fields and pool limits before opening the
+pool. Sensitive values stay redacted inside the configuration layer and are
+revealed only while constructing the connection. Do not log connection data.
+An explicit <code>pool_policy=PoolPolicy(...)</code> can replace the profile policy for a
+special process, but the ordinary application path needs no repeated settings.</p>
+<h2 id="own-the-pool-in-one-lifecycle">Own the pool in one lifecycle</h2>
+<div class="code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#AF00DB;--shiki-dark:#C586C0">from</span><span style="color:#000000;--shiki-dark:#D4D4D4"> pyoq </span><span style="color:#AF00DB;--shiki-dark:#C586C0">import</span><span style="color:#000000;--shiki-dark:#D4D4D4"> connect</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#AF00DB;--shiki-dark:#C586C0">from</span><span style="color:#000000;--shiki-dark:#D4D4D4"> application.generated_database.tables </span><span style="color:#AF00DB;--shiki-dark:#C586C0">import</span><span style="color:#000000;--shiki-dark:#D4D4D4"> ACCOUNTS</span></span>
+<span class="line"></span>
+<span class="line"></span>
+<span class="line"><span style="color:#AF00DB;--shiki-dark:#C586C0">with</span><span style="color:#000000;--shiki-dark:#D4D4D4"> connect(</span></span>
+<span class="line"><span style="color:#001080;--shiki-dark:#9CDCFE">    profile</span><span style="color:#000000;--shiki-dark:#D4D4D4">=</span><span style="color:#A31515;--shiki-dark:#CE9178">"default"</span><span style="color:#000000;--shiki-dark:#D4D4D4">,</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">) </span><span style="color:#AF00DB;--shiki-dark:#C586C0">as</span><span style="color:#000000;--shiki-dark:#D4D4D4"> database:</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">    rows = database.select_from(ACCOUNTS).limit(</span><span style="color:#098658;--shiki-dark:#B5CEA8">10</span><span style="color:#000000;--shiki-dark:#D4D4D4">).fetch_all()</span></span></code></pre>
+<div class="monaco-host"></div></div>
+<p>The context creates the configured MySQL pool, yields a typed <code>Database</code>, and
+closes the pool on every exit path. The database is safe to share across
+services in the same process because each operation borrows a connection. Do
+not enter <code>connect()</code> in every repository, job, or function.</p>
+<p><code>minimum_size</code> connections open with the pool. Additional connections open on
+demand up to <code>maximum_size</code>. Startup therefore proves at least one connection
+can be made. Set <code>minimum_size=0</code> only when lazy connection establishment is a
+deliberate choice.</p>
+<h3 id="connect-directly-when-there-is-no-project-profile">Connect directly when there is no project profile</h3>
+<p>An installed program may not ship its source <code>pyproject.toml</code>. Pass the data
+source and dialect explicitly in that case:</p>
+<div class="code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#AF00DB;--shiki-dark:#C586C0">from</span><span style="color:#000000;--shiki-dark:#D4D4D4"> pyoq </span><span style="color:#AF00DB;--shiki-dark:#C586C0">import</span><span style="color:#000000;--shiki-dark:#D4D4D4"> Dialect, connect</span></span>
+<span class="line"><span style="color:#AF00DB;--shiki-dark:#C586C0">from</span><span style="color:#000000;--shiki-dark:#D4D4D4"> pyoq.config </span><span style="color:#AF00DB;--shiki-dark:#C586C0">import</span><span style="color:#000000;--shiki-dark:#D4D4D4"> DataSourceName</span></span>
+<span class="line"><span style="color:#AF00DB;--shiki-dark:#C586C0">from</span><span style="color:#000000;--shiki-dark:#D4D4D4"> pyoq.query.execution </span><span style="color:#AF00DB;--shiki-dark:#C586C0">import</span><span style="color:#000000;--shiki-dark:#D4D4D4"> PoolPolicy</span></span>
+<span class="line"></span>
+<span class="line"></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">database_url = DataSourceName(</span><span style="color:#A31515;--shiki-dark:#CE9178">"$</span><span style="color:#0000FF;--shiki-dark:#569CD6">{MYSQL_DATABASE_URL}</span><span style="color:#A31515;--shiki-dark:#CE9178">"</span><span style="color:#000000;--shiki-dark:#D4D4D4">)</span></span>
+<span class="line"><span style="color:#AF00DB;--shiki-dark:#C586C0">with</span><span style="color:#000000;--shiki-dark:#D4D4D4"> connect(</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">    database_url,</span></span>
+<span class="line"><span style="color:#001080;--shiki-dark:#9CDCFE">    dialect</span><span style="color:#000000;--shiki-dark:#D4D4D4">=Dialect.MYSQL,</span></span>
+<span class="line"><span style="color:#001080;--shiki-dark:#9CDCFE">    pool_policy</span><span style="color:#000000;--shiki-dark:#D4D4D4">=PoolPolicy(</span><span style="color:#001080;--shiki-dark:#9CDCFE">maximum_size</span><span style="color:#000000;--shiki-dark:#D4D4D4">=</span><span style="color:#098658;--shiki-dark:#B5CEA8">10</span><span style="color:#000000;--shiki-dark:#D4D4D4">),</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">) </span><span style="color:#AF00DB;--shiki-dark:#C586C0">as</span><span style="color:#000000;--shiki-dark:#D4D4D4"> database:</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">    run_application(database)</span></span></code></pre>
+<div class="monaco-host"></div></div>
+<p>Profile arguments and a direct data source cannot be combined. This keeps one
+authoritative connection source for each lifecycle.</p>
+<h2 id="make-repositories-transaction-compatible">Make repositories transaction-compatible</h2>
+<p>A repository needs query operations, not ownership of the pool. The same
+repository can therefore use the process executor for an independent statement
+or the operations yielded by a transaction.</p>
+<p><code>src/application/repositories/accounts.py</code>:</p>
+<div class="code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#AF00DB;--shiki-dark:#C586C0">from</span><span style="color:#000000;--shiki-dark:#D4D4D4"> pyoq.dsl </span><span style="color:#AF00DB;--shiki-dark:#C586C0">import</span><span style="color:#000000;--shiki-dark:#D4D4D4"> using</span></span>
+<span class="line"><span style="color:#AF00DB;--shiki-dark:#C586C0">from</span><span style="color:#000000;--shiki-dark:#D4D4D4"> pyoq.query </span><span style="color:#AF00DB;--shiki-dark:#C586C0">import</span><span style="color:#000000;--shiki-dark:#D4D4D4"> insert_into</span></span>
+<span class="line"><span style="color:#AF00DB;--shiki-dark:#C586C0">from</span><span style="color:#000000;--shiki-dark:#D4D4D4"> pyoq.query.execution </span><span style="color:#AF00DB;--shiki-dark:#C586C0">import</span><span style="color:#000000;--shiki-dark:#D4D4D4"> QueryOperations</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#AF00DB;--shiki-dark:#C586C0">from</span><span style="color:#000000;--shiki-dark:#D4D4D4"> application.generated_database.rows </span><span style="color:#AF00DB;--shiki-dark:#C586C0">import</span><span style="color:#000000;--shiki-dark:#D4D4D4"> AccountsRow</span></span>
+<span class="line"><span style="color:#AF00DB;--shiki-dark:#C586C0">from</span><span style="color:#000000;--shiki-dark:#D4D4D4"> application.generated_database.tables </span><span style="color:#AF00DB;--shiki-dark:#C586C0">import</span><span style="color:#000000;--shiki-dark:#D4D4D4"> ACCOUNTS</span></span>
+<span class="line"></span>
+<span class="line"></span>
+<span class="line"><span style="color:#0000FF;--shiki-dark:#569CD6">class</span><span style="color:#267F99;--shiki-dark:#4EC9B0"> AccountRepository</span><span style="color:#000000;--shiki-dark:#D4D4D4">:</span></span>
+<span class="line"><span style="color:#001080;--shiki-dark:#9CDCFE">    __slots__</span><span style="color:#000000;--shiki-dark:#D4D4D4"> = (</span><span style="color:#A31515;--shiki-dark:#CE9178">"_operations"</span><span style="color:#000000;--shiki-dark:#D4D4D4">,)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#0000FF;--shiki-dark:#569CD6">    def</span><span style="color:#795E26;--shiki-dark:#DCDCAA"> __init__</span><span style="color:#000000;--shiki-dark:#D4D4D4">(</span><span style="color:#001080;--shiki-dark:#9CDCFE">self</span><span style="color:#000000;--shiki-dark:#D4D4D4">, </span><span style="color:#001080;--shiki-dark:#9CDCFE">operations</span><span style="color:#000000;--shiki-dark:#D4D4D4">: QueryOperations) -> </span><span style="color:#0000FF;--shiki-dark:#569CD6">None</span><span style="color:#000000;--shiki-dark:#D4D4D4">:</span></span>
+<span class="line"><span style="color:#0000FF;--shiki-dark:#569CD6">        self</span><span style="color:#000000;--shiki-dark:#D4D4D4">._operations = operations</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#0000FF;--shiki-dark:#569CD6">    def</span><span style="color:#795E26;--shiki-dark:#DCDCAA"> find_by_id</span><span style="color:#000000;--shiki-dark:#D4D4D4">(</span><span style="color:#001080;--shiki-dark:#9CDCFE">self</span><span style="color:#000000;--shiki-dark:#D4D4D4">, </span><span style="color:#001080;--shiki-dark:#9CDCFE">account_id</span><span style="color:#000000;--shiki-dark:#D4D4D4">: </span><span style="color:#267F99;--shiki-dark:#4EC9B0">int</span><span style="color:#000000;--shiki-dark:#D4D4D4">) -> AccountsRow | </span><span style="color:#0000FF;--shiki-dark:#569CD6">None</span><span style="color:#000000;--shiki-dark:#D4D4D4">:</span></span>
+<span class="line"><span style="color:#AF00DB;--shiki-dark:#C586C0">        return</span><span style="color:#000000;--shiki-dark:#D4D4D4"> (</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">            using(</span><span style="color:#0000FF;--shiki-dark:#569CD6">self</span><span style="color:#000000;--shiki-dark:#D4D4D4">._operations)</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">            .select_from(ACCOUNTS)</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">            .where(ACCOUNTS.ID.eq(account_id))</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">            .fetch_optional_into(AccountsRow)</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">        )</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#0000FF;--shiki-dark:#569CD6">    def</span><span style="color:#795E26;--shiki-dark:#DCDCAA"> create</span><span style="color:#000000;--shiki-dark:#D4D4D4">(</span><span style="color:#001080;--shiki-dark:#9CDCFE">self</span><span style="color:#000000;--shiki-dark:#D4D4D4">, </span><span style="color:#001080;--shiki-dark:#9CDCFE">email</span><span style="color:#000000;--shiki-dark:#D4D4D4">: </span><span style="color:#267F99;--shiki-dark:#4EC9B0">str</span><span style="color:#000000;--shiki-dark:#D4D4D4">, </span><span style="color:#001080;--shiki-dark:#9CDCFE">display_name</span><span style="color:#000000;--shiki-dark:#D4D4D4">: </span><span style="color:#267F99;--shiki-dark:#4EC9B0">str</span><span style="color:#000000;--shiki-dark:#D4D4D4">) -> </span><span style="color:#267F99;--shiki-dark:#4EC9B0">int</span><span style="color:#000000;--shiki-dark:#D4D4D4">:</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">        statement = insert_into(</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">            ACCOUNTS,</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">            ACCOUNTS.EMAIL,</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">            ACCOUNTS.DISPLAY_NAME,</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">        ).values(email, display_name)</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">        result = </span><span style="color:#0000FF;--shiki-dark:#569CD6">self</span><span style="color:#000000;--shiki-dark:#D4D4D4">._operations.execute(statement)</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">        account_id = result.last_inserted_id</span></span>
+<span class="line"><span style="color:#AF00DB;--shiki-dark:#C586C0">        if</span><span style="color:#0000FF;--shiki-dark:#569CD6"> not</span><span style="color:#795E26;--shiki-dark:#DCDCAA"> isinstance</span><span style="color:#000000;--shiki-dark:#D4D4D4">(account_id, </span><span style="color:#267F99;--shiki-dark:#4EC9B0">int</span><span style="color:#000000;--shiki-dark:#D4D4D4">):</span></span>
+<span class="line"><span style="color:#AF00DB;--shiki-dark:#C586C0">            raise</span><span style="color:#267F99;--shiki-dark:#4EC9B0"> RuntimeError</span><span style="color:#000000;--shiki-dark:#D4D4D4">(</span><span style="color:#A31515;--shiki-dark:#CE9178">"MySQL did not return an account identifier"</span><span style="color:#000000;--shiki-dark:#D4D4D4">)</span></span>
+<span class="line"><span style="color:#AF00DB;--shiki-dark:#C586C0">        return</span><span style="color:#000000;--shiki-dark:#D4D4D4"> account_id</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#0000FF;--shiki-dark:#569CD6">    def</span><span style="color:#795E26;--shiki-dark:#DCDCAA"> rename</span><span style="color:#000000;--shiki-dark:#D4D4D4">(</span><span style="color:#001080;--shiki-dark:#9CDCFE">self</span><span style="color:#000000;--shiki-dark:#D4D4D4">, </span><span style="color:#001080;--shiki-dark:#9CDCFE">account_id</span><span style="color:#000000;--shiki-dark:#D4D4D4">: </span><span style="color:#267F99;--shiki-dark:#4EC9B0">int</span><span style="color:#000000;--shiki-dark:#D4D4D4">, </span><span style="color:#001080;--shiki-dark:#9CDCFE">display_name</span><span style="color:#000000;--shiki-dark:#D4D4D4">: </span><span style="color:#267F99;--shiki-dark:#4EC9B0">str</span><span style="color:#000000;--shiki-dark:#D4D4D4">) -> </span><span style="color:#267F99;--shiki-dark:#4EC9B0">int</span><span style="color:#000000;--shiki-dark:#D4D4D4">:</span></span>
+<span class="line"><span style="color:#AF00DB;--shiki-dark:#C586C0">        return</span><span style="color:#000000;--shiki-dark:#D4D4D4"> (</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">            using(</span><span style="color:#0000FF;--shiki-dark:#569CD6">self</span><span style="color:#000000;--shiki-dark:#D4D4D4">._operations)</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">            .update(ACCOUNTS)</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">            .set(ACCOUNTS.DISPLAY_NAME, display_name)</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">            .where(ACCOUNTS.ID.eq(account_id))</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">            .execute()</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">        )</span></span></code></pre>
+<div class="monaco-host"></div></div>
+<p>MySQL does not support <code>INSERT ... RETURNING</code>. Read the generated identifier
+from <code>ExecuteResult.last_inserted_id</code>, then issue a separate select if the
+complete row is required. Do both in one transaction when they must observe
+one unit of work.</p>
+<h2 id="put-transactions-in-the-service-layer">Put transactions in the service layer</h2>
+<p>The service decides which statements must commit or roll back together. The
+repository only describes and executes persistence operations.</p>
+<p><code>src/application/services/accounts.py</code>:</p>
+<div class="code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#AF00DB;--shiki-dark:#C586C0">from</span><span style="color:#000000;--shiki-dark:#D4D4D4"> pyoq </span><span style="color:#AF00DB;--shiki-dark:#C586C0">import</span><span style="color:#000000;--shiki-dark:#D4D4D4"> Database</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#AF00DB;--shiki-dark:#C586C0">from</span><span style="color:#000000;--shiki-dark:#D4D4D4"> application.generated_database.rows </span><span style="color:#AF00DB;--shiki-dark:#C586C0">import</span><span style="color:#000000;--shiki-dark:#D4D4D4"> AccountsRow</span></span>
+<span class="line"><span style="color:#AF00DB;--shiki-dark:#C586C0">from</span><span style="color:#000000;--shiki-dark:#D4D4D4"> application.repositories.accounts </span><span style="color:#AF00DB;--shiki-dark:#C586C0">import</span><span style="color:#000000;--shiki-dark:#D4D4D4"> AccountRepository</span></span>
+<span class="line"></span>
+<span class="line"></span>
+<span class="line"><span style="color:#0000FF;--shiki-dark:#569CD6">class</span><span style="color:#267F99;--shiki-dark:#4EC9B0"> AccountService</span><span style="color:#000000;--shiki-dark:#D4D4D4">:</span></span>
+<span class="line"><span style="color:#001080;--shiki-dark:#9CDCFE">    __slots__</span><span style="color:#000000;--shiki-dark:#D4D4D4"> = (</span><span style="color:#A31515;--shiki-dark:#CE9178">"_database"</span><span style="color:#000000;--shiki-dark:#D4D4D4">,)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#0000FF;--shiki-dark:#569CD6">    def</span><span style="color:#795E26;--shiki-dark:#DCDCAA"> __init__</span><span style="color:#000000;--shiki-dark:#D4D4D4">(</span><span style="color:#001080;--shiki-dark:#9CDCFE">self</span><span style="color:#000000;--shiki-dark:#D4D4D4">, </span><span style="color:#001080;--shiki-dark:#9CDCFE">database</span><span style="color:#000000;--shiki-dark:#D4D4D4">: Database) -> </span><span style="color:#0000FF;--shiki-dark:#569CD6">None</span><span style="color:#000000;--shiki-dark:#D4D4D4">:</span></span>
+<span class="line"><span style="color:#0000FF;--shiki-dark:#569CD6">        self</span><span style="color:#000000;--shiki-dark:#D4D4D4">._database = database</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#0000FF;--shiki-dark:#569CD6">    def</span><span style="color:#795E26;--shiki-dark:#DCDCAA"> register</span><span style="color:#000000;--shiki-dark:#D4D4D4">(</span><span style="color:#001080;--shiki-dark:#9CDCFE">self</span><span style="color:#000000;--shiki-dark:#D4D4D4">, </span><span style="color:#001080;--shiki-dark:#9CDCFE">email</span><span style="color:#000000;--shiki-dark:#D4D4D4">: </span><span style="color:#267F99;--shiki-dark:#4EC9B0">str</span><span style="color:#000000;--shiki-dark:#D4D4D4">, </span><span style="color:#001080;--shiki-dark:#9CDCFE">display_name</span><span style="color:#000000;--shiki-dark:#D4D4D4">: </span><span style="color:#267F99;--shiki-dark:#4EC9B0">str</span><span style="color:#000000;--shiki-dark:#D4D4D4">) -> AccountsRow:</span></span>
+<span class="line"><span style="color:#AF00DB;--shiki-dark:#C586C0">        with</span><span style="color:#0000FF;--shiki-dark:#569CD6"> self</span><span style="color:#000000;--shiki-dark:#D4D4D4">._database.transaction() </span><span style="color:#AF00DB;--shiki-dark:#C586C0">as</span><span style="color:#000000;--shiki-dark:#D4D4D4"> transaction:</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">            repository = AccountRepository(transaction)</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">            account_id = repository.create(email, display_name)</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">            account = repository.find_by_id(account_id)</span></span>
+<span class="line"><span style="color:#AF00DB;--shiki-dark:#C586C0">            if</span><span style="color:#000000;--shiki-dark:#D4D4D4"> account </span><span style="color:#0000FF;--shiki-dark:#569CD6">is</span><span style="color:#0000FF;--shiki-dark:#569CD6"> None</span><span style="color:#000000;--shiki-dark:#D4D4D4">:</span></span>
+<span class="line"><span style="color:#AF00DB;--shiki-dark:#C586C0">                raise</span><span style="color:#267F99;--shiki-dark:#4EC9B0"> RuntimeError</span><span style="color:#000000;--shiki-dark:#D4D4D4">(</span><span style="color:#A31515;--shiki-dark:#CE9178">"created account could not be read"</span><span style="color:#000000;--shiki-dark:#D4D4D4">)</span></span>
+<span class="line"><span style="color:#AF00DB;--shiki-dark:#C586C0">            return</span><span style="color:#000000;--shiki-dark:#D4D4D4"> account</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#0000FF;--shiki-dark:#569CD6">    def</span><span style="color:#795E26;--shiki-dark:#DCDCAA"> rename</span><span style="color:#000000;--shiki-dark:#D4D4D4">(</span><span style="color:#001080;--shiki-dark:#9CDCFE">self</span><span style="color:#000000;--shiki-dark:#D4D4D4">, </span><span style="color:#001080;--shiki-dark:#9CDCFE">account_id</span><span style="color:#000000;--shiki-dark:#D4D4D4">: </span><span style="color:#267F99;--shiki-dark:#4EC9B0">int</span><span style="color:#000000;--shiki-dark:#D4D4D4">, </span><span style="color:#001080;--shiki-dark:#9CDCFE">display_name</span><span style="color:#000000;--shiki-dark:#D4D4D4">: </span><span style="color:#267F99;--shiki-dark:#4EC9B0">str</span><span style="color:#000000;--shiki-dark:#D4D4D4">) -> AccountsRow:</span></span>
+<span class="line"><span style="color:#AF00DB;--shiki-dark:#C586C0">        with</span><span style="color:#0000FF;--shiki-dark:#569CD6"> self</span><span style="color:#000000;--shiki-dark:#D4D4D4">._database.transaction() </span><span style="color:#AF00DB;--shiki-dark:#C586C0">as</span><span style="color:#000000;--shiki-dark:#D4D4D4"> transaction:</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">            repository = AccountRepository(transaction)</span></span>
+<span class="line"><span style="color:#AF00DB;--shiki-dark:#C586C0">            if</span><span style="color:#000000;--shiki-dark:#D4D4D4"> repository.rename(account_id, display_name) != </span><span style="color:#098658;--shiki-dark:#B5CEA8">1</span><span style="color:#000000;--shiki-dark:#D4D4D4">:</span></span>
+<span class="line"><span style="color:#AF00DB;--shiki-dark:#C586C0">                raise</span><span style="color:#267F99;--shiki-dark:#4EC9B0"> LookupError</span><span style="color:#000000;--shiki-dark:#D4D4D4">(</span><span style="color:#0000FF;--shiki-dark:#569CD6">f</span><span style="color:#A31515;--shiki-dark:#CE9178">"account does not exist: </span><span style="color:#0000FF;--shiki-dark:#569CD6">{</span><span style="color:#000000;--shiki-dark:#D4D4D4">account_id</span><span style="color:#0000FF;--shiki-dark:#569CD6">}</span><span style="color:#A31515;--shiki-dark:#CE9178">"</span><span style="color:#000000;--shiki-dark:#D4D4D4">)</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">            account = repository.find_by_id(account_id)</span></span>
+<span class="line"><span style="color:#AF00DB;--shiki-dark:#C586C0">            if</span><span style="color:#000000;--shiki-dark:#D4D4D4"> account </span><span style="color:#0000FF;--shiki-dark:#569CD6">is</span><span style="color:#0000FF;--shiki-dark:#569CD6"> None</span><span style="color:#000000;--shiki-dark:#D4D4D4">:</span></span>
+<span class="line"><span style="color:#AF00DB;--shiki-dark:#C586C0">                raise</span><span style="color:#267F99;--shiki-dark:#4EC9B0"> RuntimeError</span><span style="color:#000000;--shiki-dark:#D4D4D4">(</span><span style="color:#A31515;--shiki-dark:#CE9178">"renamed account could not be read"</span><span style="color:#000000;--shiki-dark:#D4D4D4">)</span></span>
+<span class="line"><span style="color:#AF00DB;--shiki-dark:#C586C0">            return</span><span style="color:#000000;--shiki-dark:#D4D4D4"> account</span></span></code></pre>
+<div class="monaco-host"></div></div>
+<p>Always construct the repository with <code>transaction</code> inside the block. Calling
+the outer database there can borrow another connection, and that statement
+would not belong to the transaction.</p>
+<p>Leaving the block normally commits. An exception rolls it back. Nested
+transaction work uses <code>transaction.savepoint()</code> rather than checking out a
+second connection.</p>
+<h2 id="start-and-stop-the-application">Start and stop the application</h2>
+<p><code>src/application/main.py</code>:</p>
+<div class="code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#AF00DB;--shiki-dark:#C586C0">from</span><span style="color:#000000;--shiki-dark:#D4D4D4"> pyoq </span><span style="color:#AF00DB;--shiki-dark:#C586C0">import</span><span style="color:#000000;--shiki-dark:#D4D4D4"> connect</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#AF00DB;--shiki-dark:#C586C0">from</span><span style="color:#000000;--shiki-dark:#D4D4D4"> application.services.accounts </span><span style="color:#AF00DB;--shiki-dark:#C586C0">import</span><span style="color:#000000;--shiki-dark:#D4D4D4"> AccountService</span></span>
+<span class="line"></span>
+<span class="line"></span>
+<span class="line"><span style="color:#0000FF;--shiki-dark:#569CD6">def</span><span style="color:#795E26;--shiki-dark:#DCDCAA"> main</span><span style="color:#000000;--shiki-dark:#D4D4D4">() -> </span><span style="color:#0000FF;--shiki-dark:#569CD6">None</span><span style="color:#000000;--shiki-dark:#D4D4D4">:</span></span>
+<span class="line"><span style="color:#AF00DB;--shiki-dark:#C586C0">    with</span><span style="color:#000000;--shiki-dark:#D4D4D4"> connect(</span><span style="color:#001080;--shiki-dark:#9CDCFE">profile</span><span style="color:#000000;--shiki-dark:#D4D4D4">=</span><span style="color:#A31515;--shiki-dark:#CE9178">"default"</span><span style="color:#000000;--shiki-dark:#D4D4D4">) </span><span style="color:#AF00DB;--shiki-dark:#C586C0">as</span><span style="color:#000000;--shiki-dark:#D4D4D4"> database:</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">        accounts = AccountService(database)</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">        account = accounts.register(</span><span style="color:#A31515;--shiki-dark:#CE9178">"reader@example.test"</span><span style="color:#000000;--shiki-dark:#D4D4D4">, </span><span style="color:#A31515;--shiki-dark:#CE9178">"Example Reader"</span><span style="color:#000000;--shiki-dark:#D4D4D4">)</span></span>
+<span class="line"><span style="color:#795E26;--shiki-dark:#DCDCAA">        print</span><span style="color:#000000;--shiki-dark:#D4D4D4">(account.id, account.email)</span></span>
+<span class="line"></span>
+<span class="line"></span>
+<span class="line"><span style="color:#AF00DB;--shiki-dark:#C586C0">if</span><span style="color:#001080;--shiki-dark:#9CDCFE"> __name__</span><span style="color:#000000;--shiki-dark:#D4D4D4"> == </span><span style="color:#A31515;--shiki-dark:#CE9178">"__main__"</span><span style="color:#000000;--shiki-dark:#D4D4D4">:</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">    main()</span></span></code></pre>
+<div class="monaco-host"></div></div>
+<p>The context remains open for the complete application run. Normal completion,
+an exception, or <code>KeyboardInterrupt</code> all leave the context and close the pool.
+Closing is idempotent. Idle connections close immediately, while checked-out
+connections close when their lease returns.</p>
+<p>For a daemon or queue worker, keep the same outer lifecycle and make the stop
+signal end the work loop:</p>
+<div class="code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#AF00DB;--shiki-dark:#C586C0">from</span><span style="color:#000000;--shiki-dark:#D4D4D4"> threading </span><span style="color:#AF00DB;--shiki-dark:#C586C0">import</span><span style="color:#000000;--shiki-dark:#D4D4D4"> Event</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#AF00DB;--shiki-dark:#C586C0">from</span><span style="color:#000000;--shiki-dark:#D4D4D4"> pyoq </span><span style="color:#AF00DB;--shiki-dark:#C586C0">import</span><span style="color:#000000;--shiki-dark:#D4D4D4"> Database</span></span>
+<span class="line"></span>
+<span class="line"></span>
+<span class="line"><span style="color:#0000FF;--shiki-dark:#569CD6">def</span><span style="color:#795E26;--shiki-dark:#DCDCAA"> run_worker</span><span style="color:#000000;--shiki-dark:#D4D4D4">(</span><span style="color:#001080;--shiki-dark:#9CDCFE">database</span><span style="color:#000000;--shiki-dark:#D4D4D4">: Database, </span><span style="color:#001080;--shiki-dark:#9CDCFE">stopping</span><span style="color:#000000;--shiki-dark:#D4D4D4">: Event) -> </span><span style="color:#0000FF;--shiki-dark:#569CD6">None</span><span style="color:#000000;--shiki-dark:#D4D4D4">:</span></span>
+<span class="line"><span style="color:#AF00DB;--shiki-dark:#C586C0">    while</span><span style="color:#0000FF;--shiki-dark:#569CD6"> not</span><span style="color:#000000;--shiki-dark:#D4D4D4"> stopping.is_set():</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">        job = receive_next_job()</span></span>
+<span class="line"><span style="color:#AF00DB;--shiki-dark:#C586C0">        with</span><span style="color:#000000;--shiki-dark:#D4D4D4"> database.transaction() </span><span style="color:#AF00DB;--shiki-dark:#C586C0">as</span><span style="color:#000000;--shiki-dark:#D4D4D4"> transaction:</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">            process_job(job, transaction)</span></span></code></pre>
+<div class="monaco-host"></div></div>
+<p>Register signal handlers in the entry point. They should set <code>stopping</code>; the
+entry point then leaves <code>connect</code> after current work unwinds. Do not close
+the pool from a signal handler while another thread may be using it.</p>
+<h2 id="stream-large-reads">Stream large reads</h2>
+<p>A normal <code>fetch_all()</code> holds every decoded row. Use a stream when the result
+must stay bounded in memory:</p>
+<div class="code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#AF00DB;--shiki-dark:#C586C0">from</span><span style="color:#000000;--shiki-dark:#D4D4D4"> pyoq </span><span style="color:#AF00DB;--shiki-dark:#C586C0">import</span><span style="color:#000000;--shiki-dark:#D4D4D4"> Database</span></span>
+<span class="line"><span style="color:#AF00DB;--shiki-dark:#C586C0">from</span><span style="color:#000000;--shiki-dark:#D4D4D4"> pyoq.query </span><span style="color:#AF00DB;--shiki-dark:#C586C0">import</span><span style="color:#000000;--shiki-dark:#D4D4D4"> select</span></span>
+<span class="line"><span style="color:#AF00DB;--shiki-dark:#C586C0">from</span><span style="color:#000000;--shiki-dark:#D4D4D4"> pyoq.query.execution </span><span style="color:#AF00DB;--shiki-dark:#C586C0">import</span><span style="color:#000000;--shiki-dark:#D4D4D4"> StreamPolicy</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#AF00DB;--shiki-dark:#C586C0">from</span><span style="color:#000000;--shiki-dark:#D4D4D4"> application.generated_database.tables </span><span style="color:#AF00DB;--shiki-dark:#C586C0">import</span><span style="color:#000000;--shiki-dark:#D4D4D4"> ACCOUNTS</span></span>
+<span class="line"></span>
+<span class="line"></span>
+<span class="line"><span style="color:#0000FF;--shiki-dark:#569CD6">def</span><span style="color:#795E26;--shiki-dark:#DCDCAA"> export_accounts</span><span style="color:#000000;--shiki-dark:#D4D4D4">(</span><span style="color:#001080;--shiki-dark:#9CDCFE">database</span><span style="color:#000000;--shiki-dark:#D4D4D4">: Database) -> </span><span style="color:#0000FF;--shiki-dark:#569CD6">None</span><span style="color:#000000;--shiki-dark:#D4D4D4">:</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">    query = (</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">        select(ACCOUNTS.ID, ACCOUNTS.EMAIL)</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">        .from_(ACCOUNTS)</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">        .order_by(ACCOUNTS.ID)</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">    )</span></span>
+<span class="line"><span style="color:#AF00DB;--shiki-dark:#C586C0">    with</span><span style="color:#000000;--shiki-dark:#D4D4D4"> database.stream(query, </span><span style="color:#001080;--shiki-dark:#9CDCFE">policy</span><span style="color:#000000;--shiki-dark:#D4D4D4">=StreamPolicy(</span><span style="color:#001080;--shiki-dark:#9CDCFE">batch_size</span><span style="color:#000000;--shiki-dark:#D4D4D4">=</span><span style="color:#098658;--shiki-dark:#B5CEA8">500</span><span style="color:#000000;--shiki-dark:#D4D4D4">)) </span><span style="color:#AF00DB;--shiki-dark:#C586C0">as</span><span style="color:#000000;--shiki-dark:#D4D4D4"> rows:</span></span>
+<span class="line"><span style="color:#AF00DB;--shiki-dark:#C586C0">        for</span><span style="color:#000000;--shiki-dark:#D4D4D4"> account_id, email </span><span style="color:#AF00DB;--shiki-dark:#C586C0">in</span><span style="color:#000000;--shiki-dark:#D4D4D4"> rows:</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">            write_export_row(account_id, email)</span></span></code></pre>
+<div class="monaco-host"></div></div>
+<p>A stream owns one checked-out connection until its context exits. Do not leave
+the stream open while waiting on unrelated network work. Open a stream from the
+transaction object when its query must share that transaction.</p>
+<h2 id="observe-pool-pressure">Observe pool pressure</h2>
+<p><code>database.pool_stats</code> is a point-in-time value:</p>
+<div class="code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">statistics = database.pool_stats</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">metrics.gauge(</span><span style="color:#A31515;--shiki-dark:#CE9178">"database.connections.open"</span><span style="color:#000000;--shiki-dark:#D4D4D4">, statistics.open_connections)</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">metrics.gauge(</span><span style="color:#A31515;--shiki-dark:#CE9178">"database.connections.idle"</span><span style="color:#000000;--shiki-dark:#D4D4D4">, statistics.idle_connections)</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">metrics.gauge(</span><span style="color:#A31515;--shiki-dark:#CE9178">"database.connections.in_use"</span><span style="color:#000000;--shiki-dark:#D4D4D4">, statistics.checked_out_connections)</span></span></code></pre>
+<div class="monaco-host"></div></div>
+<p>Choose <code>maximum_size</code> from the server connection budget. A process owns one
+pool, so the upper bound is <code>processes * maximum_size</code>. Leave capacity for
+migrations, administration, and rolling replacement. Increasing the pool does
+not increase database capacity.</p>
+<p>When every connection is checked out, acquisition waits for
+<code>checkout_timeout</code>. <code>ConnectionPoolTimeoutError</code> means the pool remained
+saturated. Investigate long transactions, streams that did not close, slow
+queries, and pool sizing before adding an immediate retry.</p>
+<p>Broken connections are discarded. Returned MySQL connections are rolled back
+and have their statement timeout cleared before becoming idle again.</p>
+<h2 id="test-the-lifecycle-and-behavior">Test the lifecycle and behavior</h2>
+<p>Use unit tests for application rules, compiler tests for SQL shape, and
+integration tests against a real MySQL server for driver and transaction
+behavior. Do not replace the integration layer with SQLite because its locking,
+types, generated identifiers, and transaction behavior differ.</p>
+<div class="code-shell" data-lang="python"><div class="code-head"><span class="code-lang">Python</span><button class="code-copy" type="button" data-copy="" aria-label="Copy Python code"><svg class="i-copy" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.6" y="5.6" width="7.9" height="7.9" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"></rect><path d="M10.4 5.6V4.1A1.6 1.6 0 0 0 8.8 2.5H4.1A1.6 1.6 0 0 0 2.5 4.1v4.7a1.6 1.6 0 0 0 1.6 1.6h1.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path></svg><svg class="i-done" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span data-copy-label="">Copy</span></button></div>
+<pre class="astro-code astro-code-themes light-plus dark-plus" style="background-color:#FFFFFF;--shiki-dark-bg:#1E1E1E;color:#000000;--shiki-dark:#D4D4D4; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#AF00DB;--shiki-dark:#C586C0">from</span><span style="color:#000000;--shiki-dark:#D4D4D4"> application.repositories.accounts </span><span style="color:#AF00DB;--shiki-dark:#C586C0">import</span><span style="color:#000000;--shiki-dark:#D4D4D4"> AccountRepository</span></span>
+<span class="line"><span style="color:#AF00DB;--shiki-dark:#C586C0">from</span><span style="color:#000000;--shiki-dark:#D4D4D4"> application.services.accounts </span><span style="color:#AF00DB;--shiki-dark:#C586C0">import</span><span style="color:#000000;--shiki-dark:#D4D4D4"> AccountService</span></span>
+<span class="line"></span>
+<span class="line"></span>
+<span class="line"><span style="color:#0000FF;--shiki-dark:#569CD6">def</span><span style="color:#795E26;--shiki-dark:#DCDCAA"> test_registration_is_visible</span><span style="color:#000000;--shiki-dark:#D4D4D4">(</span><span style="color:#001080;--shiki-dark:#9CDCFE">mysql_database</span><span style="color:#000000;--shiki-dark:#D4D4D4">) -> </span><span style="color:#0000FF;--shiki-dark:#569CD6">None</span><span style="color:#000000;--shiki-dark:#D4D4D4">:</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">    service = AccountService(mysql_database)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">    created = service.register(</span><span style="color:#A31515;--shiki-dark:#CE9178">"owner@example.test"</span><span style="color:#000000;--shiki-dark:#D4D4D4">, </span><span style="color:#A31515;--shiki-dark:#CE9178">"Owner"</span><span style="color:#000000;--shiki-dark:#D4D4D4">)</span></span>
+<span class="line"><span style="color:#000000;--shiki-dark:#D4D4D4">    found = AccountRepository(mysql_database).find_by_id(created.id)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#AF00DB;--shiki-dark:#C586C0">    assert</span><span style="color:#000000;--shiki-dark:#D4D4D4"> found == created</span></span></code></pre>
+<div class="monaco-host"></div></div>
+<p>Give the test session its own schema or database. Apply migrations, regenerate
+types in check mode, open one pool for the test process, and roll back or clean
+test rows between cases. Test pool closure separately by asserting a checkout
+after the lifecycle exits raises <code>ConnectionPoolClosedError</code>.</p>
+<h2 id="production-checklist">Production checklist</h2>
+<ul>
+<li>Keep the DSN in a secret store or environment variable.</li>
+<li>Create one pool per process, after the process starts.</li>
+<li>Close that pool from the same composition root that created it.</li>
+<li>Give repositories <code>QueryOperations</code>, never a DSN or connection factory.</li>
+<li>Put transaction boundaries in application services.</li>
+<li>Use transaction-bound operations for every statement inside a transaction.</li>
+<li>Bound pool checkout and statement execution.</li>
+<li>Close streams promptly and monitor checked-out connections.</li>
+<li>Run generation checks after schema changes and in CI.</li>
+<li>Test MySQL-specific behavior against MySQL.</li>
+</ul>
+<p>For awaited MySQL execution, use the same ownership model with the asynchronous
+factory, pool, executor, and <code>AsyncDatabase</code>. See
+<a href="../async/">Asynchronous execution</a>. General sizing and cleanup behavior is in
+<a href="../connections/">Connections and pools</a>, and schema snapshots are covered in
+<a href="../snapshots/">Snapshots and drift</a>.</p></article><nav class="pager" aria-label="Neighbouring pages"><a class="previous" href="/pyoq-sql/connections/"><span>Previous</span>Connections and pools</a><a class="next" href="/pyoq-sql/async/"><span>Next</span>Asynchronous execution</a></nav><footer class="page-footer"><p>PyOQ is released under the <a href="/pyoq-sql/licence/" rel="license">MPL-2.0</a> licence.</p></footer></main><nav class="contents" aria-label="On this page"><p>On this page</p><ul><li><a href="#the-ownership-model">The ownership model</a></li><li><a href="#install-the-project">Install the project</a></li><li><a href="#organise-the-modules">Organise the modules</a></li><li><a href="#configure-generation">Configure generation</a></li><li><a href="#keep-connection-behavior-in-the-profile">Keep connection behavior in the profile</a></li><li><a href="#own-the-pool-in-one-lifecycle">Own the pool in one lifecycle</a></li><li><a href="#make-repositories-transaction-compatible">Make repositories transaction-compatible</a></li><li><a href="#put-transactions-in-the-service-layer">Put transactions in the service layer</a></li><li><a href="#start-and-stop-the-application">Start and stop the application</a></li><li><a href="#stream-large-reads">Stream large reads</a></li><li><a href="#observe-pool-pressure">Observe pool pressure</a></li><li><a href="#test-the-lifecycle-and-behavior">Test the lifecycle and behavior</a></li><li><a href="#production-checklist">Production checklist</a></li></ul></nav></div><script type="module">document.addEventListener(`click`,e=>{let t=e.target?.closest(`[data-copy]`);if(!t)return;let n=(t.closest(`.code-shell`)?.querySelector(`pre`)?.textContent??``).replace(/\n$/,``);if(!n)return;let r=e=>{let n=t.querySelector(`[data-copy-label]`);n&&(n.textContent=e)};navigator.clipboard.writeText(n).then(()=>{t.dataset.copied=``,r(`Copied`),setTimeout(()=>{delete t.dataset.copied,r(`Copy`)},1600)},()=>r(`Press ⌘C`))});</script><script type="module" src="/pyoq-sql/_astro/CodeEditors.astro_astro_type_script_index_0_lang.C8S0YAI5.js"></script><script type="module" src="/pyoq-sql/_astro/Diagrams.astro_astro_type_script_index_0_lang.BNJty66e.js"></script></body></html>
